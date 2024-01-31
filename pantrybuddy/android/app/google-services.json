@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "17679102985",
+    "project_id": "pantry-buddy-2024",
+    "storage_bucket": "pantry-buddy-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17679102985:android:cc7e1e136a9e8e7b3f34d8",
+        "android_client_info": {
+          "package_name": "com.a11.pantrybuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtnumc8hq5y07i_0ha6GdlzP1vWkfaK1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17679102985:android:69f883a3234c99023f34d8",
+        "android_client_info": {
+          "package_name": "com.example.pantry_buddy_2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtnumc8hq5y07i_0ha6GdlzP1vWkfaK1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
