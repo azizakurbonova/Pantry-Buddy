@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pantrybuddy/firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
+
   runApp(const MyApp());
 }
 
