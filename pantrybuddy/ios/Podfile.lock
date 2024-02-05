@@ -8,18 +8,16 @@ PODS:
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 10.20.0)
   - firebase_auth (4.16.0):
-    - Firebase/Auth (~> 10.20.0)
-    - Firebase/CoreOnly (~> 10.20.0)
+    - Firebase/Auth (= 10.20.0)
     - firebase_core
-    - FlutterMacOS
+    - Flutter
   - firebase_core (2.25.0):
-    - Firebase/CoreOnly (~> 10.20.0)
-    - FlutterMacOS
+    - Firebase/CoreOnly (= 10.20.0)
+    - Flutter
   - firebase_database (10.4.1):
-    - Firebase/CoreOnly (~> 10.20.0)
-    - Firebase/Database (~> 10.20.0)
+    - Firebase/Database (= 10.20.0)
     - firebase_core
-    - FlutterMacOS
+    - Flutter
   - FirebaseAppCheckInterop (10.20.0)
   - FirebaseAuth (10.20.0):
     - FirebaseAppCheckInterop (~> 10.17)
@@ -40,7 +38,7 @@ PODS:
     - FirebaseSharedSwift (~> 10.0)
     - leveldb-library (~> 1.22)
   - FirebaseSharedSwift (10.20.0)
-  - FlutterMacOS (1.0.0)
+  - Flutter (1.0.0)
   - GoogleUtilities/AppDelegateSwizzler (7.12.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -59,12 +57,13 @@ PODS:
   - GTMSessionFetcher/Core (3.3.1)
   - leveldb-library (1.22.2)
   - PromisesObjC (2.3.1)
+  - RecaptchaInterop (100.0.0)
 
 DEPENDENCIES:
-  - firebase_auth (from `Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos`)
-  - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
-  - firebase_database (from `Flutter/ephemeral/.symlinks/plugins/firebase_database/macos`)
-  - FlutterMacOS (from `Flutter/ephemeral`)
+  - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
+  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
+  - Flutter (from `Flutter`)
 
 SPEC REPOS:
   trunk:
@@ -79,34 +78,36 @@ SPEC REPOS:
     - GTMSessionFetcher
     - leveldb-library
     - PromisesObjC
+    - RecaptchaInterop
 
 EXTERNAL SOURCES:
   firebase_auth:
-    :path: Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos
+    :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
-    :path: Flutter/ephemeral/.symlinks/plugins/firebase_core/macos
+    :path: ".symlinks/plugins/firebase_core/ios"
   firebase_database:
-    :path: Flutter/ephemeral/.symlinks/plugins/firebase_database/macos
-  FlutterMacOS:
-    :path: Flutter/ephemeral
+    :path: ".symlinks/plugins/firebase_database/ios"
+  Flutter:
+    :path: Flutter
 
 SPEC CHECKSUMS:
   Firebase: 10c8cb12fb7ad2ae0c09ffc86cd9c1ab392a0031
-  firebase_auth: 41dd36772891617cbbaa085a9e5432508aabe496
-  firebase_core: 88400e91f94a14f5886c8dc3d9f8532160eb0b59
-  firebase_database: db61ed7f4bf1167c8af62c240911b7b5dbbb5855
+  firebase_auth: 50e205714f2f30db4908f68c485e4cbf1c8c2701
+  firebase_core: 86455a528b3b0961c5f1324fa938bcfcd30cd7ac
+  firebase_database: 51dd275c209f343bae886c5f757c9092964ecf6d
   FirebaseAppCheckInterop: e81bdb1cdb82f8e0cef353ba5018a8402682032c
   FirebaseAuth: 9c5c400d2c3055d8ae3a0284944c86fa95d48dac
   FirebaseCore: 28045c1560a2600d284b9c45a904fe322dc890b6
   FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
   FirebaseDatabase: 7e838abb62ac2e1a1c792cbeb51df3c4b6607f54
   FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
-  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
+  RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 236401fc2c932af29a9fcf0e97baeeb2d750d367
+PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
 COCOAPODS: 1.15.0
