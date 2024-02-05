@@ -1,22 +1,29 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pantrybuddy/auth/main_page.dart';
 import 'package:pantrybuddy/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainPage(),
+      //title: 'Flutter Demo',
+      //theme: ThemeData(
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -32,14 +39,15 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        //colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 58, 181, 183)),
+        //useMaterial3: true,
+      //),
+      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
+/*
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -127,3 +135,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+*/

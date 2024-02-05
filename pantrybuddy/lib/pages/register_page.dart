@@ -25,10 +25,10 @@ class _RegisterPageState extends State<RegisterPage> {
   Future signUp() async {
     try {
       if (passwordConfirmed()) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
       } else {
         showDialog (
           context: context,
@@ -49,17 +49,6 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
       );
-    }
-  }
-
-  bool passwordConfirmed() {
-    if (_passwordController.text.trim() == 
-      _confirmpasswordController.text.trim()) {
-        return true;
-      } else {
-        return false;
-      }
-  }
 
   @override
   Widget build(BuildContext context) {
