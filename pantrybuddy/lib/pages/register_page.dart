@@ -23,22 +23,32 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future signUp() async {
-    if (passwordConfirmed()) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-    }
-  }
-
-  bool passwordConfirmed() {
-    if (_passwordController.text.trim() == 
-      _confirmpasswordController.text.trim()) {
-        return true;
+    try {
+      if (passwordConfirmed()) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
       } else {
-        return false;
+        showDialog (
+          context: context,
+          builder: (context) {
+            return AlertDialog (
+              content: Text('Passwords must match!'),
+            );
+          }
+        );
       }
-  }
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      showDialog (
+        context: context,
+        builder: (context) {
+          return AlertDialog (
+            content: Text(e.message.toString()),
+          );
+        }
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height:10),
                 const Text (
-                  'Register below',
+                  'Password must be at least 6 characters',
                   style: TextStyle (
                     fontSize: 20,
                   ),
