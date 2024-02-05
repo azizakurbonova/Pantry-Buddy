@@ -31,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[200],
@@ -123,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                             context, 
                             MaterialPageRoute(
                               builder: (context) {
-                                return ForgotPasswordPage();
+                                return const ForgotPasswordPage();
                               },
                             ),
                           );
