@@ -49,6 +49,17 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
       );
+    };
+  }
+
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+      _confirmpasswordController.text.trim()) {
+        return true;
+      } else {
+        return false;
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
