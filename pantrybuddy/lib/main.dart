@@ -1,5 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pantrybuddy/auth/main_page.dart';
 import 'package:pantrybuddy/firebase_options.dart';
 
 void main() async {
