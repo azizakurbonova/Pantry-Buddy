@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: MainPage(), //main page wll take to auth or if already logged in, then to login/sign up page
       //title: 'Flutter Demo',
       //theme: ThemeData(
         // This is the theme of your application.
