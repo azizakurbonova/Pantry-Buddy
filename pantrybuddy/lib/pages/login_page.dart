@@ -17,10 +17,22 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(), 
-      password: _passwordController.text.trim(),
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(), 
+        password: _passwordController.text.trim(),
       );
+    } on FirebaseAuthException catch (e) { //login unsuccessful
+      print(e); 
+      showDialog (//console
+        context: context,
+        builder: (context) {
+          return AlertDialog (
+            content: Text(e.message.toString())
+          );
+        }
+      );
+    }
   }
 
   @override
