@@ -1,13 +1,10 @@
 class User {
-  String userId;
-  String email;
-  // Not storing username/password, seems to be handled already
-  // String username;
-  // String password;
+  final String userId; //final as unchangeable, UID & username are separate
+  final String email;
 
   User({
     required this.userId,
-    required this.email,
+    required this.email
   });
 
   // Convert a User object into a JSON map

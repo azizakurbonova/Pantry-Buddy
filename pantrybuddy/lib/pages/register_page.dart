@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/models/user.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -22,13 +24,43 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+      _confirmpasswordController.text.trim()) {
+        return true;
+      } else {
+        return false;
+      }
+  }
+
   Future signUp() async {
+    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+    final FirebaseDatabase _database = FirebaseDatabase.instance;
+
     try {
       if (passwordConfirmed()) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
+        //UPDATE DATABASE WITH NEW USER
+        // Successful registration
+        if (userCredential.user != null) {
+          String userId = userCredential.user!.uid; // Get the user ID
+
+          // Here, you create a map or use your User model to represent user data
+          Map<String, dynamic> userData = {
+            "userId": userId,
+            "email": _emailController.text.trim(),
+          };
+
+          // Update the Realtime Database with the new user's information
+          await FirebaseDatabase.instance.ref("users/$userId").set(userData);
+
+          //TO-DO: Navigate user to different screen upon first successfully registering, to do after Figma setup
+        }
+
       } else {
         showDialog (
           context: context,
@@ -52,14 +84,6 @@ class _RegisterPageState extends State<RegisterPage> {
     };
   }
 
-  bool passwordConfirmed() {
-    if (_passwordController.text.trim() ==
-      _confirmpasswordController.text.trim()) {
-        return true;
-      } else {
-        return false;
-      }
-  }
 
   @override
   Widget build(BuildContext context) {
