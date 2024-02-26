@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/Account_page.dart';
 import 'package:pantrybuddy/pages/Inventory_page.dart';
 import 'package:pantrybuddy/pages/Notification_pages.dart';
-import 'package:pantrybuddy/pages/create_pantry_page.dart';
-import 'package:pantrybuddy/pages/join_pantry_page.dart';
+import 'package:pantrybuddy/pages/login_page.dart';
+//import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class JoinPantryPage extends StatefulWidget {
+  const JoinPantryPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<JoinPantryPage> createState() => _JoinPantryPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _JoinPantryPageState extends State<JoinPantryPage> {
   final user = FirebaseAuth.instance.currentUser!;
 
   @override
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   // each page is a ListTitle
                   leading: Icon(Icons.food_bank),
                   title: Text(
-                    "Inventory **",
+                    "Inventory ** ",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
@@ -74,69 +74,43 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginPage(showRegisterPage: () {  },)));
                     }),
               ],
             ),
           ),
         ),
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-                height: 300,
-                width: 300,
-                child: Image.asset('lib/images/fridgey.png')),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  //Padding(padding: EdgeInsets.only(left: 10)),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.green[800],
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreatePantryPage()));
-                    },
-                    child: Text(
-                      "Create Pantry",
-                      style: TextStyle(color: Colors.white),
+        body: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text (
+                  'Enter a PantryBuddy Code to join!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
+                ),
+          Padding (
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: TextField (
+                    //controller: _emailController,
+                    decoration: InputDecoration (
+                      enabledBorder: OutlineInputBorder (
+                        borderSide: const BorderSide (color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder (
+                        borderSide: const BorderSide (color: Colors.green),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintText: 'Code',
+                      fillColor: Colors.grey[100],
+                      filled: true,
                     ),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.green[800],
-                    ),
-                    onPressed: () {
-                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => JoinPantryPage()));
-                    },
-                    child: Text(
-                      "Join Pantry",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ]),
-
-          // child: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Text('signed in as ' + user.email!),
-          //     MaterialButton(
-          //       onPressed: () {
-          //         FirebaseAuth.instance.signOut();
-          //       },
-          //       color: Colors.green[300],
-          //       child: Text('Sign Out'),
-          //     ),
-          //     Container()
-          //   ],
-
-          // ),
-        ));
+                ),
+        ],)),
+        
+        
+        );
   }
 }
