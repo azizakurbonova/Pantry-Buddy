@@ -33,8 +33,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future signUp() async {
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    final FirebaseDatabase _database = FirebaseDatabase.instance;
+    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    final FirebaseDatabase database = FirebaseDatabase.instance;
 
     try {
       if (passwordConfirmed()) {
@@ -64,7 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
         showDialog (
           context: context,
           builder: (context) {
-            return AlertDialog (
+            return const AlertDialog (
               content: Text('Passwords must match!'),
             );
           }
@@ -80,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         }
       );
-    };
+    }
   }
 
 

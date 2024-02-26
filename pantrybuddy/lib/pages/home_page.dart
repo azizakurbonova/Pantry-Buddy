@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Colors.green[400],
           elevation: 0, // how flat do we want this
-          title: Text("Top Bar"),
+          title: const Text("Top Bar"),
         ),
         endDrawer: Drawer(
           child: Container(
@@ -29,43 +29,43 @@ class _HomePageState extends State<HomePage> {
               children: [
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.account_box),
-                  title: Text(
+                  leading: const Icon(Icons.account_box),
+                  title: const Text(
                     "Account",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AccountPage()));
+                        MaterialPageRoute(builder: (context) => const AccountPage()));
                   },
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.notifications),
-                  title: Text(
+                  leading: const Icon(Icons.notifications),
+                  title: const Text(
                     "Notifications",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
+                        builder: (context) => const NotificationPage()));
                   },
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.food_bank),
-                  title: Text(
+                  leading: const Icon(Icons.food_bank),
+                  title: const Text(
                     "Inventory",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => InventoryPage()));
+                        builder: (context) => const InventoryPage()));
                   },
                 ),
                 ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text(
+                    leading: const Icon(Icons.logout),
+                    title: const Text(
                       "Sign Out",
                       style: TextStyle(fontSize: 20),
                     ),
@@ -82,14 +82,14 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   
                   onPressed: (){} , 
-                  child: Text("Create Pantry"),
+                  child: const Text("Create Pantry"),
                   ),
 
 
                 ElevatedButton(
                   
                   onPressed: (){} , 
-                  child: Text("Join Pantry?"),
+                  child: const Text("Join Pantry?"),
                   ),  
               ]
 
