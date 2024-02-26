@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[100],
+        backgroundColor: Colors.green[100],
         appBar: AppBar(
           backgroundColor: Colors.green[400],
           elevation: 0, // how flat do we want this
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreatePantryPage()));
+                          builder: (context) => CreatePantryPage()));
                     },
                     child: Text(
                       "Create Pantry",
@@ -109,8 +109,8 @@ class _HomePageState extends State<HomePage> {
                       primary: Colors.green[800],
                     ),
                     onPressed: () {
-                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => JoinPantryPage()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => JoinPantryPage()));
                     },
                     child: Text(
                       "Join Pantry",
