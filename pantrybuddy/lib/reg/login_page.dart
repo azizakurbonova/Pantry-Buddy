@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/pages/forgot_pw_page.dart';
+import 'package:pantrybuddy/reg/forgot_pw_page.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;

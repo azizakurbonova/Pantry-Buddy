@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/pages/Account_page.dart';
-import 'package:pantrybuddy/pages/Inventory_page.dart';
-import 'package:pantrybuddy/pages/Notification_pages.dart';
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
+import 'package:pantrybuddy/pages/notif_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Colors.green[400],
           elevation: 0, // how flat do we want this
-          title: Text("Top Bar"),
+          //title: Text("Top Bar"),
         ),
         endDrawer: Drawer(
           child: Container(

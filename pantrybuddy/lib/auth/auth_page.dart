@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/pages/login_page.dart';
-import 'package:pantrybuddy/pages/register_page.dart';
+import 'package:pantrybuddy/reg/login_page.dart';
+import 'package:pantrybuddy/reg/register_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage ({Key? key}) : super(key: key);
