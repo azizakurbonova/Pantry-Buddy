@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/pages/Account_page.dart';
-import 'package:pantrybuddy/pages/Inventory_page.dart';
-import 'package:pantrybuddy/pages/Notification_pages.dart';
-import 'package:pantrybuddy/pages/login_page.dart';
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
+import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/reg/login_page.dart';
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
 class JoinPantryPage extends StatefulWidget {
