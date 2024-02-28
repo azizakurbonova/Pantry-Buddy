@@ -155,12 +155,6 @@ class _InventoryPageState extends State<InventoryPage> {
       ),
     );
 
-    /*
-    return Scaffold(
-      body: Center(child: Text("INVENTORY PAGE TEST")),
-    );
-    */
-
     /* for category boxes
                 //other
                 Padding (

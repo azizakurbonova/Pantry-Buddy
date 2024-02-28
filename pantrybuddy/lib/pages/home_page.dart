@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/create_pantry_page.dart';
+import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.green[100],
         appBar: AppBar(
           backgroundColor: Colors.green[400],
           elevation: 0, // how flat do we want this
@@ -55,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   // each page is a ListTitle
                   leading: Icon(Icons.food_bank),
                   title: Text(
-                    "Inventory",
+                    "Inventory **",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
@@ -77,26 +80,47 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Center(
-            child: Column(
-              children: [
-                ElevatedButton(
-                  
-                  onPressed: (){} , 
-                  child: Text("Create Pantry"),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Container(
+                height: 300,
+                width: 300,
+                child: Image.asset('lib/images/fridgey.png')),
+            Padding(
+              padding: EdgeInsets.only(top: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  //Padding(padding: EdgeInsets.only(left: 10)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CreatePantryPage()));
+                    },
+                    child: Text(
+                      "Create Pantry",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-
-
-                ElevatedButton(
-                  
-                  onPressed: (){} , 
-                  child: Text("Join Pantry?"),
-                  ),  
-              ]
-
-              
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => JoinPantryPage()));
+                    },
+                    child: Text(
+                      "Join Pantry",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
-
-
+            )
+          ]),
 
           // child: Column(
           //   mainAxisAlignment: MainAxisAlignment.center,
