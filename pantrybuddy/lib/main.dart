@@ -8,7 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
+  //FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
 
   runApp(const MyApp());
 }
