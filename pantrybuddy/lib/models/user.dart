@@ -1,6 +1,6 @@
 class User {
   final String userId; //final as unchangeable, UID & username are separate
-  final String email;
+  final String? email;
 
   User({
     required this.userId,

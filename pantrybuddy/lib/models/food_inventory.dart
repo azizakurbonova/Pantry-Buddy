@@ -2,18 +2,22 @@ import 'grocery_item.dart';
 import 'package:flutter/foundation.dart';
 
 class FoodInventory {
-  String inventoryId;
-  String owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
+  String? inventoryId;
+  String
+      owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
   List<String> users;
   List<GroceryItem> groceryItems;
 
-FoodInventory({
+  FoodInventory({
     required this.inventoryId,
     required this.owner,
     List<GroceryItem>? groceryItems,
     List<String>? users,
   })  : groceryItems = groceryItems ?? [],
-        users = users ?? [owner]; //owner is implicitly already part of list of users who can view and edit the inventory
+        users = users ??
+            [
+              owner
+            ]; //owner is implicitly already part of list of users who can view and edit the inventory
 
   // Methods to add, remove, and view items would go here
   // Add a GroceryItem to the inventory
@@ -32,35 +36,32 @@ FoodInventory({
     return groceryItems;
   }
 
-  bool shareAccess(String currentUserId, String userToAdd){
+  bool shareAccess(String currentUserId, String userToAdd) {
     if (currentUserId == owner) {
-      if (!users.contains(userToAdd)){
+      if (!users.contains(userToAdd)) {
         users.add(userToAdd);
         return true; //indicate operation success
-      }
-      else{
+      } else {
         debugPrint("User already has access");
         return false;
       }
-    }
-    else {
+    } else {
       debugPrint('Only the owner can update the user access list.');
       return false;
     }
   }
 
-  bool removeAccess(String currentUserId, String userToRemove){
+  bool removeAccess(String currentUserId, String userToRemove) {
     if (currentUserId == owner) {
-      if (!users.contains(userToRemove)){
+      if (!users.contains(userToRemove)) {
         users.remove(userToRemove);
         return true; //indicate operation success
-      }
-      else{
-        debugPrint("User does not exist among existing list of people with access");
+      } else {
+        debugPrint(
+            "User does not exist among existing list of people with access");
         return false;
       }
-    }
-    else {
+    } else {
       debugPrint('Only the owner can update the user access list.');
       return false;
     }

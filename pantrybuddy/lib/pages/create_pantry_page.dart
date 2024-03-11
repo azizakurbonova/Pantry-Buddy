@@ -21,6 +21,8 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
 
   final database = FirebaseDatabase.instance.ref();
 
+  
+
   //String userID = user.uid.toString();
 
   @override
@@ -97,106 +99,12 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Give your pantry a name!',
+            'Your pantry code is: ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 25,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              //controller: _emailController,
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.white),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.green),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                hintText: 'Name',
-                fillColor: Colors.grey[100],
-                filled: true,
-              ),
-            ),
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                try {
-                  String userID = user.uid;
-                  // ".write": "auth != null && data.child('users').child(auth.uid).exists()",
-                  //UPDATE DATABASE WITH NEW USER
-                  // Successful registration
-                  // if (userCredential.user != null) {
-                  //   String userId = userCredential.user!.uid; // Get the user ID
-
-                  // Here, you create a map or use your User model to represent user data
-                  Map<String, dynamic> userData = {
-                    "userId": user.uid,
-                    "email": user.email,
-                  };
-
-                  // Update the Realtime Database with the new user's information
-                  await FirebaseDatabase.instance
-                      .ref("users/$userID")
-                      .set(userData);
-
-                  // await database.child('users').set({
-                  //   //'title': "hari",
-                  //   'userId': user.uid,
-                  //   'email': user.email,
-                  //   'isAnonymous': user.isAnonymous,
-                  // });
-                  print("stuff has been written!");
-                } catch (e) {
-                  print('youve got error $e');
-                }
-              },
-              child: Text('Add User')),
-          ElevatedButton(
-              onPressed: () async {
-                try {
-                  String userID = user.uid;
-
-                  //FoodInventory pantry =
-                  List<String> users = [user.uid];
-                  List<GroceryItem> groceryItems = [];
-
-                //const getTimeEpoch = () => {return new Date().getTime().toString()}
-                  // ".write": "auth != null && data.child('users').child(auth.uid).exists()",
-                  //UPDATE DATABASE WITH NEW USER
-                  // Successful registration
-                  // if (userCredential.user != null) {
-                  //   String userId = userCredential.user!.uid; // Get the user ID
-
-                  // Here, you create a map or use your User model to represent user data
-                  Map<String, dynamic> foodInventoryData = {
-                    "owner": user.uid,
-                    "users": users,
-                    "groceryItems": groceryItems,
-                  };
-
-                  // Update the Realtime Database with the new user's information
-                  await FirebaseDatabase.instance
-                      .ref("foodInventories/$userID")
-                      .set(foodInventoryData);
-
-                  //FirebaseDatabase.instance.ref
-
-                  // await database.child('users').set({
-                  //   //'title': "hari",
-                  //   'userId': user.uid,
-                  //   'email': user.email,
-                  //   'isAnonymous': user.isAnonymous,
-                  // });
-                  print("stuff has been written!");
-                } catch (e) {
-                  print('youve got error $e');
-                }
-              },
-              child: Text('Add FoodInventory')),
         ],
       )),
     );
