@@ -14,10 +14,10 @@ Future<String?> readPLUCode() async {
   final inputImage = InputImage.fromFilePath(imageFile.path);
   final textDetector = GoogleMlKit.vision.textRecognizer();
 
-  // Process the image
+  // extract all text
   final RecognizedText allText = await textDetector.processImage(inputImage);
   
-  // Regular expression for matching a 4 or 5 digit PLU code
+  // condition for extracting PLU code from all text retrieved
   final pluCodeRegExp = RegExp(r'\b\d{4,5}\b');
   String? pluCode;
 
