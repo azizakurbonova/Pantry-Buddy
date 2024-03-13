@@ -63,7 +63,7 @@ Future<void> scanAndFetchProduct() async {
   if (barcode != null) {
     final productInfo = await fetchProductInfo(barcode);
     if (productInfo != null) {
-      print('Product Name: ${productInfo['product_name']}');
+      debugPrint('Product Name: ${productInfo['product_name']}');
       //#TO-DO: sort through product information package to use what's relevant for creating a GroceryItem and adding that to user's FoodInventory and updating the database accordingly
     }
   }

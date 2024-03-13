@@ -42,3 +42,4 @@ Future<String?> readPLUCode() async {
   return pluCode; // Return the found PLU code or null if no match was found
 }
 
+//To-Do: Look up PLU in IFPS database, cross-reference w/ nutrient data from FoodData Central
