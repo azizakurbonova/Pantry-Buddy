@@ -47,11 +47,14 @@ class _RegisterPageState extends State<RegisterPage> {
         // Successful registration
         if (userCredential.user != null) {
           String userId = userCredential.user!.uid; // Get the user ID
+           String? newInventoryID =
+      FirebaseDatabase.instance.ref("foodInventories").push().key;
 
           // Here, you create a map or use your User model to represent user data
           Map<String, dynamic> userData = {
             "userId": userId,
             "email": _emailController.text.trim(),
+            "joinCode": newInventoryID,
           };
 
           // Update the Realtime Database with the new user's information
