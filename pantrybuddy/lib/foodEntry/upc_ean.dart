@@ -6,6 +6,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:pantrybuddy/models/grocery_item.dart';
 
 //Description: Scan UPC / EAN barcode
 Future<String?> scanBarcode() async {
@@ -58,13 +59,42 @@ Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
   }
 }
 
-Future<void> scanAndFetchProduct() async {
+Future<GroceryItem> scanAndFetchProduct() async {
   final barcode = await scanBarcode();
   if (barcode != null) {
-    final productInfo = await fetchProductInfo(barcode);
-    if (productInfo != null) {
-      debugPrint('Product Name: ${productInfo['product_name']}');
-      //#TO-DO: sort through product information package to use what's relevant for creating a GroceryItem and adding that to user's FoodInventory and updating the database accordingly
+    final product = await fetchProductInfo(barcode);
+    if (product != null) {
+      debugPrint('Product Name: ${product['product_name']}');
+
+      //Create GroceryItem object      
+      final itemId = product['code'];
+      final name = product['product_name'];
+      final category = product['categories'].split(','); // Taking the first category for simplicity
+      final nutriScore = product.containsKey('nutrition_grades') ? product['nutrition_grades'] : null;
+      final ecoScore = product.containsKey('ecoscore_grade') ? product['ecoscore_grade'] : null;
+
+      // Constructing nutritionalInfo from all entries in the 'nutriments' object
+      // #TO-DO: Create function for parsing nutritionalInfo into UI
+      final nutriments = product['nutriments'];
+      final nutritionalInfo = nutriments.entries
+          .map((entry) => '${entry.key.replaceAll('_', ' ')}: ${entry.value}')
+          .join('; ');
+
+      // Placeholder values for expirationDate and quantity
+      final DateTime expirationDate = DateTime.now().add(const Duration(days: 30)); //TO-DO: create method for expiration date manual entry
+      const int quantity = 1; //TO-DO: create space for user input on quantity
+
+      return GroceryItem(
+        itemId: itemId,
+        name: name,
+        category: category,
+        quantity: quantity,
+        expirationDate: expirationDate,
+        nutriScore: nutriScore,
+        ecoScore: ecoScore,
+        itemIdType: ItemIdType.EAN, // Assuming EAN for Open Food Facts products
+        nutritionalInfo: nutritionalInfo,
+      );  
     }
   }
 }

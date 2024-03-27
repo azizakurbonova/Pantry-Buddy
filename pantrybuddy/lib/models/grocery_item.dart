@@ -3,7 +3,7 @@ enum ItemIdType { EAN, UPC, PLU, Manual }
 class GroceryItem {
   String itemId;
   String name;
-  String category;
+  List<String> category;
   int quantity;
   DateTime expirationDate;
   String? nutriScore;
