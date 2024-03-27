@@ -59,7 +59,7 @@ Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
   }
 }
 
-Future<GroceryItem> scanAndFetchProduct() async {
+Future<GroceryItem?> scanAndFetchProduct() async {
   final barcode = await scanBarcode();
   if (barcode != null) {
     final product = await fetchProductInfo(barcode);
@@ -96,5 +96,7 @@ Future<GroceryItem> scanAndFetchProduct() async {
         nutritionalInfo: nutritionalInfo,
       );  
     }
+    return null;
   }
+  return null;
 }
