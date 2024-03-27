@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:csv/csv.dart';
 
 Future<String?> readPLUCode() async {
   // user takes a photo of the PLU sticker
@@ -42,4 +43,41 @@ Future<String?> readPLUCode() async {
   return pluCode; // Return the found PLU code or null if no match was found
 }
 
-//To-Do: Look up PLU in IFPS database, cross-reference w/ nutrient data from FoodData Central
+//To-Do: Look up PLU in IFPS database to retrieve category and name
+Future<List<List<dynamic>>> parseCSV(String csvData) async {
+  List<List<dynamic>> rows = const CsvToListConverter().convert(csvData);
+  return rows;
+}
+
+Future<Map<String, dynamic>> findProductDetailsByPlu(String pluCode, List<List<dynamic>> csvData) async {
+  // Assuming the first row contains headers
+  List<dynamic> headers = csvData.first;
+  
+  // Find the row with the matching PLU code
+  Map<String, dynamic> productDetails = {};
+  for (var row in csvData.skip(1)) { // Skip the header row
+    if (row[headers.indexOf("Plu")].toString() == pluCode) {
+      // Extract and return the Category and Commodity
+      productDetails['Category'] = row[headers.indexOf("Category")];
+      productDetails['Commodity'] = row[headers.indexOf("Commodity")];
+      break;
+    }
+  }
+  return productDetails;
+}
+
+void getProductDetails(String pluCode) async {
+  try {
+    List<List<dynamic>> csvData = await parseCSV('externalDB/ifps_plu.csv');
+    Map<String, dynamic> productDetails = await findProductDetailsByPlu(pluCode, csvData);
+    
+    //#TO-DO: Replace below logic with reading in PLU to record food entry
+    if (productDetails.isNotEmpty) {
+      debugPrint("Category: ${productDetails['Category']}, Commodity: ${productDetails['Commodity']}");
+    } else {
+      debugPrint("Product with PLU code $pluCode not found.");
+    }
+  } catch (e) {
+    debugPrint("An error occurred: $e");
+  }
+}
