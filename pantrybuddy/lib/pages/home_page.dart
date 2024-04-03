@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.account_box),
+                  leading: Icon(Icons.account_box, color: Colors.black),
                   title: Text(
                     "Account",
                     style: TextStyle(fontSize: 20),
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.notifications),
+                  leading: Icon(Icons.notifications, color: Colors.black),
                   title: Text(
                     "Notifications",
                     style: TextStyle(fontSize: 20),
@@ -82,9 +82,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.food_bank),
+                  leading: Icon(Icons.food_bank, color: Colors.black),
                   title: Text(
-                    "Inventory **",
+                    "Inventory",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
                 ListTile(
-                    leading: Icon(Icons.logout),
+                    leading: Icon(Icons.logout, color: Colors.black),
                     title: Text(
                       "Sign Out",
                       style: TextStyle(fontSize: 20),
@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
+                  SizedBox(width:10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[800],

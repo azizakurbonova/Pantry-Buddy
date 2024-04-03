@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/auth/auth_page.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
@@ -32,7 +33,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               children: [
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.account_box),
+                  leading: Icon(Icons.account_box, color: Colors.black),
                   title: Text(
                     "Account",
                     style: TextStyle(fontSize: 20),
@@ -44,7 +45,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.notifications),
+                  leading: Icon(Icons.notifications, color: Colors.black),
                   title: Text(
                     "Notifications",
                     style: TextStyle(fontSize: 20),
@@ -56,9 +57,9 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.food_bank),
+                  leading: Icon(Icons.food_bank, color: Colors.black),
                   title: Text(
-                    "Inventory ** ",
+                    "Inventory",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
@@ -67,7 +68,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                   },
                 ),
                 ListTile(
-                    leading: Icon(Icons.logout),
+                    leading: Icon(Icons.logout, color: Colors.black),
                     title: Text(
                       "Sign Out",
                       style: TextStyle(fontSize: 20),
@@ -75,7 +76,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     onTap: () {
                       FirebaseAuth.instance.signOut();
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginPage(showRegisterPage: () {  },)));
+                        builder: (context) => AuthPage()));
                     }),
               ],
             ),
@@ -89,6 +90,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     fontSize: 25,
                   ),
                 ),
+          SizedBox(height:20),
           Padding (
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField (
