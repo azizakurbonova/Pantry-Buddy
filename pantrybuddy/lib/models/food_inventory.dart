@@ -3,9 +3,8 @@ import 'package:flutter/foundation.dart';
 
 class FoodInventory {
   String? inventoryId;
-  String? joinCode;
-  String
-      owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
+  String owner;
+  //user who initialized the food inventory and is the only one that can share access to the inventory with others
   List<String> users;
   List<GroceryItem> groceryItems;
 
@@ -13,7 +12,6 @@ class FoodInventory {
     required this.inventoryId,
     required this.owner,
     List<GroceryItem>? groceryItems,
-    required this.joinCode,
     List<String>? users,
   })  : groceryItems = groceryItems ?? [],
         users = users ??
@@ -36,11 +34,6 @@ class FoodInventory {
   // Get a view of the inventory
   List<GroceryItem> viewInventory() {
     return groceryItems;
-  }
-
-  //Retrieve joinCode
-  String? getCode() {
-    return joinCode;
   }
 
   bool shareAccess(String currentUserId, String userToAdd) {
@@ -78,7 +71,6 @@ class FoodInventory {
     return {
       'inventoryId': inventoryId,
       'owner': owner,
-      'joinCode': joinCode,
       'users': users,
       'groceryItems': groceryItems.map((item) => item.toJson()).toList(),
     };
@@ -88,7 +80,6 @@ class FoodInventory {
     return FoodInventory(
       inventoryId: json['inventoryId'],
       owner: json['owner'],
-      joinCode: json['joinCode'],
       users: List<String>.from(json['users']),
       groceryItems: (json['groceryItems'] as List)
           .map((itemJson) => GroceryItem.fromJson(itemJson))

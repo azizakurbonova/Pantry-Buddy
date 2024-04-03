@@ -8,7 +8,8 @@ class GroceryItem {
   DateTime expirationDate;
   String? nutriScore;
   String? ecoScore;
-  ItemIdType itemIdType; // Assuming this is a String that can be either 'EAN', 'UPC', or 'PLU', or 'Manual'
+  ItemIdType
+      itemIdType; // Assuming this is a String that can be either 'EAN', 'UPC', or 'PLU', or 'Manual'
   String? nutritionalInfo;
 
   //Need to enforce that itemIdType has to be either "EAN","UPC","PLU", or "Manual"
