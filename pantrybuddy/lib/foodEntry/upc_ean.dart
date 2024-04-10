@@ -90,6 +90,7 @@ Future<GroceryItem?> scanAndFetchProduct() async {
         category: category,
         quantity: quantity,
         expirationDate: expirationDate,
+        dateAdded : DateTime.now(),
         nutriScore: nutriScore,
         ecoScore: ecoScore,
         itemIdType: ItemIdType.EAN, // Assuming EAN for Open Food Facts products
