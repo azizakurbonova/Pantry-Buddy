@@ -63,6 +63,16 @@ class GroceryItem {
     }
   }
 
+  void markAsConsumed(GroceryItem item) {
+    item.dateConsumed = DateTime.now();
+    // Update the item in your inventory storage/database
+  }
+
+  void markAsDiscarded(GroceryItem item) {
+    item.dateDiscarded = DateTime.now();
+    // Update the item in your inventory storage/database
+  }
+
   // Convert a GroceryItem object into a JSON map
   Map<String, dynamic> toJson() {
       return {
