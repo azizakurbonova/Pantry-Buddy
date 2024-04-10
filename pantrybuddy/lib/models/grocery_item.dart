@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 enum ItemIdType { EAN, UPC, PLU, Manual }
 
 class GroceryItem {
-  String itemId;
+  String? itemId;
   String name;
   List<String> category;
   int quantity;
@@ -19,7 +19,7 @@ class GroceryItem {
 
   //Need to enforce that itemIdType has to be either "EAN","UPC","PLU", or "Manual"
   GroceryItem({
-    required this.itemId,
+    this.itemId,
     required this.name,
     required this.category,
     this.quantity = 1,

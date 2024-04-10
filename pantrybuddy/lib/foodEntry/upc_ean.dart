@@ -67,7 +67,6 @@ Future<GroceryItem?> scanAndFetchProduct() async {
       debugPrint('Product Name: ${product['product_name']}');
 
       //Create GroceryItem object      
-      final itemId = product['code'];
       final name = product['product_name'];
       final category = product['categories'].split(','); // Taking the first category for simplicity
       final nutriScore = product.containsKey('nutrition_grades') ? product['nutrition_grades'] : null;
@@ -85,7 +84,6 @@ Future<GroceryItem?> scanAndFetchProduct() async {
       const int quantity = 1; //TO-DO: create space for user input on quantity
 
       return GroceryItem(
-        itemId: itemId,
         name: name,
         category: category,
         quantity: quantity,
