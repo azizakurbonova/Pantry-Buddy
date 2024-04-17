@@ -451,6 +451,7 @@ class _ManualAddPageState extends State<ManualAddPage> {
                           name: _nameController.text,
                           category: selectedCat!,
                           quantity: selectedQuantity!,
+                          dateAdded: DateTime.now(),
                           expirationDate: DateTime(selectedYear!, selectedMonth!, selectedDay!),
                           itemIdType: ItemIdType.Manual,
                         );
