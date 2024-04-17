@@ -31,7 +31,7 @@ class GroceryItem {
     this.ecoScore, //optional, only for products from the Open Food Facts DB
     required this.itemIdType,
     this.nutritionalInfo, //optional, only for products from the Open Food Facts DB
-    this.visible = true 
+    this.visible = true
   });
 
   // Method to display nutritional score
@@ -91,7 +91,6 @@ class GroceryItem {
         'visible': visible,
       };
     }
-
 
   // Create a GroceryItem object from a JSON map
   static GroceryItem fromJson(Map<String, dynamic> json) {
