@@ -25,10 +25,14 @@ class _ManualAddPageState extends State<ManualAddPage> {
   Future<FoodInventory> fetchUserInventory() async {
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     try {
+      String userId = user.uid;
+      DatabaseEvent dbEvent = await databaseReference.child("users/$userId/inventoryID").once();
+      String inventoryId = dbEvent.snapshot.value.toString();
+
       DatabaseEvent event = await databaseReference
-          .child('FoodInventory')
-          .child(user.uid)
+          .child('foodInventories/$inventoryId/groceryItems')
           .once();
+
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null) {
         Map<String, dynamic>? inventoryData =
