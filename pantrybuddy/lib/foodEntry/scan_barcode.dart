@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/foodEntry/upc_ean.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 //Stateful Widget, calling scanAndFetchProduct() from upc_ean to initiate
 //barcode scanning process, generates the JSON map for Grocery Item,
@@ -56,7 +56,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     if (item != null) {
       int quantity = int.tryParse(_quantityController.text) ?? 1; // Default to 1 if parsing fails
       
-      // Write to Firebase
+      // Write to groceryItems DB
       DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
       DatabaseReference newInventoryRef = ref.push();
       String? itemId = newInventoryRef.key;
@@ -68,6 +68,25 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       });
 
       await ref.push().set(currentGroceryItem!.toJson());
+
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+      // Fetch inventoryId from user's database entry, field is "pantry"
+      final DatabaseReference userRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+      final DataSnapshot snapshot = await userRef.get();
+      if (snapshot.exists && snapshot.value != null) {
+        final inventoryId = snapshot.value?['pantry'];
+
+        // Update foodInventories database
+        final DatabaseReference inventoryRef = FirebaseDatabase.instance.ref('foodInventories/$inventoryId/groceryItems');
+        final DataSnapshot inventorySnapshot = await inventoryRef.get();
+        List<dynamic> groceryItems = inventorySnapshot.value != null ? List<dynamic>.from(inventorySnapshot.value) : [];
+        groceryItems.add(item.itemId); // Add new item ID to the list
+
+        await inventoryRef.set(groceryItems); // Update the inventory with the new list
+      }
+    }
 
       _quantityController.clear();
   }
