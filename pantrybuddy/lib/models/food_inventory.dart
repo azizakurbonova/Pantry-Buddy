@@ -4,8 +4,7 @@ import 'package:flutter/foundation.dart';
 class FoodInventory {
   String? inventoryId;
   //String? joinCode;
-  String
-      owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
+  String owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
   List<String> users;
   List<GroceryItem> groceryItems;
 
