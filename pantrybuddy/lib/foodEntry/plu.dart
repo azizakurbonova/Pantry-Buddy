@@ -74,10 +74,53 @@ void getProductDetails(String pluCode) async {
     //#TO-DO: Replace below logic with reading in PLU to record food entry
     if (productDetails.isNotEmpty) {
       debugPrint("Category: ${productDetails['Category']}, Commodity: ${productDetails['Commodity']}");
+      //Use commodity value to search against Spoonacular Search By Ingredient function to get nutrient information
     } else {
       debugPrint("Product with PLU code $pluCode not found.");
     }
   } catch (e) {
     debugPrint("An error occurred: $e");
+  }
+}
+
+
+//Example GET response: https://api.spoonacular.com/food/ingredients/search?apiKey=41a82396931e43039ec29a6356ec8dc1&includeNutrition=true&query=artichoke&number=2
+Future<Map<String, dynamic>?> fetchIngredientInfo(String ingredient) async {
+  const String apiKey = '41a82396931e43039ec29a6356ec8dc1'; 
+  const String url = 'https://api.spoonacular.com/food/ingredients/search';
+  final Uri uri = Uri.parse(url + '?query=$ingredient&apiKey=$apiKey&number=1');
+
+  try {
+    final response = await http.get(Uri.parse(url), headers: headers);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['results'].isNotEmpty) {
+        int id = data['results'][0]['id']; // Get the ID of the ingredient
+        return fetchIngredientNutrition(id, apiKey); // Fetch detailed nutrition info
+      }
+      return null;
+    } else {
+      throw Exception('Failed to load ingredient info');
+    }
+  } catch (e) {
+    print(e.toString());
+    return null;
+  }
+}
+
+Future<Map<String, dynamic>?> fetchIngredientNutrition(int id, String apiKey) async {
+  final String url = 'https://api.spoonacular.com/food/ingredients/$id/information';
+  final Uri uri = Uri.parse(url + '?apiKey=$apiKey&amount=1');
+
+  try {
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load nutrition details');
+    }
+  } catch (e) {
+    print(e.toString());
+    return null;
   }
 }
