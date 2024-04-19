@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
-import 'package:pantrybuddy/foodEntry/upc_ean.dart';
+import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/foodEntry/spoonacular_upc.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -53,6 +54,7 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
 
   Future<void> scanAndAddProduct() async {
     GroceryItem? item = await scanAndFetchProduct();
+
     if (item != null) {
       int quantity = int.tryParse(_quantityController.text) ?? 1; // Default to 1 if parsing fails
       
@@ -70,24 +72,21 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
       await ref.push().set(currentGroceryItem!.toJson());
 
       User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
 
       if (user != null) {
       // Fetch inventoryId from user's database entry, field is "pantry"
-      final DatabaseReference userRef = FirebaseDatabase.instance.ref('users/${user.uid}');
-      final DataSnapshot snapshot = await userRef.get();
-      if (snapshot.exists && snapshot.value != null) {
-        final inventoryId = snapshot.value?['pantry'];
+      final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
+      final DataSnapshot userSnapshot = await dbref.child("users/$user.uid/inventoryId").get();
+      String pantry = userSnapshot.value.toString();
 
-        // Update foodInventories database
-        final DatabaseReference inventoryRef = FirebaseDatabase.instance.ref('foodInventories/$inventoryId/groceryItems');
-        final DataSnapshot inventorySnapshot = await inventoryRef.get();
-        List<dynamic> groceryItems = inventorySnapshot.value != null ? List<dynamic>.from(inventorySnapshot.value) : [];
-        groceryItems.add(item.itemId); // Add new item ID to the list
+      FoodInventory inventoryManager = FoodInventory(
+        owner : userId!,
+        inventoryId : pantry
+      );
 
-        await inventoryRef.set(groceryItems); // Update the inventory with the new list
-      }
+      inventoryManager.addGroceryItem(currentGroceryItem!);
     }
-
       _quantityController.clear();
   }
 }
