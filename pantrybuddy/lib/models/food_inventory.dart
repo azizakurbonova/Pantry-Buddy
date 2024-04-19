@@ -45,6 +45,7 @@ class FoodInventory {
     if (!groceryItems.any((existingItem) => existingItem.itemId == item.itemId)) {
       groceryItems.add(item);
       dbRef.child('foodInventories/${this.inventoryId}/groceryItems').push().set(item.toJson());
+      //each push() generates a unique identifier and ensures that the new data is added as a new child under the list.
     }
   }
   
