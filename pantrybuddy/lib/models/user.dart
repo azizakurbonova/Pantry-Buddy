@@ -1,17 +1,16 @@
 class User {
   final String userId; //final as unchangeable, UID & username are separate
   final String? email;
+  final String? inventoryID;
 
-  User({
-    required this.userId,
-    required this.email
-  });
+  User({required this.userId, required this.email, required this.inventoryID});
 
   // Convert a User object into a JSON map
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
       'email': email,
+      'InventoryID': inventoryID
     };
   }
 
@@ -20,6 +19,7 @@ class User {
     return User(
       userId: json['userId'],
       email: json['email'],
+      inventoryID: json['inventoryID']
     );
   }
 }

@@ -1,5 +1,8 @@
+//import 'dart:js_interop';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
@@ -20,51 +23,52 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
 
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
 
-  String code = 'n/a';
+  //String code = 'n/a';
 
-  // this function should check if a code the user inputted(?) exists in the database
-  void getPantryCode(String input) {
-    String place = '0';
-    final getCode = FirebaseDatabase.instance
-        .ref()
-        .child('foodInventories')
-        .orderByChild('joinCode')
-        .equalTo(input)
-        .ref
-        .child("joinCode");
-    //print("getCode" + getCode);
-    //print("getCode: " + getCode.toString());
-    getCode.onValue.listen((event) {
-      setState(() {
-        place = event.snapshot.value.toString();
-        print("place: " + place);
-      });
-    });
-    // if (place == input) {
-    //   print("CODE WAS A MATCH!!!: place: $place");
-    // } else {
-    //   print("NO MATCH!! place: $place");
-    // }
-  }
+  String place = '0';
+
+  // this function doesnt do shit lmfao
+  // void getPantryCode(String pantryID) async {
+
+  // }
 
   // this function should add the user to a pantry
   void addUserToPantry() {}
 
+  void invalidCodeDialog() {
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text("ERROR CODE NOT VALID"),
+      content: Text("Please input valid code"),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    DatabaseReference getCode =
-        FirebaseDatabase.instance.ref().child('users/$myUserID/joinCode');
-    getCode.onValue.listen((event) {
-      setState(() {
-        code = event.snapshot.value.toString();
-      });
-    });
+    // can only read information from here. writing functions above doesnt work
+    String inputCode = _textController.text;
+    //print("holder in this moment is" + holder);
 
     return Scaffold(
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         backgroundColor: Colors.green[400],
-        elevation: 0, // how flat do we want this
+        elevation: 0,
         title: Text("Top Bar"),
       ),
       endDrawer: Drawer(
@@ -138,8 +142,6 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-
-            // test field
             child: TextField(
               controller: _textController,
               decoration: InputDecoration(
@@ -169,7 +171,41 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
             child: Column(children: [
               MaterialButton(
                 onPressed: () {
-                  getPantryCode(_textController.text);
+                  inputCode = _textController.text;
+
+                  //check if code is in database
+                  DatabaseReference getCode = FirebaseDatabase.instance
+                      .ref()
+                      .child('foodInventories/$inputCode/inventoryId');
+                  getCode.onValue.listen((event) {
+                    // setState(() {
+                    //if code isnt in database
+                    place = event.snapshot.value.toString();
+                    print("place is " + place);
+                    if (place == "null" || place == "0") {
+                      print("ERROR CODE NOT VALID!");
+                      invalidCodeDialog();
+                    }
+                    // });
+                    //does the user already exist as an user of the foodPantry?
+                    String isUser = '0';
+                    print("myUserID is " +  myUserID!);
+                    // DatabaseReference isUserID = FirebaseDatabase.instance
+                    //     .ref()
+                    //     .child(
+                    //         'foodInventories/$place/users').equalTo("$myUserID").ref;
+
+                    DatabaseReference isUserID = FirebaseDatabase.instance
+                    .ref('foodInventories/$place/users')
+                    .orderByValue(
+                        ).equalTo("$myUserID").ref;
+                    isUserID.onValue.listen((event) {
+                      // setState(() {
+                        isUser = event.snapshot.value.toString();
+                      // });
+                      print("isUser is " + isUser);
+                    });
+                  });
                 },
                 child: Text("Enter"),
                 color: Colors.green[400],

@@ -1,4 +1,4 @@
-import 'dart:ffi';
+//import 'dart:ffi';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,22 +31,30 @@ class _HomePageState extends State<HomePage> {
     //DatabaseReference ref = FirebaseDatabase.instance.ref("foodInventories");
     String myUser = user.uid;
 
-    // this code reads only once. 
-    final readCode = FirebaseDatabase.instance.ref();
-    final snapshot = await readCode.child('users/$myUser/joinCode').get();
-
+    // this code reads only once.
+    //final readCode = FirebaseDatabase.instance.ref();
+    //final snapshot = await readCode.child('users/$myUser/joinCode').get();
 
     String? inventoryId = newInventoryID;
 
     FoodInventory newInventory = FoodInventory(
         inventoryId: inventoryId,
         owner: user.uid,
-        joinCode: snapshot.value.toString(),
+        //joinCode: snapshot.value.toString(),
         users: [user.uid],
         groceryItems: []);
+
+    // User newUser = User(
+
+    // );
+
     await FirebaseDatabase.instance
         .ref("foodInventories/$inventoryId")
         .set(newInventory.toJson());
+
+    await FirebaseDatabase.instance.ref("users/$myUser").update({
+      "inventoryID": inventoryId,
+    });
   }
 
   @override
@@ -159,15 +167,15 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () async {
                       try {
                         String userID = user.uid;
-                        String? newInventoryID = FirebaseDatabase.instance
-                            .ref("foodInventories")
-                            .push()
-                            .key;
+                        // String? newInventoryID = FirebaseDatabase.instance
+                        //     .ref("foodInventories")
+                        //     .push()
+                        //     .key;
                         // Here, you create a map or use your User model to represent user data
                         Map<String, dynamic> userData = {
                           "userId": user.uid,
                           "email": user.email,
-                          "joinCode": newInventoryID,
+                          "inventoryID": "Null",
                         };
                         // Update the Realtime Database with the new user's information
                         await FirebaseDatabase.instance

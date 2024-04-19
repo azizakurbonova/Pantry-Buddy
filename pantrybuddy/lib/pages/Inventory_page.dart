@@ -28,16 +28,14 @@ class _InventoryPageState extends State<InventoryPage> {
 
   @override
   Widget build(BuildContext context) {
-
     DatabaseReference getCode =
-        FirebaseDatabase.instance.ref().child('users/$myUserID/joinCode');
+        FirebaseDatabase.instance.ref().child('users/$myUserID/inventoryID');
     getCode.onValue.listen((event) {
       setState(() {
         code = event.snapshot.value.toString();
       });
     });
 
-    //code = "changed";
     return Scaffold(
       //appBar
       appBar: AppBar(
