@@ -9,6 +9,7 @@ import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/pages/invite_page.dart';
 
 class ManualAddPage extends StatefulWidget {
   final FoodInventory? userInventory;
@@ -198,6 +199,18 @@ class _ManualAddPageState extends State<ManualAddPage> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => NotificationPage()));
+                },
+              ),
+              ListTile(
+                // each page is a ListTitle
+                leading: Icon(Icons.insert_invitation, color: Colors.black),
+                title: Text(
+                  "Invite People",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => InvitePage()));
                 },
               ),
               ListTile(

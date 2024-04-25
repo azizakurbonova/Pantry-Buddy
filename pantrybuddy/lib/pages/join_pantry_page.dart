@@ -1,13 +1,15 @@
 //import 'dart:js_interop';
-
+import 'package:pantrybuddy/scripts/getInventory.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
-import 'package:pantrybuddy/reg/login_page.dart';
+import 'package:pantrybuddy/pages/registration/login_page.dart';
+import 'package:pantrybuddy/pages/manual_add_page.dart';
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
 class JoinPantryPage extends StatefulWidget {
@@ -33,7 +35,10 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
   // }
 
   // this function should add the user to a pantry
-  void addUserToPantry() {}
+  Future<bool> inviteUser(String userID) async {
+    FoodInventory foodInventory = await fetchUserInventory();
+    return foodInventory.shareAccess(user.uid, userID); //bool for success/fail
+  }
 
   void invalidCodeDialog() {
     Widget okButton = TextButton(
@@ -134,7 +139,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Enter a PantryBuddy Code to join!',
+            'Your Code: ${user.uid}',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 25,
@@ -189,19 +194,20 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     // });
                     //does the user already exist as an user of the foodPantry?
                     String isUser = '0';
-                    print("myUserID is " +  myUserID!);
+                    print("myUserID is " + myUserID!);
                     // DatabaseReference isUserID = FirebaseDatabase.instance
                     //     .ref()
                     //     .child(
                     //         'foodInventories/$place/users').equalTo("$myUserID").ref;
 
                     DatabaseReference isUserID = FirebaseDatabase.instance
-                    .ref('foodInventories/$place/users')
-                    .orderByValue(
-                        ).equalTo("$myUserID").ref;
+                        .ref('foodInventories/$place/users')
+                        .orderByValue()
+                        .equalTo("$myUserID")
+                        .ref;
                     isUserID.onValue.listen((event) {
                       // setState(() {
-                        isUser = event.snapshot.value.toString();
+                      isUser = event.snapshot.value.toString();
                       // });
                       print("isUser is " + isUser);
                     });
@@ -212,6 +218,19 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               ),
             ]),
           ),
+          const SizedBox(height: 35),
+          ElevatedButton(
+              onPressed: () async {},
+              child: Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(120, 50), //width, height
+                textStyle: TextStyle(
+                  fontSize: 18,
+                ),
+                foregroundColor:
+                    Colors.green[900], //foreground changes text color
+                backgroundColor: Colors.green[50],
+              ))
         ],
       )),
     );
