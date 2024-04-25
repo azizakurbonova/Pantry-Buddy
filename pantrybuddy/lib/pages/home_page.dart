@@ -38,11 +38,11 @@ class _HomePageState extends State<HomePage> {
     String? inventoryId = newInventoryID;
 
     FoodInventory newInventory = FoodInventory(
-        inventoryId: inventoryId,
-        owner: user.uid,
-        //joinCode: snapshot.value.toString(),
-        users: [user.uid],
-        groceryItems: []);
+      inventoryId: inventoryId,
+      owner: user.uid,
+      users: [user.uid],
+      groceryItems: [],
+    );
 
     // User newUser = User(
 

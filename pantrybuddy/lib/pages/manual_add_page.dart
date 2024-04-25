@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -26,29 +27,32 @@ class _ManualAddPageState extends State<ManualAddPage> {
 
   Future<FoodInventory> fetchUserInventory() async {
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    try {
-      String userId = user.uid;
-      DatabaseEvent dbEvent =
-          await databaseReference.child("users/$userId/inventoryID").once();
-      String inventoryId = dbEvent.snapshot.value.toString();
-
-      DatabaseEvent event = await databaseReference
-          .child('foodInventories/$inventoryId/groceryItems')
-          .once();
-
-      DataSnapshot snapshot = event.snapshot;
-      if (snapshot.value != null) {
-        Map<String, dynamic>? inventoryData =
-            snapshot.value as Map<String, dynamic>;
-        return FoodInventory.fromJson(inventoryData ?? {});
-      }
-      debugPrint('Error fetching user inventory: data snapshot is null');
-      return FoodInventory(
-          inventoryId: '', owner: '', groceryItems: [], users: []);
-    } catch (error) {
-      debugPrint('Error fetching user inventory: $error');
-      throw Exception('Failed to fetch user inventory due to error');
+    String userId = user.uid;
+    final snapshot =
+        await FirebaseDatabase.instance.ref("users/$userId/inventoryID").get();
+    final inventoryID = snapshot.value.toString();
+    DataSnapshot dataSnapshot = await FirebaseDatabase.instance
+        .ref("foodInventories/$inventoryID")
+        .get();
+    Map<String, dynamic> jsonData = {};
+    List<dynamic> listData = [];
+    for (final value in dataSnapshot.children) {
+      listData.add(value.value);
+      log(value.value.toString());
     }
+    jsonData["inventoryId"] = listData[1];
+    jsonData["owner"] = listData[2];
+    jsonData["users"] = listData[3];
+    for (int x = 0; x < jsonData["users"].length; x++) {
+      jsonData["users"][x] = jsonData["users"][x].toString();
+    }
+    jsonData["groceryItems"] = listData[0];
+    for (int x = 0; x < jsonData["groceryItems"].length; x++) {
+      jsonData["groceryItems"][x] = jsonData["groceryItems"][x].toString();
+    }
+    FoodInventory pantry = FoodInventory.fromJson(jsonData);
+    log(pantry.groceryItems.toString());
+    return pantry;
   }
 
   late FoodInventory userInventory;
@@ -524,13 +528,13 @@ class _ManualAddPageState extends State<ManualAddPage> {
                             groceryData;
                         FirebaseDatabase.instance.ref().update(groceryUpdates);
 
-                        //String userId = user.uid;
-                        //final snapshot = await FirebaseDatabase.instance
-                        //    .ref("users/$userId/inventoryID")
-                        //    .get();
-                        //final inventoryID = snapshot.value.toString();
-                        //final Map<String, Map> inventoryUpdates = {};
-                        //inventoryUpdates['foodInventories/$inventoryID/groceries']
+                        FoodInventory pantry = await fetchUserInventory();
+                        pantry.addGroceryItem(groceryKey!);
+                        String inventoryId = pantry.inventoryId!;
+                        await FirebaseDatabase.instance
+                            .ref("foodInventories/$inventoryId")
+                            .set(pantry.toJson());
+                        log(pantry.groceryItems.toString());
                       },
                       child: Text('Submit'),
                       style: ElevatedButton.styleFrom(

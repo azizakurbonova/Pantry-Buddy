@@ -4,37 +4,31 @@ import 'package:flutter/foundation.dart';
 class FoodInventory {
   String? inventoryId;
   //String? joinCode;
-  String owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
-  List<String> users;
-  List<GroceryItem> groceryItems;
+  String
+      owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
+  List<String> users = [];
+  List<String> groceryItems = [];
 
   FoodInventory({
     required this.inventoryId,
     required this.owner,
-    List<GroceryItem>? groceryItems,
-    //required this.joinCode,
-    List<String>? users,
-  })  : groceryItems = groceryItems ?? [],
-        users = users ??
-            [
-              owner
-            ]; //owner is implicitly already part of list of users who can view and edit the inventory
+    List<dynamic>? groceryItems,
+    List<dynamic>? users,
+  })  : groceryItems = [owner],
+        users = [
+          owner
+        ]; //owner is implicitly already part of list of users who can view and edit the inventory
 
   // Methods to add, remove, and view items would go here
   // Add a GroceryItem to the inventory
-  void addGroceryItem(GroceryItem item) {
+  void addGroceryItem(String itemId) {
     // Here you might want to check for duplicates before adding
-    groceryItems.add(item);
+    groceryItems.add(itemId);
   }
 
   // Remove a GroceryItem from the inventory by itemId
   void removeGroceryItem(String itemId) {
-    groceryItems.removeWhere((item) => item.itemId == itemId);
-  }
-
-  // Get a view of the inventory
-  List<GroceryItem> viewInventory() {
-    return groceryItems;
+    groceryItems.removeWhere((item) => item == itemId);
   }
 
   //Retrieve joinCode
@@ -77,9 +71,8 @@ class FoodInventory {
     return {
       'inventoryId': inventoryId,
       'owner': owner,
-      //'joinCode': joinCode,
       'users': users,
-      'groceryItems': groceryItems.map((item) => item.toJson()).toList(),
+      'groceryItems': groceryItems,
     };
   }
 
@@ -87,11 +80,8 @@ class FoodInventory {
     return FoodInventory(
       inventoryId: json['inventoryId'],
       owner: json['owner'],
-      //joinCode: json['joinCode'],
-      users: List<String>.from(json['users']),
-      groceryItems: (json['groceryItems'] as List)
-          .map((itemJson) => GroceryItem.fromJson(itemJson))
-          .toList(),
+      users: json['users'],
+      groceryItems: json['groceryItems'],
     );
   }
 }
