@@ -8,18 +8,20 @@ enum ItemIdType { EAN, UPC, PLU, Manual }
 /*
 Example Use of class methods to update firebase
 
-GroceryItem item = GroceryItem(
-    itemId: '123',
-    name: 'Apple',
-    category: ['Fruit'],
-    quantity: 10,
-    dateAdded: DateTime.now(),
-    expirationDate: DateTime.now().add(Duration(days: 90)),
-    itemIdType: ItemIdType.UPC
-);
+void main() {
+  var inventory = FoodInventory(
+    inventoryId: '123456',
+    owner: 'user123',
+  );
 
-item.updateQuantity(15);
-item.markConsumed();
+  // Example of sharing access
+  bool successShare = inventory.shareAccess('user123', 'user456');
+  print('Access shared: $successShare');
+
+  // Example of removing access
+  bool successRemove = inventory.removeAccess('user123', 'user456');
+  print('Access removed: $successRemove');
+}
 
 */
 
