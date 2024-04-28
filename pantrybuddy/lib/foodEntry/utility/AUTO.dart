@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -33,7 +35,45 @@ Future<List<Spoonacular>> autocompleteSearch_helper(String apiUrl) async {
       try {
         items.add(Spoonacular.fromJson(jsonItem));
       } catch (e) {
-        debugPrint('Failed to parse ProductSimple: $e');
+        debugPrint('Failed to parse Spoonacular object: $e');
+      }
+    }
+  } else {
+    debugPrint('Failed to fetch suggestions: ${response.statusCode}');
+  }
+  return items;
+}
+
+//once item is selected in the autosearch, have to retrieve more information
+//example: https://api.spoonacular.com/food/products/22347?apiKey=41a82396931e43039ec29a6356ec8dc1
+Future<List<Spoonacular>> idSearch_products(String id) async {
+  final String apiUrl = 'https://api.spoonacular.com/food/products/$id?apiKey=41a82396931e43039ec29a6356ec8dc1';
+  return idSearch_helper(apiUrl);
+}
+
+//example: https://api.spoonacular.com/food/ingredients/9266/information?apiKey=41a82396931e43039ec29a6356ec8dc1
+Future<List<Spoonacular>> idSearch_ingredients(String id) async {
+  final String apiUrl = 'https://api.spoonacular.com/food/ingredients/$id/information?apiKey=41a82396931e43039ec29a6356ec8dc1';
+  return idSearch_helper(apiUrl);
+}
+
+//example: https://api.spoonacular.com/food/menuItems/424571?apiKey=41a82396931e43039ec29a6356ec8dc1
+Future<List<Spoonacular>> idSearch_menuItems(String id) async {
+  final String apiUrl = 'https://api.spoonacular.com/food/menuItems/$id?apiKey=41a82396931e43039ec29a6356ec8dc1';
+  return idSearch_helper(apiUrl);
+}
+
+// Helper function to perform the autocomplete search
+Future<List<Spoonacular>> idSearch_helper(String apiUrl) async {
+  final response = await http.get(Uri.parse(apiUrl));
+  List<Spoonacular> items = [];
+  if (response.statusCode == 200) {
+    var suggestions = json.decode(response.body)['results'];
+    for (var jsonItem in suggestions) {
+      try {
+        items.add(Spoonacular.fromJson(jsonItem));
+      } catch (e) {
+        debugPrint('Failed to parse Spoonacular object: $e');
       }
     }
   } else {

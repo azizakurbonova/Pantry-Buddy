@@ -52,3 +52,30 @@ csv" on ID (within categories csv) / Category_ID (within expiration csv).
  then you can also print "For freshness and quality, this item should be 
  consumed within [Refrigerate_After_Opening_Max + Refrigerate_After_Opening
  _Metric] if refrigerated after opening"
+
+
+
+ MANUAL Entry Widget Specification
+ Using the joined list of all food products (foodKeeper.csv), 
+ with category ids and category_names that are repeated, there are 2 drop-down menus:
+
+   1. The first drop down list of all the Level 1 categories (defined as Category_Name column, 
+   removing duplicates and leading/trailing spaces) as well as the option for N/A. 
+   2. The second drop down list appears listing all the Level 2 categories (defined under NAME_all column) 
+   for under the specified Level 1 category as well as the option for N/A.
+
+ Under the drop-down menus, there are text fields allowing for manual user input of 
+ product name, product category, quantity and a date picker for expiration date (defined through the setExpirationDate function)
+
+ Exceptions:
+   - The text field for product category is greyed out if Level 1 category is not N/A
+   - If L2 category is not N/A, the user may choose to leave the product name empty
+
+Underneath the date picker for the expiration date is a text box for a suggested guideline
+for expiration date (using the suggestExpiration_Manual function). If L2 category is selected,
+the system will note the ID of the row (since L2 category functions at the row level), pass
+it to the function, then print what it returned in the text box. If N/A is selected for the
+L2 category, then the guideline used will be "No specific expiration information available."
+
+Upon successful entry of the product name (L2 or user-specified), product category (L1 or user-specified), 
+quantity, and expiration date, the system will create a GroceryItem object. 

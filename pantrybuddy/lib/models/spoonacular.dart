@@ -5,9 +5,10 @@ class Spoonacular {
   Spoonacular({required this.id, required this.name});
 
   factory Spoonacular.fromJson(Map<String, dynamic> json) {
+    String name = json['title'] ?? json['title']; // ingredients endpoint does not have title
     return Spoonacular(
-      id: json['id'].toString(), // Ensure this matches the key in the JSON response
-      name: json['name'] // This should match the 'name' or 'title' key in the JSON response
+      id: json['id'].toString(),
+      name: name,
     );
   }
 }
