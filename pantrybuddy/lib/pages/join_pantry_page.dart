@@ -2,14 +2,17 @@
 import 'package:pantrybuddy/scripts/getInventory.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/registration/login_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
+=======
+import 'package:pantrybuddy/widgets/sidebar.dart';
+>>>>>>> Stashed changes
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
 class JoinPantryPage extends StatefulWidget {
@@ -24,11 +27,9 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
   final _textController = TextEditingController();
 
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
-
-  //String code = 'n/a';
-
   String place = '0';
 
+<<<<<<< Updated upstream
   // this function doesnt do shit lmfao
   // void getPantryCode(String pantryID) async {
 
@@ -39,17 +40,20 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
     FoodInventory foodInventory = await fetchUserInventory();
     return foodInventory.shareAccess(user.uid, userID); //bool for success/fail
   }
+=======
+  void addUserToPantry() {}
+>>>>>>> Stashed changes
 
   void invalidCodeDialog() {
     Widget okButton = TextButton(
-      child: Text("OK"),
+      child: const Text("OK"),
       onPressed: () {
         Navigator.of(context).pop();
       },
     );
     AlertDialog alert = AlertDialog(
-      title: Text("ERROR CODE NOT VALID"),
-      content: Text("Please input valid code"),
+      title: const Text("ERROR CODE NOT VALID"),
+      content: const Text("Please input valid code"),
       actions: [
         okButton,
       ],
@@ -74,72 +78,19 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
       appBar: AppBar(
         backgroundColor: Colors.green[400],
         elevation: 0,
-        title: Text("Top Bar"),
       ),
-      endDrawer: Drawer(
-        child: Container(
-          color: Colors.green[400],
-          child: ListView(
-            children: [
-              ListTile(
-                // each page is a ListTitle
-                leading: Icon(Icons.account_box),
-                title: Text(
-                  "Account",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AccountPage()));
-                },
-              ),
-              ListTile(
-                // each page is a ListTitle
-                leading: Icon(Icons.notifications),
-                title: Text(
-                  "Notifications",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => NotificationPage()));
-                },
-              ),
-              ListTile(
-                // each page is a ListTitle
-                leading: Icon(Icons.food_bank),
-                title: Text(
-                  "Inventory ** ",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => InventoryPage()));
-                },
-              ),
-              ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text(
-                    "Sign Out",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => LoginPage(
-                              showRegisterPage: () {},
-                            )));
-                  }),
-            ],
-          ),
-        ),
-      ),
+      endDrawer: sideBar(context),
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+<<<<<<< Updated upstream
           Text(
             'Your Code: ${user.uid}',
+=======
+          const Text(
+            'Enter a PantryBuddy Code to join!',
+>>>>>>> Stashed changes
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 25,
@@ -194,7 +145,10 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     // });
                     //does the user already exist as an user of the foodPantry?
                     String isUser = '0';
+<<<<<<< Updated upstream
                     print("myUserID is " + myUserID!);
+=======
+>>>>>>> Stashed changes
                     // DatabaseReference isUserID = FirebaseDatabase.instance
                     //     .ref()
                     //     .child(
@@ -209,7 +163,6 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                       // setState(() {
                       isUser = event.snapshot.value.toString();
                       // });
-                      print("isUser is " + isUser);
                     });
                   });
                 },

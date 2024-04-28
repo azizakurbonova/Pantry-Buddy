@@ -8,7 +8,7 @@ class GroceryItem {
   String category;
   int quantity;
   DateTime dateAdded;
-  DateTime? dateConsumed; 
+  DateTime? dateConsumed;
   DateTime? dateDiscarded;
   DateTime expirationDate;
   String? nutriScore;
@@ -16,24 +16,24 @@ class GroceryItem {
   ItemIdType
       itemIdType; // Assuming this is a String that can be either 'EAN', 'UPC', or 'PLU', or 'Manual'
   String? nutritionalInfo;
-  bool visible; //distinguishes whether this food item is not discarded or consumed / is displayed as part of the current food inventory
+  bool
+      visible; //distinguishes whether this food item is not discarded or consumed / is displayed as part of the current food inventory
 
   //Need to enforce that itemIdType has to be either "EAN","UPC","PLU", or "Manual"
-  GroceryItem({
-    required this.itemId,
-    required this.name,
-    required this.category,
-    this.quantity = 1,
-    required this.expirationDate,
-    required this.dateAdded, //dateTime of class object instantiation
-    this.dateConsumed, //to be populated upon removal of grocery item from food inventory
-    this.dateDiscarded, //to be populated upon removal of grocery item from food inventory
-    this.nutriScore, //optional, only for products from the Open Food Facts DB
-    this.ecoScore, //optional, only for products from the Open Food Facts DB
-    required this.itemIdType,
-    this.nutritionalInfo, //optional, only for products from the Open Food Facts DB
-    this.visible = true
-  });
+  GroceryItem(
+      {required this.itemId,
+      required this.name,
+      required this.category,
+      this.quantity = 1,
+      required this.expirationDate,
+      required this.dateAdded, //dateTime of class object instantiation
+      this.dateConsumed, //to be populated upon removal of grocery item from food inventory
+      this.dateDiscarded, //to be populated upon removal of grocery item from food inventory
+      this.nutriScore, //optional, only for products from the Open Food Facts DB
+      this.ecoScore, //optional, only for products from the Open Food Facts DB
+      required this.itemIdType,
+      this.nutritionalInfo, //optional, only for products from the Open Food Facts DB
+      this.visible = true});
 
   // Method to display nutritional score
   String? viewNutriScore() {
@@ -76,22 +76,22 @@ class GroceryItem {
 
   // Convert a GroceryItem object into a JSON map
   Map<String, dynamic> toJson() {
-      return {
-        'itemId': itemId,
-        'name': name,
-        'category': category,
-        'quantity': quantity,
-        'dateAdded': dateAdded.toIso8601String(),
-        'dateConsumed': dateConsumed?.toIso8601String(),
-        'dateDiscarded': dateDiscarded?.toIso8601String(),
-        'expirationDate': expirationDate.toIso8601String(),
-        'nutriScore': nutriScore,
-        'ecoScore': ecoScore,
-        'itemIdType': itemIdType.name, // Convert enum to its name
-        'nutritionalInfo': nutritionalInfo,
-        'visible': visible,
-      };
-    }
+    return {
+      'itemId': itemId,
+      'name': name,
+      'category': category,
+      'quantity': quantity,
+      'dateAdded': dateAdded.toIso8601String(),
+      'dateConsumed': dateConsumed?.toIso8601String(),
+      'dateDiscarded': dateDiscarded?.toIso8601String(),
+      'expirationDate': expirationDate.toIso8601String(),
+      'nutriScore': nutriScore,
+      'ecoScore': ecoScore,
+      'itemIdType': itemIdType.name, // Convert enum to its name
+      'nutritionalInfo': nutritionalInfo,
+      'visible': visible,
+    };
+  }
 
   // Create a GroceryItem object from a JSON map
   static GroceryItem fromJson(Map<String, dynamic> json) {
@@ -99,14 +99,19 @@ class GroceryItem {
       itemId: json['itemId'],
       name: json['name'],
       category: json['category'],
-      quantity: json['quantity'] ?? 1,
+      quantity: int.parse(json['quantity'] ?? 1),
       dateAdded: DateTime.parse(json['dateAdded']),
       expirationDate: DateTime.parse(json['expirationDate']),
-      dateConsumed: json['dateConsumed'] != null ? DateTime.parse(json['dateConsumed']) : null,
-      dateDiscarded: json['dateDiscarded'] != null ? DateTime.parse(json['dateDiscarded']) : null,
+      dateConsumed: json['dateConsumed'] != null
+          ? DateTime.parse(json['dateConsumed'])
+          : null,
+      dateDiscarded: json['dateDiscarded'] != null
+          ? DateTime.parse(json['dateDiscarded'])
+          : null,
       nutriScore: json['nutriScore'],
       ecoScore: json['ecoScore'],
-      itemIdType: ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
+      itemIdType:
+          ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
       nutritionalInfo: json['nutritionalInfo'],
       visible: json['visible'] ?? true,
     );

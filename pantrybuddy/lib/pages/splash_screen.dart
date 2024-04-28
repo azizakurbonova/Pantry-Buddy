@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 
 import 'package:pantrybuddy/pages/home_page.dart';

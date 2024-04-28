@@ -1,4 +1,3 @@
-import 'grocery_item.dart';
 import 'package:flutter/foundation.dart';
 
 class FoodInventory {

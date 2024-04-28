@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
 import 'package:pantrybuddy/pages/registration/login_page.dart';
 import 'package:pantrybuddy/pages/registration/register_page.dart';
+=======
+import 'package:pantrybuddy/registration/login_page.dart';
+import 'package:pantrybuddy/registration/register_page.dart';
+>>>>>>> Stashed changes
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);

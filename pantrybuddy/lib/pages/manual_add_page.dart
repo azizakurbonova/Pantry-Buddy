@@ -1,15 +1,15 @@
-import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
-import 'package:pantrybuddy/pages/account_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
-import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
+<<<<<<< Updated upstream
 import 'package:pantrybuddy/pages/invite_page.dart';
+=======
+import 'package:pantrybuddy/widgets/sidebar.dart';
+import 'package:pantrybuddy/scripts/fetchUserInventory.dart';
+>>>>>>> Stashed changes
 
 class ManualAddPage extends StatefulWidget {
   final FoodInventory? userInventory;
@@ -25,36 +25,6 @@ class _ManualAddPageState extends State<ManualAddPage> {
   final _formKey = GlobalKey<FormState>();
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
   DatabaseReference pantryRef = FirebaseDatabase.instance.ref("groceryItems");
-
-  Future<FoodInventory> fetchUserInventory() async {
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    String userId = user.uid;
-    final snapshot =
-        await FirebaseDatabase.instance.ref("users/$userId/inventoryID").get();
-    final inventoryID = snapshot.value.toString();
-    DataSnapshot dataSnapshot = await FirebaseDatabase.instance
-        .ref("foodInventories/$inventoryID")
-        .get();
-    Map<String, dynamic> jsonData = {};
-    List<dynamic> listData = [];
-    for (final value in dataSnapshot.children) {
-      listData.add(value.value);
-      log(value.value.toString());
-    }
-    jsonData["inventoryId"] = listData[1];
-    jsonData["owner"] = listData[2];
-    jsonData["users"] = listData[3];
-    for (int x = 0; x < jsonData["users"].length; x++) {
-      jsonData["users"][x] = jsonData["users"][x].toString();
-    }
-    jsonData["groceryItems"] = listData[0];
-    for (int x = 0; x < jsonData["groceryItems"].length; x++) {
-      jsonData["groceryItems"][x] = jsonData["groceryItems"][x].toString();
-    }
-    FoodInventory pantry = FoodInventory.fromJson(jsonData);
-    log(pantry.groceryItems.toString());
-    return pantry;
-  }
 
   late FoodInventory userInventory;
 
@@ -87,72 +57,11 @@ class _ManualAddPageState extends State<ManualAddPage> {
     'Other',
   ];
   String? selectedCat;
-  final List<int> quantityList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-  ];
+  final List<int> quantityList = [for (var i = 1; i <= 15; i++) i];
   int? selectedQuantity;
-  final List<int> monthList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-  ];
+  final List<int> monthList = [for (var i = 1; i <= 12; i++) i];
   int? selectedMonth;
-  final List<int> dayList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    27,
-    28,
-    29,
-    30,
-    31
-  ];
+  final List<int> dayList = [for (var i = 1; i <= 31; i++) i];
   int? selectedDay;
   final List<int> yearList = [
     //this year and up to seven years in future
@@ -173,6 +82,7 @@ class _ManualAddPageState extends State<ManualAddPage> {
         //title: Text("Top Bar"),
       ),
       //drawer. pulls out on top right
+<<<<<<< Updated upstream
       endDrawer: Drawer(
         child: Container(
           color: Colors.green[400],
@@ -238,6 +148,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
           ),
         ),
       ),
+=======
+      endDrawer: sideBar(context),
+>>>>>>> Stashed changes
 
       //body
 

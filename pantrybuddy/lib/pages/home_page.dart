@@ -1,18 +1,12 @@
 //import 'dart:ffi';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
-import 'package:pantrybuddy/models/grocery_item.dart';
-import 'package:pantrybuddy/models/user.dart' as my_user;
-import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
-import 'package:pantrybuddy/pages/create_pantry_page.dart';
 import 'package:pantrybuddy/pages/join_pantry_page.dart';
-import 'package:uuid/uuid.dart';
+import 'package:pantrybuddy/widgets/sidebar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -41,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       inventoryId: inventoryId,
       owner: user.uid,
       users: [user.uid],
-      groceryItems: [],
+      groceryItems: [user.uid],
     );
 
     // User newUser = User(
@@ -66,60 +60,7 @@ class _HomePageState extends State<HomePage> {
           elevation: 0, // how flat do we want this
           //title: Text("Top Bar"),
         ),
-        endDrawer: Drawer(
-          child: Container(
-            color: Colors.green[400],
-            child: ListView(
-              children: [
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.account_box),
-                  title: Text(
-                    "Account",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AccountPage()));
-                  },
-                ),
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.notifications),
-                  title: Text(
-                    "Notifications",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
-                  },
-                ),
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.food_bank),
-                  title: Text(
-                    "Inventory **",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => InventoryPage()));
-                  },
-                ),
-                ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text(
-                      "Sign Out",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onTap: () {
-                      FirebaseAuth.instance.signOut();
-                    }),
-              ],
-            ),
-          ),
-        ),
+        endDrawer: sideBar(context),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
@@ -127,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 width: 300,
                 child: Image.asset('lib/images/fridgey.png')),
             Padding(
-              padding: EdgeInsets.only(top: 25),
+              padding: const EdgeInsets.only(top: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -140,9 +81,9 @@ class _HomePageState extends State<HomePage> {
                       createPantry();
 
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => InventoryPage()));
+                          builder: (context) => const InventoryPage()));
                     },
-                    child: Text(
+                    child: const Text(
                       "Create Pantry",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -155,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => JoinPantryPage()));
                     },
-                    child: Text(
+                    child: const Text(
                       "Join Pantry",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -181,13 +122,11 @@ class _HomePageState extends State<HomePage> {
                         await FirebaseDatabase.instance
                             .ref("users/$userID")
                             .set(userData);
-
-                        print("stuff has been written!");
                       } catch (e) {
-                        print('youve got error $e');
+                        print(e);
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       "Create User (for testing)",
                       style: TextStyle(color: Colors.white),
                     ),
