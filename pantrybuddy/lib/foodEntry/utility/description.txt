@@ -1,0 +1,54 @@
+Different methods of food entry into the inventory/pantry:
+
+1) The user can scan the barcode of a food product to retrieve
+ the UPC code, which is then passed to Spoonacular's "Search Grocery
+  Products by UPC" endpoint which returns a GroceryItem object  
+  and updates the list of GroceryItems in the user's pantry via 
+  the Firebase Realtime database. In the creation of the GroceryItem object,
+   the user will have to specify / manually input the expiration date 
+   listed on the product. 
+
+2) The user can perform an autocomplete search of ingredients, 
+products, and menu items from respective endpoints within Spoonacular. 
+This will return a GroceryItem object and updates the list of GroceryItems 
+in the user's pantry through the Firebase Realtime database. In the 
+creation of the GroceryItem object, the user will have to specify / 
+manually input the expiration date listed on the product.  The system 
+will suggest a guideline for the expiration date. 
+
+3) The user can manually add a food product to their pantry, 
+representing a UI form complete with the required fields for 
+creating a GroceryItem object. Upon creation, the list of GroceryItems 
+in the user's pantry is updated. In the creation of the GroceryItem 
+object, the user will have to specify / manually input the expiration 
+date listed on the product. In addition, the user will have to choose 
+from among the product categories listed under foodKeeper_categories 
+when filling in the category field for the GroceryItem as well as an 
+"N/A" option. If the user does not choose N/A, then an additional
+ field appears below allowing the user to choose an additional 
+ subcategory, listing the Name + Name_Subtitle of all items underneath
+  "foodKeeper_expiration" as well as an N/A option. If the user does
+   not choose N/A for the subcategory as well, then the system will 
+   print a suggested guideline for the expiration date below the field 
+   for manual input for expiration date. In this case, the successful 
+   match corresponds to whatever item from the expiration CSV the user
+   chose.
+
+Utility Function - Expiration Date Guideline Suggestion:
+For the autocomplete and manual food entry methods (functions 1 and 2), 
+the system suggests an expiration date based on matching the product and/or 
+its category to the "foodKeeper_expiration.csv" spreadsheet, you can JOIN 
+the two spreadsheets "foodKeeper_expiration.csv" and "foodKeeper_categories.
+csv" on ID (within categories csv) / Category_ID (within expiration csv). 
+ Upon a successful match, the system will print out "For freshness and 
+ quality, this item should be consumed within [DOP_Refrigerate_Max + 
+ DOP_Refrigerate_Metric] if refrigerated from the date of purchase" where 
+ the fields in the brackets match the columns in the expiration CSV.  If 
+ Pantry_Max and Pantry_Metric have values, then you can also print "For 
+ freshness and quality, this item should be consumed within [Pantry_Max + 
+ Pantry_Metric] if in the pantry from the date of purchase." This will be 
+ printed underneath the manual entry for expiration date. If Refrigerate
+ _After_Opening_Max and Refrigerate_After_Opening_Metric have values, 
+ then you can also print "For freshness and quality, this item should be 
+ consumed within [Refrigerate_After_Opening_Max + Refrigerate_After_Opening
+ _Metric] if refrigerated after opening"
