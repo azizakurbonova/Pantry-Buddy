@@ -95,6 +95,8 @@ class GroceryItem {
     };
   }
 
+
+  // Create a GroceryItem object from a JSON map
   static GroceryItem fromJson(Map<String, dynamic> json) {
     return GroceryItem(
       itemId: json['itemId'],
