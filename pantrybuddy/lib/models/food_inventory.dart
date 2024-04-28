@@ -1,88 +1,123 @@
-import 'grocery_item.dart';
-import 'package:flutter/foundation.dart';
+// ignore_for_file: unnecessary_this
 
-class FoodInventory {
-  String inventoryId;
-  String owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
-  List<String> users;
-  List<GroceryItem> groceryItems;
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart'; // For debugPrint
 
-FoodInventory({
-    required this.inventoryId,
-    required this.owner,
-    List<GroceryItem>? groceryItems,
-    List<String>? users,
-  })  : groceryItems = groceryItems ?? [],
-        users = users ?? [owner]; //owner is implicitly already part of list of users who can view and edit the inventory
+enum ItemIdType { EAN, UPC, PLU, Manual }
 
-  // Methods to add, remove, and view items would go here
-  // Add a GroceryItem to the inventory
-  void addGroceryItem(GroceryItem item) {
-    // Here you might want to check for duplicates before adding
-    groceryItems.add(item);
-  }
+/*
+Example Use of class methods to update firebase
 
-  // Remove a GroceryItem from the inventory by itemId
-  void removeGroceryItem(String itemId) {
-    groceryItems.removeWhere((item) => item.itemId == itemId);
-  }
+GroceryItem item = GroceryItem(
+    itemId: '123',
+    name: 'Apple',
+    category: ['Fruit'],
+    quantity: 10,
+    dateAdded: DateTime.now(),
+    expirationDate: DateTime.now().add(Duration(days: 90)),
+    itemIdType: ItemIdType.UPC
+);
 
-  // Get a view of the inventory
-  List<GroceryItem> viewInventory() {
-    return groceryItems;
-  }
+item.updateQuantity(15);
+item.markConsumed();
 
-  bool shareAccess(String currentUserId, String userToAdd){
-    if (currentUserId == owner) {
-      if (!users.contains(userToAdd)){
-        users.add(userToAdd);
-        return true; //indicate operation success
-      }
-      else{
-        debugPrint("User already has access");
-        return false;
-      }
+*/
+
+class GroceryItem {
+  String? itemId;
+  String name;
+  List<String> category;
+  int quantity;
+  DateTime dateAdded;
+  DateTime? dateConsumed;
+  DateTime? dateDiscarded;
+  DateTime expirationDate;
+  String? nutriScore;
+  String? ecoScore;
+  ItemIdType itemIdType;
+  String? nutritionalInfo;
+  bool visible;
+  String? image;
+
+  GroceryItem({
+    this.itemId,
+    required this.name,
+    required this.category,
+    this.quantity = 1,
+    required this.dateAdded,
+    required this.expirationDate,
+    this.dateConsumed,
+    this.dateDiscarded,
+    this.nutriScore,
+    this.ecoScore,
+    required this.itemIdType,
+    this.nutritionalInfo,
+    this.visible = true,
+    this.image,
+  });
+
+  DatabaseReference get dbRef => FirebaseDatabase.instance.ref('groceryItems/${this.itemId}');
+
+  void updateQuantity(int newQuantity) {
+    if (newQuantity > 0) {
+      this.quantity = newQuantity;
+      dbRef.update({'quantity': this.quantity});
     }
-    else {
-      debugPrint('Only the owner can update the user access list.');
-      return false;
+  }
+
+  void markConsumed() {
+    if (this.dateConsumed == null) { // Ensure it's only marked once
+      this.dateConsumed = DateTime.now();
+      this.visible = false; // Optionally make it invisible in the app
+      dbRef.update({'dateConsumed': this.dateConsumed?.toIso8601String(), 'visible': this.visible});
     }
   }
 
-  bool removeAccess(String currentUserId, String userToRemove){
-    if (currentUserId == owner) {
-      if (!users.contains(userToRemove)){
-        users.remove(userToRemove);
-        return true; //indicate operation success
-      }
-      else{
-        debugPrint("User does not exist among existing list of people with access");
-        return false;
-      }
-    }
-    else {
-      debugPrint('Only the owner can update the user access list.');
-      return false;
+
+  void markDiscarded() {
+    if (this.dateDiscarded == null) { // Ensure it's only marked once
+      this.dateDiscarded = DateTime.now();
+      this.visible = false; // Optionally make it invisible in the app
+      dbRef.update({'dateDiscarded': this.dateDiscarded?.toIso8601String(), 'visible': this.visible});
     }
   }
+
 
   Map<String, dynamic> toJson() {
     return {
-      'inventoryId': inventoryId,
-      'owner': owner,
-      'users': users,
-      'groceryItems': groceryItems.map((item) => item.toJson()).toList(),
+      'itemId': itemId,
+      'name': name,
+      'category': category.join(', '), // Assuming category is a list of strings
+      'quantity': quantity,
+      'dateAdded': dateAdded.toIso8601String(),
+      'dateConsumed': dateConsumed?.toIso8601String(),
+      'dateDiscarded': dateDiscarded?.toIso8601String(),
+      'expirationDate': expirationDate.toIso8601String(),
+      'nutriScore': nutriScore,
+      'ecoScore': ecoScore,
+      'itemIdType': itemIdType.name,
+      'nutritionalInfo': nutritionalInfo,
+      'visible': visible,
+      'image': image
     };
   }
 
-  static FoodInventory fromJson(Map<String, dynamic> json) {
-    return FoodInventory(
-      inventoryId: json['inventoryId'],
-      owner: json['owner'],
-      users: List<String>.from(json['users']),
-      groceryItems: (json['groceryItems'] as List)
-          .map((itemJson) => GroceryItem.fromJson(itemJson))
-          .toList(),
+  static GroceryItem fromJson(Map<String, dynamic> json) {
+    return GroceryItem(
+      itemId: json['itemId'],
+      name: json['name'],
+      category: (json['category'] as String).split(', '), // Convert string back to list
+      quantity: json['quantity'] ?? 1,
+      dateAdded: DateTime.parse(json['dateAdded']),
+      expirationDate: DateTime.parse(json['expirationDate']),
+      dateConsumed: json['dateConsumed'] != null ? DateTime.parse(json['dateConsumed']) : null,
+      dateDiscarded: json['dateDiscarded'] != null ? DateTime.parse(json['dateDiscarded']) : null,
+      nutriScore: json['nutriScore'],
+      ecoScore: json['ecoScore'],
+      itemIdType: ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
+      nutritionalInfo: json['nutritionalInfo'],
+      visible: json['visible'] ?? true,
+      image: json['image']
     );
   }
 }
