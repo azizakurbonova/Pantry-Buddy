@@ -94,9 +94,9 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   Future<void> setExpirationDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: currentGroceryItem?.expirationDate ?? DateTime.now(),
+      initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 15), //last selectable date, 15 years from now
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)), // Set a range up to five years
     );
 
     if (pickedDate != null) {
