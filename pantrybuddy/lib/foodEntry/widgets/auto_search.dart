@@ -7,14 +7,13 @@ import "package:pantrybuddy/models/grocery_item.dart";
 import 'package:pantrybuddy/models/food_inventory.dart';
 import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart";
 import 'package:pantrybuddy/models/spoonacular.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter/cupertino.dart';
 
 //The user will select to search between products, ingredients, and menu items
 //Simply because the endpoints are separate and there is no way to
 //combine results
 
-enum SearchType { product, ingredient, menuItem }
+enum SearchType { products, ingredients, menuItems }
 
 class AutoSearchForm extends StatefulWidget {
   const AutoSearchForm ({Key? key}) : super(key: key);
@@ -23,115 +22,156 @@ class AutoSearchForm extends StatefulWidget {
 }
 
 class _AutoSearchFormState extends State<AutoSearchForm> {
-  late SearchType _searchType;
-  DateTime? _expirationDate;
+  SearchType _selectedSearchType = SearchType.products;
+  final TextEditingController _searchController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  List<Spoonacular> _searchResults = [];
+  DateTime? expirationDate;
+  GroceryItem? selectedGroceryItem;
 
   @override
   void initState() {
     super.initState();
-    _searchType = SearchType.product;
+    _selectedSearchType = SearchType.products;
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _quantityController.dispose();
+    super.dispose();
   }
 
 @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CupertinoSegmentedControl<SearchType>(
-          children: const {
-            SearchType.product: Text('Product'),
-            SearchType.ingredient: Text('Ingredient'),
-            SearchType.menuItem: Text('Menu Item'),
-          },
-          onValueChanged: (SearchType? value) {
-            setState(() {
-              _searchType = value!;
-            });
-          },
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Search Food Items'),
+    ),
+    body: Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoSegmentedControl<SearchType>(
+            children: const {
+              SearchType.products: Text('Products'),
+              SearchType.ingredients: Text('Ingredients'),
+              SearchType.menuItems: Text('Menu Items'),
+            },
+            onValueChanged: (SearchType value) {
+              setState(() {
+                _selectedSearchType = value;
+                // Clears previous results when switching search types
+                _searchResults.clear();
+                _searchController.clear();
+              });
+            },
+            groupValue: _selectedSearchType,
+          ),
         ),
-        const SizedBox(height: 16),
-        TypeAheadField<Spoonacular>(
-          hideOnEmpty: false,
-          hideOnLoading: true,
-          debounceDuration: const Duration(milliseconds: 300),
-          suggestionsCallback: (query) async {
-            switch (_searchType) {
-              case SearchType.product:
-                return await autocompleteSearch_products(query);
-              case SearchType.ingredient:
-                return await autocompleteSearch_ingredients(query);
-              case SearchType.menuItem:
-                return await autocompleteSearch_menuItems(query);
-              default:
-                return [];
-            }
-          },
-          itemBuilder: (context, suggestion) {
-            return ListTile(
-              title: Text(suggestion.name),
-            );
-          },
-          onSelected: (suggestion) {
-            _quantityController.text = '';
-            _addGroceryItem(context, suggestion);
-          }
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _quantityController,
-          decoration: const InputDecoration(labelText: 'Quantity'),
-          keyboardType: TextInputType.number,
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () {
-            final String query = _quantityController.text.trim();
-            if (query.isNotEmpty) {
-              switch (_searchType) {
-                case SearchType.product:
-                  _apiService.searchProducts(query).then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ProductSearchResultsPage(value, _addGroceryItem),
-                      ),
-                    );
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              labelText: 'Search',
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _searchResults.clear();
                   });
-                  break;
-                case SearchType.ingredient:
-                  _apiService.searchIngredients(query).then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            IngredientSearchResultsPage(value, _addGroceryItem),
-                      ),
-                    );
-                  });
-                  break;
-                case SearchType.menuItem:
-                  _apiService.searchMenuItems(query).then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MenuItemSearchResultsPage(value, _addGroceryItem),
-                      ),
-                    );
-                  });
-                  break;
+                },
+              ),
+            ),
+            onChanged: (text) {
+              if (text.isNotEmpty) {
+                _search(text);
+              } else {
+                setState(() {
+                  _searchResults.clear();
+                });
               }
-            }
-          },
-          child: const Text('Search'),
+            },
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _searchResults.length,
+            itemBuilder: (BuildContext context, int index) {
+              final result = _searchResults[index];
+              return ListTile(
+                title: Text(result.name),
+                subtitle: Text('ID: ${result.id}'),
+                onTap: () async {
+                  final selectedResult = result;
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Add to Pantry"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("Set quantity and expiration date for ${selectedResult.name}."),
+                            TextField(
+                              controller: _quantityController,
+                              decoration: const InputDecoration(
+                                labelText: 'Quantity',
+                              ),
+                              keyboardType: TextInputType.number,
+                            ),
+                            ElevatedButton(
+                              onPressed: () => setExpirationDate(context),
+                              child: const Text('Set Expiration Date'),
+                            ),
+                            if (expirationDate != null)
+                              Text('Selected date: ${expirationDate!.toLocal()}'),
+                            ...[
+                            FutureBuilder<String>(
+                              future: suggestExpiration_Manual(selectedResult.name),
+                              builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.done) {
+                                    return Text(snapshot.data ?? "No expiration guideline available.");
+                                  } 
+                                  else {
+                                    return const CircularProgressIndicator();
+                                  }
+                                },
+                              ),
+                            ],
+                          ]
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _addGroceryItem(context, selectedResult);
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Add to Inventory'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
-  Future<void> _setExpirationDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
+
+  Future<void> setExpirationDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
@@ -140,27 +180,87 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
 
     if (pickedDate != null) {
       setState(() {
-        _expirationDate = pickedDate;
+        selectedGroceryItem!.expirationDate = pickedDate;
       });
     }
   }
 
+
   Future<void> _addGroceryItem(BuildContext context, Spoonacular suggestion) async {
-    await _setExpirationDate(context);
+    await setExpirationDate(context);
 
-    final int quantity = _quantityController.text.isNotEmpty ? int.parse(_quantityController.text) : 1;
-    final GroceryItem groceryItem = GroceryItem(
-      id: suggestion.id,
-      name: suggestion.name,
-      imageUrl: suggestion.imageUrl,
-      expirationDate: _expirationDate,
-      quantity: quantity,
-      category: suggestion.category,
-    );
+    GroceryItem? item;
+    switch (_selectedSearchType) {
+      case SearchType.products:
+        item = await idSearch_products(suggestion.id);
+        break;
+      case SearchType.ingredients:
+        item = await idSearch_ingredients(suggestion.id);
+        break;
+      case SearchType.menuItems:
+        item = await idSearch_menuItems(suggestion.id);
+        break;
+    }
 
-    await FirebaseService().addGroceryItem(groceryItem);
+    if (item != null) {
+      final int quantity = _quantityController.text.isNotEmpty ? int.parse(_quantityController.text) : 1;
+      
+      // Write to groceryItems DB
+      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
+      DatabaseReference newInventoryRef = ref.push();
+      String? itemId = newInventoryRef.key;
+      
+      setState(() {
+        selectedGroceryItem = item;
+        selectedGroceryItem!.quantity = quantity; // Update quantity based on input
+        selectedGroceryItem!.itemId = itemId;
+      });
 
-    Navigator.pop(context);
+      await ref.push().set(selectedGroceryItem!.toJson());
+
+      User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
+
+      if (user != null) {
+      // Fetch inventoryId from user's database entry, field is "pantry"
+      final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
+      final DataSnapshot userSnapshot = await dbref.child("users/$user.uid/inventoryId").get();
+      String pantry = userSnapshot.value.toString();
+
+      FoodInventory inventoryManager = FoodInventory(
+        owner : userId!,
+        inventoryId : pantry
+      );
+
+      inventoryManager.addGroceryItem(selectedGroceryItem!);
+    }
+      _quantityController.clear();
+  }
+}
+
+void _search(String query) async {
+  if (query.isEmpty) {
+    setState(() {
+      _searchResults = [];
+    });
+    return;
   }
 
+  List<Spoonacular> results;
+  switch (_selectedSearchType) {
+    case SearchType.products:
+      results = await autocompleteSearch_products(query);
+      break;
+    case SearchType.ingredients:
+      results = await autocompleteSearch_ingredients(query);
+      break;
+    case SearchType.menuItems:
+      results = await autocompleteSearch_menuItems(query);
+      break;
+  }
+
+  setState(() {
+    _searchResults = results;
+  });
+}
 }
