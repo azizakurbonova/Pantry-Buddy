@@ -6,6 +6,9 @@ import "package:pantrybuddy/foodEntry/utility/MANUAL.dart";
 import "package:pantrybuddy/models/grocery_item.dart";
 import 'package:pantrybuddy/models/food_inventory.dart';
 import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart";
+import 'package:path/path.dart' as path;
+import 'dart:io';
+import "package:pantrybuddy/foodEntry/utility/csv.dart";
 
 class ManualEntryForm extends StatefulWidget {
   const ManualEntryForm ({Key? key}) : super(key: key);
@@ -31,7 +34,15 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   Future<void> loadData() async {
-    var csvData = await loadCsvData("package:pantrybuddy/foodEntry/externalDB/foodKeeper.csv");
+    // Load and parse the categories and expiration data from CSV files.
+    var currDir= Directory.current.path;
+    String filePath = path.join(currDir, 'lib', 'foodEntry','externalDB','foodKeeper.csv');
+
+    final expirationData = await loadCsv(filePath);
+
+    // Create lists of maps to hold the parsed data.
+    List<Map<String, dynamic>> csvData = parseCsv(expirationData);
+
     var dropdownData = await prepareDropdownData(csvData);
     setState(() {
       categoryNames = dropdownData['Category_Name'];
@@ -81,7 +92,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
           controller: productNameController,
           decoration: InputDecoration(
             labelText: 'Product Name',
-            enabled: selectedNameAll == "N/A",  // Enable only if selected product is N/A
+            enabled: selectedNameAll == "N/A" || selectedNameAll!.contains(', '),  // Enable only if selected product is N/A
       ),
       ),
       TextFormField(

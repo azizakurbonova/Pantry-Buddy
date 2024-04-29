@@ -1,12 +1,20 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/foodEntry/utility/MANUAL.dart';
 import 'package:pantrybuddy/foodEntry/widgets/auto_search.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
-import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart"; // Import your functions here
+import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart"; 
+import "package:pantrybuddy/foodEntry/utility/UPC.dart"; 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import "package:pantrybuddy/models/grocery_item.dart";
+import "package:pantrybuddy/foodEntry/utility/csv.dart";
+
+
 
 void main() {
-  group('Suggest Expiration Date Guideline', () {
+  group("CSV Loading & Parsing", () {
     test('Successfully reads and parses CSV data', () async {
       // Path to the test fixture
       var currDir= Directory.current.path;
@@ -30,7 +38,8 @@ void main() {
       expect(parsedData[0]['DOP_Refrigerate_Max'], 2);
       expect(parsedData[0]['DOP_Refrigerate_Metric'], 'Months');
     });
-
+  });
+  group('Suggest Expiration Date Guideline', () {
     test('Manual Input - Expiration Guideline Suggestion', () async {
       var result = await suggestExpiration_Manual('butter');
       // Assuming the function returns a specific guideline string
@@ -56,4 +65,97 @@ void main() {
       debugPrint(result);
     });
   });
+  group('Integration Test for Spoonacular UPC Endpoint', () {
+    test('fetches product data from a live API call', () async {
+      // Assuming fetchProductByUPC uses a real http client and real API key
+      const upcCode = '041631000564'; // Known UPC code that will return valid data
+      Map<String, dynamic>? result = await fetchProductByUPC(upcCode);
+
+      // Verify that the API returns a non-null result
+      expect(result, isNotNull);
+      expect(result!['title'], isNotNull);
+      expect(result['title'], 'Swan Flour'); // Expecting specific title based on known data
+    });
+
+    test('creates GroceryItem', () async {
+      // Assuming fetchProductByUPC uses a real http client and real API key
+      const upcCode = '041631000564'; // Known UPC code that will return valid data
+      Map<String, dynamic>? result = await fetchProductByUPC(upcCode);
+
+      // Verify that the API returns a non-null result
+      expect(result, isNotNull);
+      expect(result!['title'], isNotNull);
+      expect(result['title'], 'Swan Flour'); // Expecting specific title based on known data
+    });
+  });
+    test('successfully creates a GroceryItem from API data', () async {
+      // Simulate fetching product data from a live API
+      const upcCode = '041631000564'; // Example UPC code
+      const apiKey = '41a82396931e43039ec29a6356ec8dc1';
+      final url = Uri.parse('https://api.spoonacular.com/food/products/upc/$upcCode?apiKey=$apiKey');
+
+      try {
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+          Map<String, dynamic> productData = json.decode(response.body);
+          GroceryItem item = createGroceryItemFromSpoonacular(productData);
+
+          // Assertions to validate the creation of the GroceryItem
+          expect(item.itemId, equals(productData['id'].toString()));
+          expect(item.name, equals(productData['title']));
+          expect(item.category, equals(productData['breadcrumbs']));
+          expect(item.quantity, 1);
+          expect(item.itemIdType, ItemIdType.UPC);
+          expect(item.visible, true);
+          // Ensure nutritional info and expiration date are set as expected
+          expect(item.nutritionalInfo, isNotEmpty);
+          expect(item.expirationDate, isNotNull);
+        } else {
+          fail('Failed to fetch product data from API');
+        }
+      } catch (e) {
+        fail('Failed due to an exception: $e');
+      }
+    });
+  group('Manual Food Entry Helper Functions', () {
+    test('correctly organizes CSV data into dropdown format', () async {
+      // Path to the test fixture
+      var currDir= Directory.current.path;
+      String filePath = path.join(currDir, 'lib', 'foodEntry','externalDB','foodKeeper.csv');
+
+      // Use the loadCsv function to read the file
+      var data = await loadCsv(filePath);
+
+      // Create lists of maps to hold the parsed data.
+      List<Map<String, dynamic>> csvData = parseCsv(data);
+
+      // Execute the function
+      var result = await prepareDropdownData(csvData);
+
+      // Verify the results
+      expect(result.containsKey('Category_Name'), true);
+      expect(result.containsKey('Name_ALL'), true);
+
+      // Check Category Names
+      List<String> categoryNames = result['Category_Name'];
+      expect(categoryNames.length, 25);
+
+      // Check Name_ALL mappings
+      Map<String, List<String>> nameAllByCategory = result['Name_ALL'];
+      expect(nameAllByCategory.length, 25);
+      expect(nameAllByCategory['Produce Fresh Fruits'], contains('N/A'));
+      debugPrint(nameAllByCategory['Beverages'].toString());
+    });
+    test('handles empty CSV data gracefully', () async {
+      List<Map<String, dynamic>> emptyCsvData = [];
+
+      // Execute the function
+      var result = await prepareDropdownData(emptyCsvData);
+
+      // Verify the results
+      expect(result['Category_Name'], isEmpty);
+      expect(result['Name_ALL'], isEmpty);
+    });
+  });
 }
+

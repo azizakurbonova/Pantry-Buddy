@@ -5,23 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/foodEntry/widgets/auto_search.dart';
 import 'package:path/path.dart' as path;
 import  'package:string_similarity/string_similarity.dart';
-
-// Load CSV data from a file path and return as a list of lists.
-Future<List<List<dynamic>>> loadCsv(String filePath) async {
-  final input = File(filePath).openRead();
-  return await input.transform(utf8.decoder).transform(const csv_lib.CsvToListConverter()).toList();
-}
-
-// Parse the CSV data into a list of maps for easier data manipulation.
-List<Map<String, dynamic>> parseCsv(List<List<dynamic>> csvData) {
-  List<String> headers = csvData[0].cast<String>();
-  List<Map<String, dynamic>> data = [];
-  for (final row in csvData.skip(1)) {
-    Map<String, dynamic> dataRow = Map.fromIterables(headers, row);
-    data.add(dataRow);
-  }
-  return data;
-}
+import "package:pantrybuddy/foodEntry/utility/csv.dart";
 
 
 // Define a function that suggests expiration dates based on category and subcategory IDs.

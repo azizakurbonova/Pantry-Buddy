@@ -49,6 +49,7 @@ dependencies:
   test: ^1.16.0 #test cases
   path: ^1.8.3
   string_similarity: ^2.0.0
+  mockito: ^5.4.4
 
 
 dev_dependencies:
