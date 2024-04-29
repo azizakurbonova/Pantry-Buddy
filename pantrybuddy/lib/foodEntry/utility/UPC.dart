@@ -27,14 +27,13 @@ Future<String?> scanBarcode() async {
 }
 
 //Example GET response: https://api.spoonacular.com/food/products/upc/041631000564?apiKey=41a82396931e43039ec29a6356ec8dc1
-Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode, [http.Client? client]) async {
-  client ??= http.Client();
+Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
   const String apiKey = '41a82396931e43039ec29a6356ec8dc1'; 
   final String url = 'https://api.spoonacular.com/food/products/upc/$upcCode';
   final Uri uri = Uri.parse('$url?apiKey=$apiKey');
 
   try {
-    final response = await client.get(uri);
+    final response = await http.get(uri);
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
