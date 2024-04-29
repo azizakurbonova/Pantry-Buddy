@@ -130,7 +130,7 @@ Widget build(BuildContext context) {
                               Text('Selected date: ${expirationDate!.toLocal()}'),
                             ...[
                             FutureBuilder<String>(
-                              future: suggestExpiration_Manual(selectedResult.name),
+                              future: suggestExpiration_Auto(selectedResult.name,_selectedSearchType),
                               builder: (context, snapshot) {
                                   if (snapshot.connectionState == ConnectionState.done) {
                                     return Text(snapshot.data ?? "No expiration guideline available.");
