@@ -4,11 +4,19 @@ class Spoonacular {
 
   Spoonacular({required this.id, required this.name});
 
-  factory Spoonacular.fromJson(Map<String, dynamic> json) {
-    String name = json['title'] ?? json['title']; // ingredients endpoint does not have title
+  static Spoonacular fromJson(Map<String, dynamic> json) {
+    String name = json['title'] ?? json['name']; // ingredients endpoint does not have title
     return Spoonacular(
       id: json['id'].toString(),
       name: name,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+
 }
