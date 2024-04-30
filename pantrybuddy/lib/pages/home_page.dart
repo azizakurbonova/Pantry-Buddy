@@ -3,10 +3,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/Scripts/fetchFoodInventory.dart';
+import 'package:pantrybuddy/Scripts/getGroceryItem.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/join_pantry_page.dart';
 import 'package:pantrybuddy/widgets/sidebar.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:uuid/uuid.dart';
+import 'package:pantrybuddy/Scripts/getGroceryItem.dart';
+>>>>>>> Stashed changes
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -51,6 +58,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<List<GroceryItem>> getGroceryList() async {
+    List<String> FoodIDs = (await fetchUserInventory()).groceryItems;
+    return getGroceries(FoodIDs);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +72,11 @@ class _HomePageState extends State<HomePage> {
           elevation: 0, // how flat do we want this
           //title: Text("Top Bar"),
         ),
+<<<<<<< Updated upstream
         endDrawer: sideBar(context),
+=======
+        endDrawer: sidebar(context),
+>>>>>>> Stashed changes
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
@@ -81,7 +97,11 @@ class _HomePageState extends State<HomePage> {
                       createPantry();
 
                       Navigator.of(context).push(MaterialPageRoute(
+<<<<<<< Updated upstream
                           builder: (context) => const InventoryPage()));
+=======
+                          builder: (context) => InventoryPage(null)));
+>>>>>>> Stashed changes
                     },
                     child: const Text(
                       "Create Pantry",

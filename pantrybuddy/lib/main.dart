@@ -1,45 +1,90 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pantrybuddy/Scripts/fetchInventoryID.dart';
+import 'package:pantrybuddy/Scripts/getGroceryItem.dart';
 import 'package:pantrybuddy/auth/main_page.dart';
 import 'package:pantrybuddy/firebase_options.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:pantrybuddy/models/grocery_item.dart';
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
+import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/Scripts/fetchFoodInventory.dart';
+import 'package:pantrybuddy/widgets/sidebar.dart';
 
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  log("=====STARTING APP=====");
+
+  //Default initialized to null
+  FoodInventory? pantry;
+  List<GroceryItem> groceries = [];
+  String? inventoryID;
 
   //FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
-
-  runApp(const MyApp());
+  if (FirebaseAuth.instance.currentUser != null) {
+    log("User Exists");
+    // If user has existing account:
+    String inventoryID = await fetchInventoryID();
+    if (inventoryID != "Null") {
+      log("Inventory ID: " + inventoryID);
+      //If user has created OR joined a pantry
+      FoodInventory pantry = await fetchUserInventory();
+      List<GroceryItem> groceries = await getGroceries(pantry.groceryItems);
+      runApp(MyApp(groceries, pantry, inventoryID));
+    } else {
+      log("No inventory found");
+      runApp(MyApp(groceries, pantry, inventoryID));
+    }
+  } else {
+    log("New User");
+    runApp(MyApp(groceries, pantry, inventoryID));
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  List<GroceryItem> groceries;
+  FoodInventory? pantry;
+  String? inventoryID;
+
+  MyApp(this.groceries, this.pantry, this.inventoryID, {Key? key})
+      : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(), //main page wll take to auth or if already logged in, then to login/sign up page
+      home: MainPage(groceries, pantry,
+          inventoryID), //main page wll take to auth or if already logged in, then to login/sign up page
       //title: 'Flutter Demo',
       //theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        //colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 58, 181, 183)),
-        //useMaterial3: true,
+      // This is the theme of your application.
+      //
+      // TRY THIS: Try running your application with "flutter run". You'll see
+      // the application has a purple toolbar. Then, without quitting the app,
+      // try changing the seedColor in the colorScheme below to Colors.green
+      // and then invoke "hot reload" (save your changes or press the "hot
+      // reload" button in a Flutter-supported IDE, or press "r" if you used
+      // the command line to start the app).
+      //
+      // Notice that the counter didn't reset back to zero; the application
+      // state is not lost during the reload. To reset the state, use hot
+      // restart instead.
+      //
+      // This works for code too, not just values: Most code changes can be
+      // tested with just a hot reload.
+      //colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 58, 181, 183)),
+      //useMaterial3: true,
       //),
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );

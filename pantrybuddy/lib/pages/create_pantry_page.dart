@@ -72,8 +72,8 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
                   style: TextStyle(fontSize: 20),
                 ),
                 onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => InventoryPage()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => InventoryPage(Null)));
                 },
               ),
               ListTile(

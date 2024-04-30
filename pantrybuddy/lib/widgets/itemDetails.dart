@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -107,4 +108,98 @@ class _ItemDetailsState extends State<ItemDetails> {
           ),
         ));
   }
+=======
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:pantrybuddy/models/grocery_item.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pantrybuddy/models/grocery_item.dart';
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
+import 'package:pantrybuddy/widgets/itemDescription.dart';
+import 'package:pantrybuddy/models/grocery_item.dart';
+import 'package:pantrybuddy/widgets/itemNameField.dart';
+import 'package:pantrybuddy/widgets/itemQuantity.dart';
+import 'package:pantrybuddy/Scripts/fetchInventoryID.dart';
+
+Widget itemDetails(BuildContext context, GroceryItem groceryItem) {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _quantityController = TextEditingController();
+  _nameController.text = groceryItem.name;
+  _quantityController.text = groceryItem.quantity.toString();
+  return Scaffold(
+      backgroundColor: Color(0xFF2D3447),
+      appBar: AppBar(
+          title: const Text('Food Details',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.w100)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.info, color: Colors.white),
+              onPressed: () {},
+            )
+          ]),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(50.0),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Text("Name:",
+                style: TextStyle(fontSize: 25.0, color: Colors.white)),
+            itemName(context, _nameController),
+            Divider(),
+            Text(
+              'Quantity:',
+              style: TextStyle(fontSize: 25.0, color: Colors.white),
+            ),
+            itemQuantity(context, _quantityController),
+            Divider(),
+            Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    String groceryId = groceryItem.itemId;
+                    final quantityData = {
+                      "quantity": _quantityController.text as int
+                    };
+                    FirebaseDatabase.instance
+                        .ref("groceryItems/$groceryId")
+                        .update(quantityData);
+
+                    Navigator.of(context)
+                        .pushReplacement(MaterialPageRoute(builder: (context) {
+                      return InventoryPage(null);
+                    }));
+                  },
+                  child: const Text('Save'),
+                ),
+                //ElevatedButton(
+                //  color: Colors.red,
+                //  textColor: Colors.white,
+                //  onPressed: () async {
+                //    final uid = await getCurrentUID();
+                //    db
+                //        .collection('Users')
+                //        .doc(uid)
+                //        .collection(widget.food['location'])
+                //        .doc(widget.food.id)
+                //        .delete();
+                //    Navigator.of(context)
+                //        .pushReplacement(MaterialPageRoute(builder: (context) {
+                //      return AppHome();
+                //    }));
+                //  },
+                //  child: const Text('Delete'),
+                //),
+              ],
+            ),
+          ]),
+        ),
+      ));
+>>>>>>> Stashed changes
 }

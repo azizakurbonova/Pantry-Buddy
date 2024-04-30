@@ -78,6 +78,68 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
       appBar: AppBar(
         backgroundColor: Colors.green[400],
         elevation: 0,
+<<<<<<< Updated upstream
+=======
+        title: Text("Top Bar"),
+      ),
+      endDrawer: Drawer(
+        child: Container(
+          color: Colors.green[400],
+          child: ListView(
+            children: [
+              ListTile(
+                // each page is a ListTitle
+                leading: Icon(Icons.account_box),
+                title: Text(
+                  "Account",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => AccountPage()));
+                },
+              ),
+              ListTile(
+                // each page is a ListTitle
+                leading: Icon(Icons.notifications),
+                title: Text(
+                  "Notifications",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NotificationPage()));
+                },
+              ),
+              ListTile(
+                // each page is a ListTitle
+                leading: Icon(Icons.food_bank),
+                title: Text(
+                  "Inventory ** ",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => InventoryPage(null)));
+                },
+              ),
+              ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text(
+                    "Sign Out",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginPage(
+                              showRegisterPage: () {},
+                            )));
+                  }),
+            ],
+          ),
+        ),
+>>>>>>> Stashed changes
       ),
       endDrawer: sideBar(context),
       body: Center(
@@ -146,8 +208,12 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     //does the user already exist as an user of the foodPantry?
                     String isUser = '0';
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     print("myUserID is " + myUserID!);
 =======
+>>>>>>> Stashed changes
+=======
+                    print("myUserID is " + myUserID!);
 >>>>>>> Stashed changes
                     // DatabaseReference isUserID = FirebaseDatabase.instance
                     //     .ref()

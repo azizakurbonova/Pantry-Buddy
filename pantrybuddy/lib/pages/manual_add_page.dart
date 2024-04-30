@@ -1,3 +1,9 @@
+<<<<<<< Updated upstream
+=======
+// ignore_for_file: prefer_interpolation_to_compose_strings, prefer_const_constructors
+
+import 'dart:convert';
+>>>>>>> Stashed changes
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,10 +11,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import 'package:pantrybuddy/pages/invite_page.dart';
 =======
 import 'package:pantrybuddy/widgets/sidebar.dart';
 import 'package:pantrybuddy/scripts/fetchUserInventory.dart';
+>>>>>>> Stashed changes
+=======
+import 'package:pantrybuddy/Scripts/fetchFoodInventory.dart';
+import 'package:pantrybuddy/widgets/sidebar.dart';
 >>>>>>> Stashed changes
 
 class ManualAddPage extends StatefulWidget {
@@ -75,12 +86,11 @@ class _ManualAddPageState extends State<ManualAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar
       appBar: AppBar(
         backgroundColor: Colors.green[400],
         elevation: 0,
-        //title: Text("Top Bar"),
       ),
+<<<<<<< Updated upstream
       //drawer. pulls out on top right
 <<<<<<< Updated upstream
       endDrawer: Drawer(
@@ -154,6 +164,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
 
       //body
 
+=======
+      endDrawer: sidebar(context),
+>>>>>>> Stashed changes
       backgroundColor: Colors.green[200],
       body: SafeArea(
         child: Form(
@@ -435,6 +448,12 @@ class _ManualAddPageState extends State<ManualAddPage> {
                   const SizedBox(height: 35),
                   ElevatedButton(
                       onPressed: () async {
+                        final groceryKey = FirebaseDatabase.instance
+                            .ref()
+                            .child('groceryItems')
+                            .push()
+                            .key;
+                        log("ENTERING:" + groceryKey!);
                         final groceryData = {
                           "category": selectedCat!,
                           "expirationDate": DateTime(
@@ -443,24 +462,25 @@ class _ManualAddPageState extends State<ManualAddPage> {
                           "itemIdType": ItemIdType.Manual.toString(),
                           "name": _nameController.text,
                           "quantity": selectedQuantity!.toString(),
+                          "itemId": groceryKey,
                         };
-                        final groceryKey = FirebaseDatabase.instance
-                            .ref()
-                            .child('groceryItems')
-                            .push()
-                            .key;
+
                         final Map<String, Map> groceryUpdates = {};
                         groceryUpdates['groceryItems/$groceryKey'] =
                             groceryData;
                         FirebaseDatabase.instance.ref().update(groceryUpdates);
 
                         FoodInventory pantry = await fetchUserInventory();
-                        pantry.addGroceryItem(groceryKey!);
+                        log("Pantry before update: " +
+                            (await fetchUserInventory())
+                                .groceryItems
+                                .toString());
+                        pantry.addGroceryItem(groceryKey);
+                        log("After update" + pantry.groceryItems.toString());
                         String inventoryId = pantry.inventoryId!;
                         await FirebaseDatabase.instance
                             .ref("foodInventories/$inventoryId")
-                            .set(pantry.toJson());
-                        log(pantry.groceryItems.toString());
+                            .update(pantry.toJson());
                       },
                       child: Text('Submit'),
                       style: ElevatedButton.styleFrom(

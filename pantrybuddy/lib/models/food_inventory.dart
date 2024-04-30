@@ -1,3 +1,9 @@
+<<<<<<< Updated upstream
+=======
+import 'package:pantrybuddy/Scripts/getGroceryItem.dart';
+
+import 'grocery_item.dart';
+>>>>>>> Stashed changes
 import 'package:flutter/foundation.dart';
 
 class FoodInventory {
