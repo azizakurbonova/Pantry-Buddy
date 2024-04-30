@@ -31,8 +31,12 @@ Future<List<Spoonacular>> autocompleteSearch_helper(String apiUrl) async {
   final response = await http.get(Uri.parse(apiUrl));
   List<Spoonacular> items = [];
   if (response.statusCode == 200) {
-    var suggestions = json.decode(response.body)['results'];
-    for (var jsonItem in suggestions) {
+    var data = json.decode(response.body);
+
+    // Handle both a JSON object and a JSON array response
+    List<dynamic> resultsList = data is List ? data : data['results'] ?? [];
+
+    for (var jsonItem in resultsList) {
       try {
         items.add(Spoonacular.fromJson(jsonItem));
       } catch (e) {
