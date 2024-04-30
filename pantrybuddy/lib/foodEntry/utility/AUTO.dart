@@ -82,7 +82,7 @@ Future<GroceryItem?> idSearch_ingredients(String id) async {
     if (response.statusCode == 200) {
       final product = json.decode(response.body);
       if (product != null) {
-      debugPrint('Product Name: ${product['title']}');
+      debugPrint('Product Name: ${product['name']}');
       
       return createGroceryItem_Ingredient(product);
     }
@@ -156,7 +156,7 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product) {
 
   return GroceryItem(
     itemId: product?['id'].toString(),
-    name: product?['title'] ?? 'No title available',
+    name: product?['name'] ?? 'No name available',
     category: product?['categoryPath'] ?? 'Unknown category',
     quantity: 1,  // Default quantity
     dateAdded: DateTime.now(),

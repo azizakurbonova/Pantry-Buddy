@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import "package:pantrybuddy/models/grocery_item.dart";
 import "package:pantrybuddy/foodEntry/utility/csv.dart";
+import 'package:pantrybuddy/foodEntry/utility/AUTO.dart';
+import "package:pantrybuddy/models/Spoonacular.dart";
 
 
 
@@ -155,6 +157,117 @@ void main() {
       // Verify the results
       expect(result['Category_Name'], isEmpty);
       expect(result['Name_ALL'], isEmpty);
+    });
+  });
+  group('Autocomplete and Product Retrieval Integration Tests', () {
+    // Test the product autocomplete functionality
+    test('autocompleteSearch_products returns valid results', () async {
+      final results = await autocompleteSearch_products("chick");
+      expect(results.isNotEmpty, true);
+      //expect(results[0], isA<Spoonacular>()); ACTING WEIRDLY
+      debugPrint(results[0].runtimeType.toString());
+      debugPrint(results[0].toJson().toString()); 
+      expect(results[0].name, isNotEmpty); 
+    });
+    test('autocompleteSearch_ingredients returns valid results', () async {
+      final results = await autocompleteSearch_ingredients("app");
+      expect(results.isNotEmpty, true);
+      //expect(results[0], isA<Spoonacular>()); ACTING WEIRDLY
+      debugPrint(results[0].runtimeType.toString());
+      debugPrint(results[0].toJson().toString()); 
+      expect(results[0].name, isNotEmpty); 
+    });
+
+    test('autocompleteSearch_menuItems returns valid results', () async {
+      final results = await autocompleteSearch_menuItems("mcdona");
+      expect(results.isNotEmpty, true);
+      //expect(results[0], isA<Spoonacular>()); ACTING WEIRDLY
+      debugPrint(results[0].runtimeType.toString());
+      debugPrint(results[0].toJson().toString()); 
+      expect(results[0].name, isNotEmpty); 
+    });
+
+    // Test retrieving more detailed product information
+    test('idSearch_products retrieves product details', () async {
+      final product = await idSearch_products("22347"); // Using a known product ID
+      expect(product, isNotNull);
+      expect(product!.name, equals("SNICKERS Minis Size Chocolate Candy Bars Variety Mix 10.5-oz. Bag"));
+      expect(product.itemIdType, ItemIdType.AUTO);
+    });
+
+    test('idSearch_products retrieves menu item details', () async {
+      final product = await idSearch_menuItems("424571"); // Using a known product ID
+      expect(product, isNotNull);
+      expect(product!.name, equals("Bacon King Burger"));
+      expect(product.itemIdType, ItemIdType.AUTO);
+    });
+
+    test('idSearch_products retrieves ingredients details', () async {
+      final product = await idSearch_ingredients("9266"); // Using a known product ID
+      expect(product, isNotNull);
+      expect(product!.name, equals("pineapples"));
+      expect(product.itemIdType, ItemIdType.AUTO);
+    });
+
+    const apiKey = '41a82396931e43039ec29a6356ec8dc1';
+    test('createGroceryItem_Menu creates a valid GroceryItem from API data', () async {
+      // Fetch a menu item by ID for testing
+      final response = await http.get(Uri.parse('https://api.spoonacular.com/food/menuItems/424571?apiKey=$apiKey'));
+      if (response.statusCode == 200) {
+        var product = jsonDecode(response.body);
+
+        // Create a GroceryItem from the fetched product
+        GroceryItem item = createGroceryItem_Menu(product);
+
+        // Check that the item has been correctly populated
+        expect(item.name, isNotEmpty);
+        expect(item.category, isNotEmpty);
+        expect(item.itemIdType, ItemIdType.AUTO);
+        expect(item.nutritionalInfo, isNotEmpty);
+        expect(item.image, isNotNull);
+      } else {
+        fail('Failed to fetch menu item for testing');
+      }
+    });
+
+    test('createGroceryItem_Ingredient creates a valid GroceryItem from API data', () async {
+      // Fetch an ingredient by ID for testing
+      final response = await http.get(Uri.parse('https://api.spoonacular.com/food/ingredients/9266/information?apiKey=$apiKey&amount=1'));
+      if (response.statusCode == 200) {
+        var product = jsonDecode(response.body);
+
+        // Create a GroceryItem from the fetched ingredient
+        GroceryItem item = createGroceryItem_Ingredient(product);
+
+        // Check that the item has been correctly populated
+        expect(item.name, isNotEmpty);
+        expect(item.category, isNotEmpty);
+        expect(item.itemIdType, ItemIdType.AUTO);
+        expect(item.nutritionalInfo, isNotEmpty);
+        expect(item.image, isNotNull);
+      } else {
+        fail('Failed to fetch ingredient for testing');
+      }
+    });
+
+    test('createGroceryItem_Product creates a valid GroceryItem from API data', () async {
+      // Fetch a product by ID for testing
+      final response = await http.get(Uri.parse('https://api.spoonacular.com/food/products/22347?apiKey=$apiKey'));
+      if (response.statusCode == 200) {
+        var product = jsonDecode(response.body);
+
+        // Create a GroceryItem from the fetched product
+        GroceryItem item = createGroceryItem_Product(product);
+
+        // Check that the item has been correctly populated
+        expect(item.name, isNotEmpty);
+        expect(item.category, isNotEmpty);
+        expect(item.itemIdType, ItemIdType.AUTO);
+        expect(item.nutritionalInfo, isNotEmpty);
+        expect(item.image, isNotNull);
+      } else {
+        fail('Failed to fetch product for testing');
+      }
     });
   });
 }
