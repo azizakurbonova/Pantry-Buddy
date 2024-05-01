@@ -1,113 +1,117 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unnecessary_this
 
-enum ItemIdType { EAN, UPC, PLU, Manual }
+import 'package:firebase_database/firebase_database.dart';
+
+enum ItemIdType { AUTO, MANUAL, UPC}
+
+/*
+Example Use of class methods to update firebase
+
+GroceryItem item = GroceryItem(
+    itemId: '123',
+    name: 'Apple',
+    category: ['Fruit'],
+    quantity: 10,
+    dateAdded: DateTime.now(),
+    expirationDate: DateTime.now().add(Duration(days: 90)),
+    itemIdType: ItemIdType.UPC
+);
+
+item.updateQuantity(15);
+item.markConsumed();
+
+*/
 
 class GroceryItem {
-  String itemId;
+  String? itemId;
   String name;
-  String category;
+  List<String> category;
   int quantity;
   DateTime dateAdded;
-  DateTime? dateConsumed; 
+  DateTime? dateConsumed;
   DateTime? dateDiscarded;
   DateTime expirationDate;
-  String? nutriScore;
-  String? ecoScore;
-  ItemIdType itemIdType; // Assuming this is a String that can be either 'EAN', 'UPC', or 'PLU', or 'Manual'
+  ItemIdType itemIdType;
   String? nutritionalInfo;
-  bool visible; //distinguishes whether this food item is not discarded or consumed / is displayed as part of the current food inventory
+  bool visible;
+  String? image;
 
-  //Need to enforce that itemIdType has to be either "EAN","UPC","PLU", or "Manual"
   GroceryItem({
-    required this.itemId,
+    this.itemId,
     required this.name,
     required this.category,
     this.quantity = 1,
+    required this.dateAdded,
     required this.expirationDate,
-    required this.dateAdded, //dateTime of class object instantiation
-    this.dateConsumed, //to be populated upon removal of grocery item from food inventory
-    this.dateDiscarded, //to be populated upon removal of grocery item from food inventory
-    this.nutriScore, //optional, only for products from the Open Food Facts DB
-    this.ecoScore, //optional, only for products from the Open Food Facts DB
+    this.dateConsumed,
+    this.dateDiscarded,
     required this.itemIdType,
-    this.nutritionalInfo, //optional, only for products from the Open Food Facts DB
-    this.visible = true
+    this.nutritionalInfo,
+    this.visible = true,
+    this.image,
   });
 
-  // Method to display nutritional score
-  String? viewNutriScore() {
-    // Assuming this method just returns the nutriScore for now
-    return nutriScore;
-  }
+  DatabaseReference get dbRef => FirebaseDatabase.instance.ref('groceryItems/${this.itemId}');
 
-  // Method to display eco score
-  String? viewEcoScore() {
-    // Assuming this method just returns the ecoScore for now
-    return ecoScore;
-  }
-
-  // Method to display nutritional information
-  String? viewNutritionalInfo() {
-    // Assuming this method just returns the nutritionalInfo for now
-    return nutritionalInfo;
-  }
-
-  void setQuantity(int newQuantity) {
+  void updateQuantity(int newQuantity) {
     if (newQuantity > 0) {
-      quantity = newQuantity;
-    } else {
-      // Handle the case where the new quantity is less than 1.
-      // This might involve setting the quantity to 0, throwing an error, etc.
-      // For this example, we'll just print a message and not change the quantity.
-      debugPrint('Invalid quantity. The quantity must be greater than 0.');
+      this.quantity = newQuantity;
+      dbRef.update({'quantity': this.quantity});
     }
   }
 
-  void markAsConsumed(GroceryItem item) {
-    item.dateConsumed = DateTime.now();
-    // Update the item in your inventory storage/database
+  void markConsumed() {
+    if (this.dateConsumed == null) { // Ensure it's only marked once
+      this.dateConsumed = DateTime.now();
+      this.visible = false; // Optionally make it invisible in the app
+      dbRef.update({'dateConsumed': this.dateConsumed?.toIso8601String(), 'visible': this.visible});
+    }
   }
 
-  void markAsDiscarded(GroceryItem item) {
-    item.dateDiscarded = DateTime.now();
-    // Update the item in your inventory storage/database
+
+  void markDiscarded() {
+    if (this.dateDiscarded == null) { // Ensure it's only marked once
+      this.dateDiscarded = DateTime.now();
+      this.visible = false; // Optionally make it invisible in the app
+      dbRef.update({'dateDiscarded': this.dateDiscarded?.toIso8601String(), 'visible': this.visible});
+    }
   }
 
-  // Convert a GroceryItem object into a JSON map
+
   Map<String, dynamic> toJson() {
-      return {
-        'itemId': itemId,
-        'name': name,
-        'category': category,
-        'quantity': quantity,
-        'dateAdded': dateAdded.toIso8601String(),
-        'dateConsumed': dateConsumed?.toIso8601String(),
-        'dateDiscarded': dateDiscarded?.toIso8601String(),
-        'expirationDate': expirationDate.toIso8601String(),
-        'nutriScore': nutriScore,
-        'ecoScore': ecoScore,
-        'itemIdType': itemIdType.name, // Convert enum to its name
-        'nutritionalInfo': nutritionalInfo,
-        'visible': visible,
-      };
-    }
+    return {
+      'itemId': itemId,
+      'name': name,
+      'category': category.join(', '), // Assuming category is a list of strings
+      'quantity': quantity,
+      'dateAdded': dateAdded.toIso8601String(),
+      'dateConsumed': dateConsumed?.toIso8601String(),
+      'dateDiscarded': dateDiscarded?.toIso8601String(),
+      'expirationDate': expirationDate.toIso8601String(),
+      'itemIdType': itemIdType.name,
+      'nutritionalInfo': nutritionalInfo,
+      'visible': visible,
+      'image': image
+    };
+  }
+
 
   // Create a GroceryItem object from a JSON map
   static GroceryItem fromJson(Map<String, dynamic> json) {
     return GroceryItem(
       itemId: json['itemId'],
       name: json['name'],
-      category: json['category'],
+      category: (json['category'] as String).split(', '), // Convert string back to list
       quantity: json['quantity'] ?? 1,
       dateAdded: DateTime.parse(json['dateAdded']),
       expirationDate: DateTime.parse(json['expirationDate']),
       dateConsumed: json['dateConsumed'] != null ? DateTime.parse(json['dateConsumed']) : null,
       dateDiscarded: json['dateDiscarded'] != null ? DateTime.parse(json['dateDiscarded']) : null,
-      nutriScore: json['nutriScore'],
-      ecoScore: json['ecoScore'],
       itemIdType: ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
       nutritionalInfo: json['nutritionalInfo'],
       visible: json['visible'] ?? true,
+      image: json['image']
     );
   }
 }
+
