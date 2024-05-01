@@ -40,6 +40,18 @@ dependencies:
   firebase_core: ^2.24.2
   firebase_database: ^10.4.1
   uuid: ^4.4.0
+  camera: ^0.10.5+9
+  http: ^1.2.0
+  flutter_barcode_scanner: ^2.0.0
+  google_ml_kit: ^0.16.3
+  image_picker: ^1.0.7 #selecting pics from camera or photo library, needed in OCR
+  csv: ^6.0.0
+  flutter_typeahead: ^5.2.0 #auto complete search
+  test: ^1.16.0 #test cases
+  path: ^1.8.3
+  string_similarity: ^2.0.0
+  mockito: ^5.4.4
+
 
 dev_dependencies:
   flutter_test:

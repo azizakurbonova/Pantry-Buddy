@@ -25,7 +25,7 @@ item.markConsumed();
 class GroceryItem {
   String? itemId;
   String name;
-  List<String> category;
+  List<dynamic> category;
   int quantity;
   DateTime dateAdded;
   DateTime? dateConsumed;
