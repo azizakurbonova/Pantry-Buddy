@@ -8,7 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
+  //FirebaseDatabase database = FirebaseDatabase.instance; // initialize real-time database
 
   runApp(const MyApp());
 }
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
+      // This call to setState tells the Flutter framework that something hasr
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be

@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '17679102985',
     projectId: 'pantry-buddy-2024',
     authDomain: 'pantry-buddy-2024.firebaseapp.com',
+    databaseURL: 'https://pantry-buddy-2024-default-rtdb.firebaseio.com/',
     storageBucket: 'pantry-buddy-2024.appspot.com',
     measurementId: 'G-8EW6VJYGVX',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:17679102985:android:cc7e1e136a9e8e7b3f34d8',
     messagingSenderId: '17679102985',
     projectId: 'pantry-buddy-2024',
+    databaseURL: 'https://pantry-buddy-2024-default-rtdb.firebaseio.com/',
     storageBucket: 'pantry-buddy-2024.appspot.com',
   );
 
@@ -66,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:17679102985:ios:ffac8886ac2c66153f34d8',
     messagingSenderId: '17679102985',
     projectId: 'pantry-buddy-2024',
+    databaseURL: 'https://pantry-buddy-2024-default-rtdb.firebaseio.com/',
     storageBucket: 'pantry-buddy-2024.appspot.com',
     iosBundleId: 'com.a11.pantrybuddy',
   );
@@ -75,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:17679102985:ios:76ab4993f638c0743f34d8',
     messagingSenderId: '17679102985',
     projectId: 'pantry-buddy-2024',
+    databaseURL: 'https://pantry-buddy-2024-default-rtdb.firebaseio.com/',
     storageBucket: 'pantry-buddy-2024.appspot.com',
     iosBundleId: 'com.a11.pantrybuddy.RunnerTests',
   );
