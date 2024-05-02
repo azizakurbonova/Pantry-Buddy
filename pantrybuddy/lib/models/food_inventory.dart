@@ -1,6 +1,29 @@
 import 'grocery_item.dart';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_database/firebase_database.dart';
 
+/*
+Example Use of class methods to update firebase
+
+void main() {
+  var inventory = FoodInventory(
+    inventoryId: '123456',
+    owner: 'user123',
+  );
+
+  // Example of sharing access
+  bool successShare = inventory.shareAccess('user123', 'user456');
+  print('Access shared: $successShare');
+
+  // Example of removing access
+  bool successRemove = inventory.removeAccess('user123', 'user456');
+  print('Access removed: $successRemove');
+}
+
+*/
+
+
+//Includes methods to update the database directly
 class FoodInventory {
   String? inventoryId;
   //String? joinCode;
@@ -10,7 +33,7 @@ class FoodInventory {
   List<String> groceryItems = [];
 
   FoodInventory({
-    required this.inventoryId,
+    this.inventoryId,
     required this.owner,
     List<dynamic>? groceryItems,
     List<dynamic>? users,
@@ -40,9 +63,10 @@ class FoodInventory {
     if (currentUserId == owner) {
       if (!users.contains(userToAdd)) {
         users.add(userToAdd);
-        return true; //indicate operation success
+        dbRef.child('foodInventories/${this.inventoryId}/users').set(users);
+        return true; // Indicate operation success
       } else {
-        debugPrint("User already has access");
+        debugPrint("User already has access.");
         return false;
       }
     } else {
@@ -53,12 +77,12 @@ class FoodInventory {
 
   bool removeAccess(String currentUserId, String userToRemove) {
     if (currentUserId == owner) {
-      if (!users.contains(userToRemove)) {
+      if (users.contains(userToRemove)) {
         users.remove(userToRemove);
-        return true; //indicate operation success
+        dbRef.child('foodInventories/${this.inventoryId}/users').set(users);
+        return true; // Indicate operation success
       } else {
-        debugPrint(
-            "User does not exist among existing list of people with access");
+        debugPrint("User does not exist among existing list of people with access.");
         return false;
       }
     } else {
@@ -66,6 +90,25 @@ class FoodInventory {
       return false;
     }
   }
+
+  Future<FoodInventory?> viewInventory() async {
+    DataSnapshot snapshot = await dbRef.child('foodInventories/${this.inventoryId}').get();
+    if (snapshot.exists) {
+      return FoodInventory.fromJson(Map<String, dynamic>.from(snapshot.value as Map));
+    }
+    return null;
+  }
+/*
+  // Static method to create a FoodInventory object from a JSON map
+  static FoodInventory fromJson(Map<String, dynamic> json) {
+    return FoodInventory(
+      inventoryId: json['inventoryId'],
+      owner: json['owner'],
+      groceryItems: (json['groceryItems'] as List).map((item) => GroceryItem.fromJson(item)).toList(),
+      users: List<String>.from(json['users']),
+    );
+  }
+*/
 
   Map<String, dynamic> toJson() {
     return {

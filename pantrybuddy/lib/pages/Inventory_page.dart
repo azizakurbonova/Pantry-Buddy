@@ -4,7 +4,6 @@ import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({Key? key}) : super(key: key);
