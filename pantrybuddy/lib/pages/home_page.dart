@@ -12,6 +12,7 @@ import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/create_pantry_page.dart';
 import 'package:pantrybuddy/pages/join_pantry_page.dart';
+import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:uuid/uuid.dart';
 
 class HomePage extends StatefulWidget {
@@ -66,60 +67,7 @@ class _HomePageState extends State<HomePage> {
           elevation: 0, // how flat do we want this
           //title: Text("Top Bar"),
         ),
-        endDrawer: Drawer(
-          child: Container(
-            color: Colors.green[400],
-            child: ListView(
-              children: [
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.account_box, color: Colors.black),
-                  title: Text(
-                    "Account",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AccountPage()));
-                  },
-                ),
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.notifications, color: Colors.black),
-                  title: Text(
-                    "Notifications",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NotificationPage()));
-                  },
-                ),
-                ListTile(
-                  // each page is a ListTitle
-                  leading: Icon(Icons.food_bank, color: Colors.black),
-                  title: Text(
-                    "Inventory",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => InventoryPage()));
-                  },
-                ),
-                ListTile(
-                    leading: Icon(Icons.logout, color: Colors.black),
-                    title: Text(
-                      "Sign Out",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    onTap: () {
-                      FirebaseAuth.instance.signOut();
-                    }),
-              ],
-            ),
-          ),
-        ),
+        endDrawer: sideBar(context),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
@@ -147,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  SizedBox(width:10),
+                  SizedBox(width: 10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[800],

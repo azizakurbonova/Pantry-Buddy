@@ -5,6 +5,7 @@ import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({Key? key}) : super(key: key);
@@ -42,59 +43,7 @@ class _InventoryPageState extends State<InventoryPage> {
         //title: Text("Top Bar"),
       ),
       //drawer. pulls out on top right
-      endDrawer: Drawer(
-        child: Container(
-          color: Colors.green[400],
-          child: ListView(
-            children: [
-              ListTile(
-                leading: Icon(Icons.account_box, color: Colors.black),
-                title: Text(
-                  "Account",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AccountPage()));
-                },
-              ),
-              ListTile(
-                // each page is a ListTitle
-                leading: Icon(Icons.notifications, color: Colors.black),
-                title: Text(
-                  "Notifications",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => NotificationPage()));
-                },
-              ),
-              ListTile(
-                // each page is a ListTitle
-                leading: Icon(Icons.food_bank, color: Colors.black),
-                title: Text(
-                  "Inventory",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => InventoryPage()));
-                },
-              ),
-              ListTile(
-                  leading: Icon(Icons.logout, color: Colors.black),
-                  title: Text(
-                    "Sign Out",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  onTap: () {
-                    FirebaseAuth.instance.signOut();
-                  }),
-            ],
-          ),
-        ),
-      ),
+      endDrawer: sideBar(context),
 
       //speed dial for add methods
       floatingActionButton: SpeedDial(

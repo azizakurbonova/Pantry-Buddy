@@ -12,18 +12,13 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Colors.green,
-      body: SafeArea (
-        child: Center (
-          child: SingleChildScrollView ( //fixes enter text overflow
-            child: Column (
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              ]
-            )
-          )
-        )
-      )
-    );
+        backgroundColor: Colors.green,
+        body: SafeArea(
+            child: Center(
+                child: SingleChildScrollView(
+                    //fixes enter text overflow
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [])))));
   }
 }

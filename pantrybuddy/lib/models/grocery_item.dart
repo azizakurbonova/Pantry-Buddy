@@ -3,7 +3,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart'; // For debugPrint
 
-enum ItemIdType { EAN, UPC, PLU, MANUAL }
+enum ItemIdType { EAN, UPC, PLU, MANUAL, AUTO }
 
 /*
 Example Use of class methods to update firebase
