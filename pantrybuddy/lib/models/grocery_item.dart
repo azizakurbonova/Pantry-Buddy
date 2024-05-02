@@ -1,8 +1,9 @@
 // ignore_for_file: unnecessary_this
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart'; // For debugPrint
 
-enum ItemIdType { AUTO, MANUAL, UPC}
+enum ItemIdType { EAN, UPC, PLU, MANUAL }
 
 /*
 Example Use of class methods to update firebase
@@ -25,12 +26,14 @@ item.markConsumed();
 class GroceryItem {
   String? itemId;
   String name;
-  List<dynamic> category;
+  List<String> category;
   int quantity;
   DateTime dateAdded;
   DateTime? dateConsumed;
   DateTime? dateDiscarded;
   DateTime expirationDate;
+  String? nutriScore;
+  String? ecoScore;
   ItemIdType itemIdType;
   String? nutritionalInfo;
   bool visible;
@@ -45,13 +48,16 @@ class GroceryItem {
     required this.expirationDate,
     this.dateConsumed,
     this.dateDiscarded,
+    this.nutriScore,
+    this.ecoScore,
     required this.itemIdType,
     this.nutritionalInfo,
     this.visible = true,
     this.image,
   });
 
-  DatabaseReference get dbRef => FirebaseDatabase.instance.ref('groceryItems/${this.itemId}');
+  DatabaseReference get dbRef =>
+      FirebaseDatabase.instance.ref('groceryItems/${this.itemId}');
 
   void updateQuantity(int newQuantity) {
     if (newQuantity > 0) {
@@ -61,22 +67,28 @@ class GroceryItem {
   }
 
   void markConsumed() {
-    if (this.dateConsumed == null) { // Ensure it's only marked once
+    if (this.dateConsumed == null) {
+      // Ensure it's only marked once
       this.dateConsumed = DateTime.now();
       this.visible = false; // Optionally make it invisible in the app
-      dbRef.update({'dateConsumed': this.dateConsumed?.toIso8601String(), 'visible': this.visible});
+      dbRef.update({
+        'dateConsumed': this.dateConsumed?.toIso8601String(),
+        'visible': this.visible
+      });
     }
   }
-
 
   void markDiscarded() {
-    if (this.dateDiscarded == null) { // Ensure it's only marked once
+    if (this.dateDiscarded == null) {
+      // Ensure it's only marked once
       this.dateDiscarded = DateTime.now();
       this.visible = false; // Optionally make it invisible in the app
-      dbRef.update({'dateDiscarded': this.dateDiscarded?.toIso8601String(), 'visible': this.visible});
+      dbRef.update({
+        'dateDiscarded': this.dateDiscarded?.toIso8601String(),
+        'visible': this.visible
+      });
     }
   }
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -88,6 +100,8 @@ class GroceryItem {
       'dateConsumed': dateConsumed?.toIso8601String(),
       'dateDiscarded': dateDiscarded?.toIso8601String(),
       'expirationDate': expirationDate.toIso8601String(),
+      'nutriScore': nutriScore,
+      'ecoScore': ecoScore,
       'itemIdType': itemIdType.name,
       'nutritionalInfo': nutritionalInfo,
       'visible': visible,
@@ -95,23 +109,27 @@ class GroceryItem {
     };
   }
 
-
-  // Create a GroceryItem object from a JSON map
   static GroceryItem fromJson(Map<String, dynamic> json) {
     return GroceryItem(
-      itemId: json['itemId'],
-      name: json['name'],
-      category: (json['category'] as String).split(', '), // Convert string back to list
-      quantity: json['quantity'] ?? 1,
-      dateAdded: DateTime.parse(json['dateAdded']),
-      expirationDate: DateTime.parse(json['expirationDate']),
-      dateConsumed: json['dateConsumed'] != null ? DateTime.parse(json['dateConsumed']) : null,
-      dateDiscarded: json['dateDiscarded'] != null ? DateTime.parse(json['dateDiscarded']) : null,
-      itemIdType: ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
-      nutritionalInfo: json['nutritionalInfo'],
-      visible: json['visible'] ?? true,
-      image: json['image']
-    );
+        itemId: json['itemId'],
+        name: json['name'],
+        category: (json['category'] as String)
+            .split(', '), // Convert string back to list
+        quantity: json['quantity'] ?? 1,
+        dateAdded: DateTime.parse(json['dateAdded']),
+        expirationDate: DateTime.parse(json['expirationDate']),
+        dateConsumed: json['dateConsumed'] != null
+            ? DateTime.parse(json['dateConsumed'])
+            : null,
+        dateDiscarded: json['dateDiscarded'] != null
+            ? DateTime.parse(json['dateDiscarded'])
+            : null,
+        nutriScore: json['nutriScore'],
+        ecoScore: json['ecoScore'],
+        itemIdType:
+            ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
+        nutritionalInfo: json['nutritionalInfo'],
+        visible: json['visible'] ?? true,
+        image: json['image']);
   }
 }
-
