@@ -26,29 +26,39 @@ void main() {
 //Includes methods to update the database directly
 class FoodInventory {
   String? inventoryId;
-  String owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
-  List<String> users;
-  List<GroceryItem> groceryItems;
+  //String? joinCode;
+  String
+      owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
+  List<String> users = [];
+  List<String> groceryItems = [];
 
   FoodInventory({
     this.inventoryId,
     required this.owner,
-    List<GroceryItem>? groceryItems,
-    List<String>? users,
-  })  : groceryItems = groceryItems ?? [],
-        users = users ?? [owner];
+    List<dynamic>? groceryItems,
+    List<dynamic>? users,
+  })  : groceryItems = [owner],
+        users = [
+          owner
+        ]; //owner is implicitly already part of list of users who can view and edit the inventory
 
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-
-  // Adds a grocery item to the Firebase database
-  void addGroceryItem(GroceryItem item) {
-    if (!groceryItems.any((existingItem) => existingItem.itemId == item.itemId)) {
-      groceryItems.add(item);
-      dbRef.child('foodInventories/${this.inventoryId}/groceryItems').push().set(item.toJson());
-      //each push() generates a unique identifier and ensures that the new data is added as a new child under the list.
-    }
+  // Methods to add, remove, and view items would go here
+  // Add a GroceryItem to the inventory
+  void addGroceryItem(String itemId) {
+    // Here you might want to check for duplicates before adding
+    groceryItems.add(itemId);
   }
-  
+
+  // Remove a GroceryItem from the inventory by itemId
+  void removeGroceryItem(String itemId) {
+    groceryItems.removeWhere((item) => item == itemId);
+  }
+
+  //Retrieve joinCode
+  // String? getCode() {
+  //   return joinCode;
+  // }
+
   bool shareAccess(String currentUserId, String userToAdd) {
     if (currentUserId == owner) {
       if (!users.contains(userToAdd)) {
@@ -88,7 +98,7 @@ class FoodInventory {
     }
     return null;
   }
-
+/*
   // Static method to create a FoodInventory object from a JSON map
   static FoodInventory fromJson(Map<String, dynamic> json) {
     return FoodInventory(
@@ -98,13 +108,23 @@ class FoodInventory {
       users: List<String>.from(json['users']),
     );
   }
+*/
 
   Map<String, dynamic> toJson() {
     return {
       'inventoryId': inventoryId,
       'owner': owner,
       'users': users,
-      'groceryItems': groceryItems.map((item) => item.toJson()).toList(),
+      'groceryItems': groceryItems,
     };
+  }
+
+  static FoodInventory fromJson(Map<String, dynamic> json) {
+    return FoodInventory(
+      inventoryId: json['inventoryId'],
+      owner: json['owner'],
+      users: json['users'],
+      groceryItems: json['groceryItems'],
+    );
   }
 }
