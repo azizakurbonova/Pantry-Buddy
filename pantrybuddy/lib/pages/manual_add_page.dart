@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/manual_add_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
@@ -220,8 +221,8 @@ class _ManualAddPageState extends State<ManualAddPage> {
                   ),
                   onTap: () {
                     FirebaseAuth.instance.signOut();
-                  }),
-            ],
+                  }
+              ),],
           ),
         ),
       ),
