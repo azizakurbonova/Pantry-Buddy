@@ -14,6 +14,9 @@ class InventoryPage extends StatefulWidget {
 
 class _InventoryPageState extends State<InventoryPage> {
   final user = FirebaseAuth.instance.currentUser!;
+  String? myUserID = FirebaseAuth.instance.currentUser!.uid;
+
+  String code = 'n/a';
 
   @override
   void dispose() {
@@ -22,6 +25,14 @@ class _InventoryPageState extends State<InventoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    DatabaseReference getCode =
+        FirebaseDatabase.instance.ref().child('users/$myUserID/inventoryID');
+    getCode.onValue.listen((event) {
+      setState(() {
+        code = event.snapshot.value.toString();
+      });
+    });
+
     return Scaffold(
       //appBar
       appBar: AppBar(
@@ -55,7 +66,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 ),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => NotificationPage()));
+                      builder: (context) => NotificationPage()));
                 },
               ),
               ListTile(
@@ -66,8 +77,8 @@ class _InventoryPageState extends State<InventoryPage> {
                   style: TextStyle(fontSize: 20),
                 ),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => InventoryPage()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => InventoryPage()));
                 },
               ),
               ListTile(
@@ -78,35 +89,34 @@ class _InventoryPageState extends State<InventoryPage> {
                   ),
                   onTap: () {
                     FirebaseAuth.instance.signOut();
-                  }
-              ),
+                  }),
             ],
           ),
         ),
       ),
 
       //speed dial for add methods
-      floatingActionButton: SpeedDial (
+      floatingActionButton: SpeedDial(
         //animatedIcon: AnimatedIcons.menu_close,
         icon: Icons.add,
         backgroundColor: Colors.green[400],
-        overlayColor: Colors.black, 
+        overlayColor: Colors.black,
         //background greys out when opened. helps focus on options
         overlayOpacity: .4,
         children: [
-          SpeedDialChild (
+          SpeedDialChild(
             child: Icon(Icons.add_box),
             label: 'Manual Entry',
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ManualAddPage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ManualAddPage()));
             },
           ),
-          SpeedDialChild (
+          SpeedDialChild(
             child: Icon(Icons.barcode_reader),
             label: 'Scan (UPC/EAN)',
           ),
-          SpeedDialChild (
+          SpeedDialChild(
             child: Icon(Icons.add_a_photo),
             label: 'Photo (PLU)',
           ),
@@ -115,42 +125,37 @@ class _InventoryPageState extends State<InventoryPage> {
 
       //body
       backgroundColor: Colors.green[200],
-      body: SafeArea (
-        child: Center (
-          child: SingleChildScrollView ( //fixes enter text overflow
-            child: Column (
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            //fixes enter text overflow
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //stretch so can left align
-                const SizedBox(height:15),
-                const SizedBox (
-                  
-                  width: double.infinity,
-                  child: Text (
-                    "      show grocery items here",
-                    style: TextStyle(
+                SelectableText(
+                  "This is your Pantry Code!: $code",
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
+                  ),
+                ),
+                //stretch so can left align
+                const SizedBox(height: 15),
+                const SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    "      show grocery items here",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                     textAlign: TextAlign.left,
                   ),
                 ),
-
-
-
-
-
-
-                
               ],
             ),
           ),
         ),
-      
-      
-      
-      
-      
       ),
     );
 
@@ -181,7 +186,5 @@ class _InventoryPageState extends State<InventoryPage> {
                   )
                 ),
                 */
-
-
   }
 }

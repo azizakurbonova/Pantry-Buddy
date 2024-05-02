@@ -1,4 +1,8 @@
+//import 'dart:js_interop';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/auth/auth_page.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
@@ -16,9 +20,51 @@ class JoinPantryPage extends StatefulWidget {
 
 class _JoinPantryPageState extends State<JoinPantryPage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final _textController = TextEditingController();
+
+  String? myUserID = FirebaseAuth.instance.currentUser!.uid;
+
+  //String code = 'n/a';
+
+  String place = '0';
+
+  // this function doesnt do shit lmfao
+  // void getPantryCode(String pantryID) async {
+
+  // }
+
+  // this function should add the user to a pantry
+  void addUserToPantry() {}
+
+  void invalidCodeDialog() {
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text("ERROR CODE NOT VALID"),
+      content: Text("Please input valid code"),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // can only read information from here. writing functions above doesnt work
+    String inputCode = _textController.text;
+    //print("holder in this moment is" + holder);
+
     return Scaffold(
       backgroundColor: Colors.green[100],
         appBar: AppBar(
@@ -33,7 +79,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               children: [
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.account_box, color: Colors.black),
+                  leading: Icon(Icons.account_box),
                   title: Text(
                     "Account",
                     style: TextStyle(fontSize: 20),
@@ -45,7 +91,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.notifications, color: Colors.black),
+                  leading: Icon(Icons.notifications),
                   title: Text(
                     "Notifications",
                     style: TextStyle(fontSize: 20),
@@ -57,9 +103,9 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                 ),
                 ListTile(
                   // each page is a ListTitle
-                  leading: Icon(Icons.food_bank, color: Colors.black),
+                  leading: Icon(Icons.food_bank),
                   title: Text(
-                    "Inventory",
+                    "Inventory ** ",
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
@@ -68,7 +114,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                   },
                 ),
                 ListTile(
-                    leading: Icon(Icons.logout, color: Colors.black),
+                    leading: Icon(Icons.logout),
                     title: Text(
                       "Sign Out",
                       style: TextStyle(fontSize: 20),
@@ -76,7 +122,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     onTap: () {
                       FirebaseAuth.instance.signOut();
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => AuthPage()));
+                        builder: (context) => LoginPage(showRegisterPage: () {  },)));
                     }),
               ],
             ),
@@ -90,7 +136,6 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                     fontSize: 25,
                   ),
                 ),
-          SizedBox(height:20),
           Padding (
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextField (

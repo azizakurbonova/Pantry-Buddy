@@ -1,3 +1,5 @@
+//import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -24,22 +26,35 @@ class _HomePageState extends State<HomePage> {
   // need to pass this field around
   String? newInventoryID =
       FirebaseDatabase.instance.ref("foodInventories").push().key;
+
   void createPantry() async {
     //DatabaseReference ref = FirebaseDatabase.instance.ref("foodInventories");
+    String myUser = user.uid;
 
-    // Use push to create a new child location with a unique key
-    //DatabaseReference newInventoryRef = ref.push();
+    // this code reads only once.
+    //final readCode = FirebaseDatabase.instance.ref();
+    //final snapshot = await readCode.child('users/$myUser/joinCode').get();
 
-    // need to pass this field around
     String? inventoryId = newInventoryID;
+
     FoodInventory newInventory = FoodInventory(
-        inventoryId: inventoryId,
-        owner: user.uid,
-        users: [user.uid],
-        groceryItems: []);
+      inventoryId: inventoryId,
+      owner: user.uid,
+      users: [user.uid],
+      groceryItems: [],
+    );
+
+    // User newUser = User(
+
+    // );
+
     await FirebaseDatabase.instance
         .ref("foodInventories/$inventoryId")
         .set(newInventory.toJson());
+
+    await FirebaseDatabase.instance.ref("users/$myUser").update({
+      "inventoryID": inventoryId,
+    });
   }
 
   @override
@@ -153,10 +168,15 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () async {
                       try {
                         String userID = user.uid;
+                        // String? newInventoryID = FirebaseDatabase.instance
+                        //     .ref("foodInventories")
+                        //     .push()
+                        //     .key;
                         // Here, you create a map or use your User model to represent user data
                         Map<String, dynamic> userData = {
                           "userId": user.uid,
                           "email": user.email,
+                          "inventoryID": "Null",
                         };
                         // Update the Realtime Database with the new user's information
                         await FirebaseDatabase.instance
