@@ -60,6 +60,12 @@ class _InventoryPageState extends State<InventoryPage> {
     return filteredList;
   }
 
+  List<GroceryItem> sortByExpirationDate(List<GroceryItem> groceries) {
+    log("SORTING BY EXPIRATION DATE!!!");
+    groceries.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
+    return groceries;
+  }
+
   @override
   Widget build(BuildContext context) {
     DatabaseReference getCode =
@@ -174,8 +180,8 @@ class _InventoryPageState extends State<InventoryPage> {
                                 log(pantry.groceryItems.length.toString());
                                 //If you're reading this i suffered for this :_:
                                 return GroceryList(
-                                    groceries:
-                                        filterByName(pantry.groceryItems));
+                                    groceries: sortByExpirationDate(
+                                        filterByName(pantry.groceryItems)));
                               }
                             });
                       }
