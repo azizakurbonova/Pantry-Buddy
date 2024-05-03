@@ -8,7 +8,7 @@ import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/Inventory_page.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';

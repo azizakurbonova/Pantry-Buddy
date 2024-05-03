@@ -3,7 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
 
 Widget sideBar(BuildContext context) {
@@ -45,7 +45,7 @@ Widget sideBar(BuildContext context) {
             ),
             onTap: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => NotificationPage()));
+                  MaterialPageRoute(builder: (context) => DCInventoryPage()));
             },
           ),
           ListTile(

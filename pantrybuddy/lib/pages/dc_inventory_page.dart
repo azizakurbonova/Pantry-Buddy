@@ -15,14 +15,14 @@ import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'dart:developer';
 
-class InventoryPage extends StatefulWidget {
-  InventoryPage({Key? key}) : super(key: key);
+class DCInventoryPage extends StatefulWidget {
+  DCInventoryPage({Key? key}) : super(key: key);
 
   @override
-  State<InventoryPage> createState() => _InventoryPageState();
+  State<DCInventoryPage> createState() => _InventoryPageState();
 }
 
-class _InventoryPageState extends State<InventoryPage> {
+class _InventoryPageState extends State<DCInventoryPage> {
   final user = FirebaseAuth.instance.currentUser!;
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
   String code = 'n/a';
@@ -59,7 +59,7 @@ class _InventoryPageState extends State<InventoryPage> {
         //title: Text("Top Bar"),
       ),
       endDrawer: sideBar(context),
-
+/*
       //speed dial for add methods
       floatingActionButton: SpeedDial(
         //animatedIcon: AnimatedIcons.menu_close,
@@ -87,6 +87,7 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
         ],
       ),
+*/
 
       //body
       backgroundColor: Colors.green[200],
@@ -124,14 +125,13 @@ class _InventoryPageState extends State<InventoryPage> {
                           //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
-                        if (groceryJson["visible"]) {
+                        if (!groceryJson["visible"]){
                           groceryJsons.add(groceryJson);
                         }
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
                       log(pantry.groceryItems.length.toString());
-                      //If you're reading this i suffered for this :_:
                       return GroceryList(groceries: pantry.groceryItems);
                     }
                   });
