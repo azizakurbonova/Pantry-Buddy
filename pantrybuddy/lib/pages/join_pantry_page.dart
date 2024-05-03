@@ -20,22 +20,17 @@ class JoinPantryPage extends StatefulWidget {
 }
 
 class _JoinPantryPageState extends State<JoinPantryPage> {
-  final user = FirebaseAuth.instance.currentUser!;
   final _textController = TextEditingController();
-
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
 
-  //String code = 'n/a';
-
-  String place = '0';
-
-  // this function doesnt do shit lmfao
-  // void getPantryCode(String pantryID) async {
-
-  // }
-
   // this function should add the user to a pantry
-  void addUserToPantry() {}
+  void addUserToPantry(String pantryCode) async {
+    final database = FirebaseDatabase.instance.ref();
+    DataSnapshot snapshot = (await database.child('pantries').child(pantryCode).once()) as DataSnapshot;
+    if (snapshot.value != null) {
+      database.child('pantries').child(pantryCode).child('users').push().set(pantryCode);
+    }
+  }
 
   void invalidCodeDialog() {
     Widget okButton = TextButton(
@@ -88,7 +83,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: TextField(
-              //controller: _emailController,
+              controller: _textController,
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white),
@@ -104,6 +99,29 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: GestureDetector(
+            onTap: () {
+              addUserToPantry(_textController.text);
+            },
+            child: Container(
+              padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                color: Colors.purple[400],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Text('Sign In',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  )),
+              ),
+            ),
+          )),
+          const SizedBox(height: 25),
         ],
       )),
     );
