@@ -5,6 +5,13 @@ import 'package:pantrybuddy/Display/groceryNameField.dart';
 import 'package:pantrybuddy/Display/groceryQuantityField.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/Inventory_page.dart';
+<<<<<<< HEAD
+=======
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/manual_add_page.dart';
+import 'package:pantrybuddy/pages/dc_inventory_page.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+>>>>>>> 65a911b4d274c56dc357ccfd7b94507dd0d347aa
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 

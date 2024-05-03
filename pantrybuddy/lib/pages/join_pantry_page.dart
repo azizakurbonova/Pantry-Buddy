@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/auth/auth_page.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
