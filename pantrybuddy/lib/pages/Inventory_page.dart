@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/Display/groceryList.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
@@ -128,7 +129,7 @@ class _InventoryPageState extends State<InventoryPage> {
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
                       //If you're reading this i suffered for this :_:
-                      return Text(pantry.owner);
+                      return GroceryList(groceries: pantry.groceryItems);
                     }
                   });
             }
