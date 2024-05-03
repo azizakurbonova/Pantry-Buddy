@@ -15,7 +15,6 @@ import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'dart:developer';
 
-// This PROBABLY NEEDS FIXING! Please let me (CHRIS) know if there's an error
 Future<FoodInventory> fetchPantry() async {
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
   final uid = FirebaseAuth.instance.currentUser!.uid;

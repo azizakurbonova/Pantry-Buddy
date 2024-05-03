@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:developer';
 
-// This PROBABLY NEEDS FIXING! Please let me (CHRIS) know if there's an error
 Future<String> fetchPantryID() async {
   final user = FirebaseAuth.instance.currentUser!;
   String userId = user.uid;
