@@ -58,18 +58,6 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     if (item != null) {
       int quantity = int.tryParse(_quantityController.text) ?? 1; // Default to 1 if parsing fails
       
-      // Write to groceryItems DB
-      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
-      DatabaseReference newInventoryRef = ref.push();
-      String? itemId = newInventoryRef.key;
-      
-      setState(() {
-        currentGroceryItem = item;
-        currentGroceryItem!.quantity = quantity; // Update quantity based on input
-        currentGroceryItem!.itemId = itemId;
-      });
-
-      await ref.push().set(currentGroceryItem!.toJson());
 
       User? user = FirebaseAuth.instance.currentUser;
       String? userId = user?.uid;
@@ -85,6 +73,22 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
         inventoryId : pantry
       );
 
+      // Write to groceryItems DB
+      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
+      DatabaseReference newInventoryRef = ref.push();
+      String? itemId = newInventoryRef.key;
+      
+      setState(() {
+        currentGroceryItem = item;
+        currentGroceryItem!.quantity = quantity; // Update quantity based on input
+        currentGroceryItem!.itemId = itemId;
+        currentGroceryItem!.inventoryID = pantry;
+      });
+
+      //Update GroceryItems DB
+      await ref.push().set(currentGroceryItem!.toJson());
+
+      //Update FoodInventory DB
       inventoryManager.addGroceryItem(currentGroceryItem!);
     }
       _quantityController.clear();

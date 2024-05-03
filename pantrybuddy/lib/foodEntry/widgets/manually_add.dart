@@ -161,26 +161,6 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       return;
     }
 
-    // Write to groceryItems DB
-    DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
-    DatabaseReference newInventoryRef = ref.push();
-    String? itemId = newInventoryRef.key;
-
-    GroceryItem newItem = GroceryItem(
-      inventoryID: "temp",
-      itemId:
-          itemId, // Assuming this is generated elsewhere or not needed at creation
-      name: itemName,
-      category: [category],
-      quantity: quantity,
-      dateAdded: DateTime.now(),
-      expirationDate: expirationDate!,
-      itemIdType: ItemIdType.MANUAL, // Example, adjust as needed
-      visible: true,
-    );
-
-    await ref.push().set(newItem.toJson());
-
     User? user = FirebaseAuth.instance.currentUser;
     String? userId = user?.uid;
 
@@ -189,15 +169,38 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
       final DataSnapshot userSnapshot =
           await dbref.child("users/$user.uid/inventoryId").get();
+      
       String pantry = userSnapshot.value.toString();
+
+      // Write to groceryItems DB
+      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
+      DatabaseReference newInventoryRef = ref.push();
+      String? itemId = newInventoryRef.key;
+
+      GroceryItem newItem = GroceryItem(
+        inventoryID: pantry,
+        itemId:
+            itemId, 
+        name: itemName,
+        category: [category],
+        quantity: quantity,
+        dateAdded: DateTime.now(),
+        expirationDate: expirationDate!,
+        itemIdType: ItemIdType.MANUAL,
+        visible: true,
+      );
+
+      await ref.push().set(newItem.toJson());
+
+      //make update in corresponding foodInventory object
 
       FoodInventory inventoryManager =
           FoodInventory(owner: userId!, inventoryId: pantry);
 
       inventoryManager.addGroceryItem(newItem);
-    }
 
-    debugPrint("Created Food Product: ${newItem.name}");
+      debugPrint("Created Food Product: ${newItem.name}");
+    }
 
     _quantityController.clear();
     productNameController.clear();

@@ -205,19 +205,6 @@ Widget build(BuildContext context) {
     if (item != null) {
       final int quantity = _quantityController.text.isNotEmpty ? int.parse(_quantityController.text) : 1;
       
-      // Write to groceryItems DB
-      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
-      DatabaseReference newInventoryRef = ref.push();
-      String? itemId = newInventoryRef.key;
-      
-      setState(() {
-        selectedGroceryItem = item;
-        selectedGroceryItem!.quantity = quantity; // Update quantity based on input
-        selectedGroceryItem!.itemId = itemId;
-      });
-
-      await ref.push().set(selectedGroceryItem!.toJson());
-
       User? user = FirebaseAuth.instance.currentUser;
       String? userId = user?.uid;
 
@@ -232,6 +219,22 @@ Widget build(BuildContext context) {
         inventoryId : pantry
       );
 
+      // Write to groceryItems DB
+      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
+      DatabaseReference newInventoryRef = ref.push();
+      String? itemId = newInventoryRef.key;
+      
+      setState(() {
+        selectedGroceryItem = item;
+        selectedGroceryItem!.quantity = quantity; // Update quantity based on input
+        selectedGroceryItem!.itemId = itemId;
+        selectedGroceryItem!.inventoryID = pantry;
+      });
+
+      //update GroceryItem database
+      await ref.push().set(selectedGroceryItem!.toJson());
+
+      //update FoodInventory database
       inventoryManager.addGroceryItem(selectedGroceryItem!);
     }
       _quantityController.clear();
