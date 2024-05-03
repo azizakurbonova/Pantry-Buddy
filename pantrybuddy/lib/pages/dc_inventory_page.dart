@@ -125,14 +125,17 @@ class _InventoryPageState extends State<DCInventoryPage> {
                           //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
-                        if (!groceryJson["visible"]){
+                        if (!groceryJson["visible"]) {
                           groceryJsons.add(groceryJson);
                         }
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
                       log(pantry.groceryItems.length.toString());
-                      return GroceryList(groceries: pantry.groceryItems);
+                      return GroceryList(
+                        groceries: pantry.groceryItems,
+                        filter: "",
+                      );
                     }
                   });
             }

@@ -4,8 +4,9 @@ import 'package:pantrybuddy/models/grocery_item.dart';
 
 class GroceryList extends StatelessWidget {
   List<GroceryItem> groceries;
+  String filter;
 
-  GroceryList({required this.groceries}) : super();
+  GroceryList({required this.groceries, required this.filter}) : super();
   @override
   Widget build(BuildContext context) {
     if (groceries.isEmpty) {

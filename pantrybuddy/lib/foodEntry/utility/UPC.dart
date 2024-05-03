@@ -28,7 +28,7 @@ Future<String?> scanBarcode() async {
 
 //Example GET response: https://api.spoonacular.com/food/products/upc/041631000564?apiKey=41a82396931e43039ec29a6356ec8dc1
 Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
-  const String apiKey = '41a82396931e43039ec29a6356ec8dc1'; 
+  const String apiKey = '41a82396931e43039ec29a6356ec8dc1';
   final String url = 'https://api.spoonacular.com/food/products/upc/$upcCode';
   final Uri uri = Uri.parse('$url?apiKey=$apiKey');
 
@@ -37,7 +37,8 @@ Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
-      debugPrint('Failed to fetch product. Status code: ${response.statusCode}');
+      debugPrint(
+          'Failed to fetch product. Status code: ${response.statusCode}');
       debugPrint('Response body: ${response.body}');
       return null;
     }
@@ -50,27 +51,26 @@ Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product) {
   var nutrition = product?['nutrition'];
-  
+
   // Dynamically build the nutritional information string
   var nutritionalDetails = nutrition.entries.map((entry) {
     return "${entry.key}: ${entry.value}";
   }).join('; ');
 
   return GroceryItem(
-    itemId: product?['id'].toString(),
-    name: product?['title'] ?? 'No title available',
-    category: product?['breadcrumbs'] ?? 'Unknown category',
-    quantity: 1,  // Default quantity
-    dateAdded: DateTime.now(),
-    expirationDate: DateTime.now().add(Duration(days: 5)),  // Example expiration date
-    itemIdType: ItemIdType.UPC,
-    nutritionalInfo: nutritionalDetails,  // All nutritional info as a string
-    visible: true,
-    image : product?['image']
-  );
+      inventoryID: "temp",
+      itemId: product?['id'].toString(),
+      name: product?['title'] ?? 'No title available',
+      category: product?['breadcrumbs'] ?? 'Unknown category',
+      quantity: 1, // Default quantity
+      dateAdded: DateTime.now(),
+      expirationDate:
+          DateTime.now().add(Duration(days: 5)), // Example expiration date
+      itemIdType: ItemIdType.UPC,
+      nutritionalInfo: nutritionalDetails, // All nutritional info as a string
+      visible: true,
+      image: product?['image']);
 }
-
-
 
 Future<GroceryItem?> scanAndFetchProduct() async {
   final barcode = await scanBarcode();
@@ -78,7 +78,7 @@ Future<GroceryItem?> scanAndFetchProduct() async {
     final product = await fetchProductByUPC(barcode);
     if (product != null) {
       debugPrint('Product Name: ${product['title']}');
-      
+
       return createGroceryItemFromSpoonacular(product);
     }
     return null;
