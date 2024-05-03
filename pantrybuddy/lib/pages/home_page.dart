@@ -9,7 +9,6 @@ import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/models/user.dart' as my_user;
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
-import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/pages/create_pantry_page.dart';
 import 'package:pantrybuddy/pages/join_pantry_page.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
@@ -42,6 +41,7 @@ class _HomePageState extends State<HomePage> {
     String? inventoryId = newInventoryID;
     GroceryItem groceryItem = GroceryItem(
         name: "dummy",
+        inventoryID: inventoryId as String,
         category: ['test'],
         dateAdded: DateTime.now(),
         expirationDate: DateTime.now(),

@@ -25,15 +25,22 @@ class _ManualAddPageState extends State<ManualAddPage> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+  FocusNode _focus = FocusNode();
 
   @override
   void initState() {
+    _focus.addListener(_onFocusChange);
     super.initState();
+  }
+
+  void _onFocusChange() {
+    debugPrint("Focus: ${_focus.hasFocus.toString()}");
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _focus.removeListener(_onFocusChange);
     super.dispose();
   }
 
@@ -360,12 +367,14 @@ class _ManualAddPageState extends State<ManualAddPage> {
                         FoodInventory pantry = await fetchPantry();
                         String pantryID = pantry.inventoryId as String;
                         GroceryItem groceryItem = GroceryItem(
-                            name: _nameController.text,
-                            category: [selectedCat.toString()],
-                            dateAdded: DateTime.now(),
-                            expirationDate: DateTime(selectedYear as int,
-                                selectedMonth as int, selectedDay as int),
-                            itemIdType: ItemIdType.MANUAL);
+                                name: _nameController.text,
+                                inventoryID: pantryID,
+                                category: [selectedCat.toString()],
+                                dateAdded: DateTime.now(),
+                                expirationDate: DateTime(selectedYear as int,
+                                    selectedMonth as int, selectedDay as int),
+                                itemIdType: ItemIdType.MANUAL),
+                            invento;
                         groceryItem.visible = true;
                         log("length before" +
                             pantry.groceryItems.length.toString());

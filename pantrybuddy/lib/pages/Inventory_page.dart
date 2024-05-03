@@ -28,7 +28,7 @@ class _InventoryPageState extends State<InventoryPage> {
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
   String code = 'n/a';
   late Future pantryID;
-  String searchText = "";
+  TextEditingController searchText = TextEditingController();
 
   @override
   void dispose() {
@@ -94,9 +94,6 @@ class _InventoryPageState extends State<InventoryPage> {
       backgroundColor: Colors.green[200],
       body: SafeArea(
           child: Column(children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-        SearchBar(),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
         Expanded(
             child: Container(
                 child: StreamBuilder(
@@ -144,7 +141,8 @@ class _InventoryPageState extends State<InventoryPage> {
                                 log(pantry.groceryItems.length.toString());
                                 //If you're reading this i suffered for this :_:
                                 return GroceryList(
-                                    groceries: pantry.groceryItems);
+                                    groceries: pantry.groceryItems,
+                                    filter: searchText.text);
                               }
                             });
                       }

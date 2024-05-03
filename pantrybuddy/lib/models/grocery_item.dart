@@ -38,6 +38,7 @@ class GroceryItem {
   String? nutritionalInfo;
   bool visible;
   String? image;
+  String inventoryID;
 
   GroceryItem({
     this.itemId,
@@ -54,6 +55,7 @@ class GroceryItem {
     this.nutritionalInfo,
     this.visible = true,
     this.image,
+    required this.inventoryID,
   });
 
   DatabaseReference get dbRef =>
@@ -93,6 +95,7 @@ class GroceryItem {
   Map<String, dynamic> toJson() {
     return {
       'itemId': itemId,
+      'inventoryID': inventoryID,
       'name': name,
       'category': category.join(', '), // Assuming category is a list of strings
       'quantity': quantity,
@@ -105,13 +108,14 @@ class GroceryItem {
       'itemIdType': itemIdType.name,
       'nutritionalInfo': nutritionalInfo,
       'visible': visible,
-      'image': image
+      'image': image,
     };
   }
 
   static GroceryItem fromJson(Map<String, dynamic> json) {
     return GroceryItem(
         itemId: json['itemId'],
+        inventoryID: json['inventoryID'],
         name: json['name'],
         category: (json['category'] as String)
             .split(', '), // Convert string back to list
