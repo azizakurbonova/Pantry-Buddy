@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:pantrybuddy/pages/widgets/appbar.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
+import 'package:path/path.dart';
 
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
@@ -28,11 +30,7 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
 
     return Scaffold(
       backgroundColor: Colors.green[100],
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        elevation: 0, // how flat do we want this
-        title: Text("Top Bar"),
-      ),
+      appBar: ApplicationToolbar(),
       endDrawer: sideBar(context),
       body: Center(
           child: Column(

@@ -11,6 +11,7 @@ import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 
 class ManualAddPage extends StatefulWidget {
   final FoodInventory? userInventory;
@@ -25,37 +26,6 @@ class _ManualAddPageState extends State<ManualAddPage> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-  DatabaseReference pantryRef = FirebaseDatabase.instance.ref("groceryItems");
-
-  Future<FoodInventory> fetchUserInventory() async {
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    String userId = user.uid;
-    final snapshot =
-        await FirebaseDatabase.instance.ref("users/$userId/inventoryID").get();
-    final inventoryID = snapshot.value.toString();
-    DataSnapshot dataSnapshot = await FirebaseDatabase.instance
-        .ref("foodInventories/$inventoryID")
-        .get();
-    Map<String, dynamic> jsonData = {};
-    List<dynamic> listData = [];
-    for (final value in dataSnapshot.children) {
-      listData.add(value.value);
-      log(value.value.toString());
-    }
-    jsonData["inventoryId"] = listData[1];
-    jsonData["owner"] = listData[2];
-    jsonData["users"] = listData[3];
-    for (int x = 0; x < jsonData["users"].length; x++) {
-      jsonData["users"][x] = jsonData["users"][x].toString();
-    }
-    jsonData["groceryItems"] = listData[0];
-    for (int x = 0; x < jsonData["groceryItems"].length; x++) {
-      jsonData["groceryItems"][x] = jsonData["groceryItems"][x].toString();
-    }
-    FoodInventory pantry = FoodInventory.fromJson(jsonData);
-    log(pantry.groceryItems.toString());
-    return pantry;
-  }
 
   late FoodInventory userInventory;
 
@@ -63,7 +33,7 @@ class _ManualAddPageState extends State<ManualAddPage> {
   void initState() {
     super.initState();
     // Fetch the user's inventory when the widget is initialized
-    fetchUserInventory().then((inventory) {
+    fetchPantry().then((inventory) {
       setState(() {
         userInventory = inventory;
       });
@@ -459,32 +429,24 @@ class _ManualAddPageState extends State<ManualAddPage> {
                   const SizedBox(height: 35),
                   ElevatedButton(
                       onPressed: () async {
-                        final groceryData = {
-                          "category": selectedCat!,
-                          "expirationDate": DateTime(
-                                  selectedYear!, selectedMonth!, selectedDay!)
-                              .toString(),
-                          "itemIdType": ItemIdType.MANUAL.toString(),
-                          "name": _nameController.text,
-                          "quantity": selectedQuantity!.toString(),
-                        };
-                        final groceryKey = FirebaseDatabase.instance
-                            .ref()
-                            .child('groceryItems')
-                            .push()
-                            .key;
-                        final Map<String, Map> groceryUpdates = {};
-                        groceryUpdates['groceryItems/$groceryKey'] =
-                            groceryData;
-                        FirebaseDatabase.instance.ref().update(groceryUpdates);
-
-                        FoodInventory pantry = await fetchUserInventory();
-                        pantry.addGroceryItem(groceryKey!);
-                        String inventoryId = pantry.inventoryId!;
-                        await FirebaseDatabase.instance
-                            .ref("foodInventories/$inventoryId")
-                            .set(pantry.toJson());
-                        log(pantry.groceryItems.toString());
+                        FoodInventory pantry = await fetchPantry();
+                        String pantryID = pantry.inventoryId as String;
+                        //log("Attempting to fetch user inventory");
+                        //FoodInventory pantry = await fetchPantry();
+                        //log("Successful fetch");
+                        //String inventoryId = pantry.inventoryId!;
+                        //GroceryItem newGrocery = GroceryItem(
+                        //    name: _nameController.text,
+                        //    category: [selectedCat!],
+                        //    dateAdded: DateTime.now(),
+                        //    expirationDate: DateTime(
+                        //        selectedYear!, selectedMonth!, selectedDay!),
+                        //    itemIdType: ItemIdType.MANUAL);
+                        //final Map<String, Map> groceryUpdates = {};
+                        //groceryUpdates['foodInventories/$inventoryId'] =
+                        //    newGrocery.toJson();
+                        //FirebaseDatabase.instance.ref().update(groceryUpdates);
+                        //log(pantry.groceryItems.toString());
                       },
                       child: Text('Submit'),
                       style: ElevatedButton.styleFrom(

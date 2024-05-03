@@ -11,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   //text controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -19,38 +18,37 @@ class _LoginPageState extends State<LoginPage> {
   Future signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(), 
+        email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-    } on FirebaseAuthException catch (e) { //login unsuccessful
-      print(e); 
-      showDialog (//console
-        context: context,
-        builder: (context) {
-          return AlertDialog (
-            content: Text(e.message.toString())
-          );
-        }
-      );
+    } on FirebaseAuthException catch (e) {
+      //login unsuccessful
+      showDialog(
+          //console
+          context: context,
+          builder: (context) {
+            return AlertDialog(content: Text(e.message.toString()));
+          });
     }
   }
 
   @override
-  void dispose() { //for memory management
+  void dispose() {
+    //for memory management
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[200],
-      body: SafeArea (
-        child: Center (
-          child: SingleChildScrollView ( //fixes enter text overflow
-            child: Column (
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            //fixes enter text overflow
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //pantry buddy icon? or just have it for loading screens?
@@ -64,34 +62,34 @@ class _LoginPageState extends State<LoginPage> {
                 */
 
                 //welcome text
-                const Text (
+                const Text(
                   'Hello',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 52,
                   ),
                 ),
-                const SizedBox(height:10),
-                const Text (
+                const SizedBox(height: 10),
+                const Text(
                   'Your Pantry Buddy missed you!',
-                  style: TextStyle (
+                  style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 //email textfield
-                Padding (
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: TextField (
+                  child: TextField(
                     controller: _emailController,
-                    decoration: InputDecoration (
-                      enabledBorder: OutlineInputBorder (
-                        borderSide: const BorderSide (color: Colors.white),
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      focusedBorder: OutlineInputBorder (
-                        borderSide: const BorderSide (color: Colors.green),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       hintText: 'Email',
@@ -103,18 +101,19 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
 
                 //password textfield
-                Padding (
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: TextField (
-                    obscureText: true, //add eyeball icon to allow user to see password?
+                  child: TextField(
+                    obscureText:
+                        true, //add eyeball icon to allow user to see password?
                     controller: _passwordController,
-                    decoration: InputDecoration (
-                      enabledBorder: OutlineInputBorder (
-                        borderSide: const BorderSide (color: Colors.white),
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      focusedBorder: OutlineInputBorder (
-                        borderSide: const BorderSide (color: Colors.green),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       hintText: 'Password',
@@ -125,83 +124,72 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
 
-                Padding (
-                  padding: const EdgeInsets.symmetric(horizontal:25.0),
-                  child: Row (
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      GestureDetector (
-                        onTap: () {
-                          Navigator.push(
-                            context, 
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const ForgotPasswordPage();
-                              },
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle (
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                          )
-                        )
-                      )
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return const ForgotPasswordPage();
+                                },
+                              ),
+                            );
+                          },
+                          child: const Text('Forgot Password?',
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              )))
                     ],
                   ),
                 ),
-              
+
                 const SizedBox(height: 10),
                 //sign in button
-                Padding (
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: GestureDetector (
-                    onTap: signIn, //method
-                    child: Container (
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration (
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center (
-                        child: Text (
-                          'Sign In',
-                          style: TextStyle (
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          )
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: GestureDetector(
+                      onTap: signIn, //method
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Text('Sign In',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              )),
                         ),
                       ),
-                    ),
-                  )
-                ),
+                    )),
                 const SizedBox(height: 25),
 
                 //register button
-                Row (
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text (
-                      'Not a Member?',
-                      style: TextStyle (
-                        fontWeight: FontWeight.bold 
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Text(
+                    'Not a Member?',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  GestureDetector(
+                    onTap: widget.showRegisterPage,
+                    child: const Text(
+                      ' Register now',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    GestureDetector (
-                      onTap: widget.showRegisterPage,
-                      child: const Text (
-                        ' Register now',
-                        style: TextStyle (
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  ]
-                )
+                  )
+                ])
               ],
             ),
           ),

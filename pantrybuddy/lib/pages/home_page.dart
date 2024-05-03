@@ -12,11 +12,14 @@ import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:pantrybuddy/pages/create_pantry_page.dart';
 import 'package:pantrybuddy/pages/join_pantry_page.dart';
+import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:developer';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
+  bool hasInventory = false;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -37,12 +40,17 @@ class _HomePageState extends State<HomePage> {
     //final snapshot = await readCode.child('users/$myUser/joinCode').get();
 
     String? inventoryId = newInventoryID;
-
+    GroceryItem groceryItem = GroceryItem(
+        name: "dummy",
+        category: ['test'],
+        dateAdded: DateTime.now(),
+        expirationDate: DateTime.now(),
+        itemIdType: ItemIdType.MANUAL);
     FoodInventory newInventory = FoodInventory(
       inventoryId: inventoryId,
       owner: user.uid,
       users: [user.uid],
-      groceryItems: [],
+      groceryItems: [groceryItem],
     );
 
     // User newUser = User(
@@ -58,93 +66,120 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future hasInventory() async {
+    String inventoryID = await fetchPantryID();
+    if (inventoryID == "Null") {
+      widget.hasInventory = false;
+    } else {
+      widget.hasInventory = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.green[100],
-        appBar: AppBar(
-          backgroundColor: Colors.green[400],
-          elevation: 0, // how flat do we want this
-          //title: Text("Top Bar"),
-        ),
-        endDrawer: sideBar(context),
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-                height: 300,
-                width: 300,
-                child: Image.asset('lib/images/fridgey.png')),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  //Padding(padding: EdgeInsets.only(left: 10)),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[800],
-                    ),
-                    onPressed: () async {
-                      createPantry();
+    return FutureBuilder(
+        future: hasInventory(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (widget.hasInventory) {
+              return InventoryPage();
+            } else {
+              return Scaffold(
+                  backgroundColor: Colors.green[100],
+                  appBar: AppBar(
+                    backgroundColor: Colors.green[400],
+                    elevation: 0, // how flat do we want this
+                    //title: Text("Top Bar"),
+                  ),
+                  endDrawer: sideBar(context),
+                  body: Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                              height: 300,
+                              width: 300,
+                              child: Image.asset('lib/images/fridgey.png')),
+                          Padding(
+                            padding: EdgeInsets.only(top: 25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                //Padding(padding: EdgeInsets.only(left: 10)),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green[800],
+                                  ),
+                                  onPressed: () async {
+                                    createPantry();
 
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => InventoryPage()));
-                    },
-                    child: Text(
-                      "Create Pantry",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[800],
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => JoinPantryPage()));
-                    },
-                    child: Text(
-                      "Join Pantry",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[800],
-                    ),
-                    onPressed: () async {
-                      try {
-                        String userID = user.uid;
-                        // String? newInventoryID = FirebaseDatabase.instance
-                        //     .ref("foodInventories")
-                        //     .push()
-                        //     .key;
-                        // Here, you create a map or use your User model to represent user data
-                        Map<String, dynamic> userData = {
-                          "userId": user.uid,
-                          "email": user.email,
-                          "inventoryID": "Null",
-                        };
-                        // Update the Realtime Database with the new user's information
-                        await FirebaseDatabase.instance
-                            .ref("users/$userID")
-                            .set(userData);
-
-                        print("stuff has been written!");
-                      } catch (e) {
-                        print('youve got error $e');
-                      }
-                    },
-                    child: Text(
-                      "Create User (for testing)",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ]),
-        ));
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                InventoryPage()));
+                                  },
+                                  child: Text(
+                                    "Create Pantry",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green[800],
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                JoinPantryPage()));
+                                  },
+                                  child: Text(
+                                    "Join Pantry",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                //ElevatedButton(
+                                //  style: ElevatedButton.styleFrom(
+                                //    backgroundColor: Colors.green[800],
+                                //  ),
+                                //  onPressed: () async {
+                                //    try {
+                                //      String userID = user.uid;
+                                //      // String? newInventoryID = FirebaseDatabase.instance
+                                //      //     .ref("foodInventories")
+                                //      //     .push()
+                                //      //     .key;
+                                //      // Here, you create a map or use your User model to represent user data
+                                //      Map<String, dynamic> userData = {
+                                //        "userId": user.uid,
+                                //        "email": user.email,
+                                //        "inventoryID": "Null",
+                                //      };
+                                //      // Update the Realtime Database with the new user's information
+                                //      await FirebaseDatabase.instance
+                                //          .ref("users/$userID")
+                                //          .set(userData);
+//
+                                //      print("stuff has been written!");
+                                //    } catch (e) {
+                                //      print('youve got error $e');
+                                //    }
+                                //  },
+                                //  child: Text(
+                                //    "Create User (for testing)",
+                                //    style: TextStyle(color: Colors.white),
+                                //  ),
+                                //),
+                              ],
+                            ),
+                          )
+                        ]),
+                  ));
+            }
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }

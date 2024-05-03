@@ -4,21 +4,20 @@ import 'package:pantrybuddy/auth/auth_page.dart';
 import '../pages/home_page.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage ({ Key? key }) : super(key: key);
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(), //like JavaScript listener
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return const HomePage();
-          } else {
-            return const AuthPage();
-          }
-        }
-      )
-    );
+        body: StreamBuilder<User?>(
+            stream: FirebaseAuth.instance
+                .authStateChanges(), //like JavaScript listener
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return HomePage();
+              } else {
+                return AuthPage();
+              }
+            }));
   }
 }
