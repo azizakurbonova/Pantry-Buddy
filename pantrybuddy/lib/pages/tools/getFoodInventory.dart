@@ -1,38 +1,43 @@
-import 'dart:developer';
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:pantrybuddy/Display/groceryList.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/manual_add_page.dart';
+import 'package:pantrybuddy/pages/notif_page.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
+import 'package:pantrybuddy/pages/widgets/sidebar.dart';
+import 'package:pantrybuddy/models/grocery_item.dart';
+import 'dart:developer';
 
 // This PROBABLY NEEDS FIXING! Please let me (CHRIS) know if there's an error
 Future<FoodInventory> fetchPantry() async {
+  DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   String inventoryID = await fetchPantryID();
-  DataSnapshot dataSnapshot =
-      await FirebaseDatabase.instance.ref("foodInventories/$inventoryID").get();
+  DataSnapshot dbsnapshot =
+      await dbRef.child("foodInventories/$inventoryID").get();
+
   Map<String, dynamic> jsonData = {};
-  List<dynamic> listData = [];
-  for (final value in dataSnapshot.children) {
-    listData.add(value.value);
-    log(value.value.toString());
+  for (var item in dbsnapshot.children) {
+    log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+    jsonData[item.key.toString()] = item.value;
   }
-  jsonData["inventoryId"] = listData[1];
-  jsonData["owner"] = listData[2];
-  jsonData["users"] = listData[3];
-  for (int x = 0; x < jsonData["users"].length; x++) {
-    jsonData["users"][x] = jsonData["users"][x].toString();
+  List<dynamic> groceryJsons = [];
+  for (var map in jsonData["groceryItems"]) {
+    Map<String, dynamic> groceryJson = {};
+    for (var key in map.keys) {
+      log("translating: ${key.toString()}->${map[key].toString()}");
+      groceryJson[key.toString()] = map[key];
+    }
+    groceryJsons.add(groceryJson);
   }
-  jsonData["groceryItems"] = listData[0];
+  jsonData["groceryItems"] = groceryJsons;
   FoodInventory pantry = FoodInventory.fromJson(jsonData);
   return pantry;
-}
-
-Future<FoodInventory> fetchPantry2() async {
-  String inventoryID = await fetchPantryID();
-  DataSnapshot dataSnapshot =
-      await FirebaseDatabase.instance.ref("foodInventories/$inventoryID").get();
-
-  Map<String, dynamic> jsonData = {};
-  for (final value in dataSnapshot.children) {
-    log(value.toString());
-  }
-  return FoodInventory(owner: "1312312313");
 }

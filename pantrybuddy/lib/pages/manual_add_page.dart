@@ -14,8 +14,7 @@ import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 
 class ManualAddPage extends StatefulWidget {
-  final FoodInventory? userInventory;
-  const ManualAddPage({Key? key, this.userInventory}) : super(key: key);
+  const ManualAddPage();
 
   @override
   State<ManualAddPage> createState() => _ManualAddPageState();
@@ -27,20 +26,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
   final _formKey = GlobalKey<FormState>();
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
-  late FoodInventory userInventory;
-
   @override
   void initState() {
     super.initState();
-    // Fetch the user's inventory when the widget is initialized
-    fetchPantry().then((inventory) {
-      setState(() {
-        userInventory = inventory;
-      });
-    }).catchError((error) {
-      // Handle errors if any
-      debugPrint('Error fetching user inventory in initializing: $error');
-    });
   }
 
   @override
@@ -58,72 +46,11 @@ class _ManualAddPageState extends State<ManualAddPage> {
     'Other',
   ];
   String? selectedCat;
-  final List<int> quantityList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-  ];
+  final List<int> quantityList = new List<int>.generate(15, (i) => i + 1);
   int? selectedQuantity;
-  final List<int> monthList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-  ];
+  final List<int> monthList = new List<int>.generate(12, (i) => i + 1);
   int? selectedMonth;
-  final List<int> dayList = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    27,
-    28,
-    29,
-    30,
-    31
-  ];
+  final List<int> dayList = new List<int>.generate(31, (i) => i + 1);
   int? selectedDay;
   final List<int> yearList = [
     //this year and up to seven years in future
@@ -429,24 +356,25 @@ class _ManualAddPageState extends State<ManualAddPage> {
                   const SizedBox(height: 35),
                   ElevatedButton(
                       onPressed: () async {
+                        log("TRYING");
                         FoodInventory pantry = await fetchPantry();
                         String pantryID = pantry.inventoryId as String;
-                        //log("Attempting to fetch user inventory");
-                        //FoodInventory pantry = await fetchPantry();
-                        //log("Successful fetch");
-                        //String inventoryId = pantry.inventoryId!;
-                        //GroceryItem newGrocery = GroceryItem(
-                        //    name: _nameController.text,
-                        //    category: [selectedCat!],
-                        //    dateAdded: DateTime.now(),
-                        //    expirationDate: DateTime(
-                        //        selectedYear!, selectedMonth!, selectedDay!),
-                        //    itemIdType: ItemIdType.MANUAL);
-                        //final Map<String, Map> groceryUpdates = {};
-                        //groceryUpdates['foodInventories/$inventoryId'] =
-                        //    newGrocery.toJson();
-                        //FirebaseDatabase.instance.ref().update(groceryUpdates);
-                        //log(pantry.groceryItems.toString());
+                        GroceryItem groceryItem = GroceryItem(
+                            name: _nameController.text,
+                            category: [selectedCat.toString()],
+                            dateAdded: DateTime.now(),
+                            expirationDate: DateTime(selectedYear as int,
+                                selectedMonth as int, selectedDay as int),
+                            itemIdType: ItemIdType.MANUAL);
+                        log("length before" +
+                            pantry.groceryItems.length.toString());
+                        pantry.appendGroceryItem(groceryItem);
+                        String inventoryID = pantry.inventoryId as String;
+                        log("length after" +
+                            pantry.groceryItems.length.toString());
+                        dbRef
+                            .child("foodInventories/$inventoryID")
+                            .update(pantry.toJson());
                       },
                       child: Text('Submit'),
                       style: ElevatedButton.styleFrom(

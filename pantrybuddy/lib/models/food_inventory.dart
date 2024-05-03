@@ -53,6 +53,10 @@ class FoodInventory {
     }
   }
 
+  void appendGroceryItem(GroceryItem item) {
+    groceryItems.add(item);
+  }
+
   bool shareAccess(String currentUserId, String userToAdd) {
     if (currentUserId == owner) {
       if (!users.contains(userToAdd)) {
