@@ -20,7 +20,7 @@ class GroceryQuantityField extends StatelessWidget {
       keyboardType: TextInputType.number,
       textAlign: TextAlign.center,
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
           hintText: "Enter quantity",
           hintStyle: TextStyle(
               fontStyle: FontStyle.italic,
@@ -28,7 +28,7 @@ class GroceryQuantityField extends StatelessWidget {
               fontSize: 20.0),
           focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.white))),
-      style: TextStyle(color: Colors.white, fontSize: 20.0),
+      style: const TextStyle(color: Colors.white, fontSize: 20.0),
     );
   }
 }

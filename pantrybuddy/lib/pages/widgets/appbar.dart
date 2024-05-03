@@ -22,6 +22,7 @@ class ApplicationToolbar extends StatelessWidget
       backgroundColor: Colors.green[400],
       elevation: 0,
       title: Text("Top Bar"),
+      automaticallyImplyLeading: false,
       // Refresh Button
       // actions: [IconButton(
       //  onPressed: ,

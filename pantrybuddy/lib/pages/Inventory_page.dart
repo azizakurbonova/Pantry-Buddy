@@ -11,6 +11,7 @@ import 'package:pantrybuddy/pages/notif_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
+import 'package:pantrybuddy/pages/widgets/appbar.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'dart:developer';
@@ -53,11 +54,7 @@ class _InventoryPageState extends State<InventoryPage> {
       });
     });
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        elevation: 0,
-        //title: Text("Top Bar"),
-      ),
+      appBar: ApplicationToolbar(),
       endDrawer: sideBar(context),
 
       //speed dial for add methods
@@ -124,9 +121,10 @@ class _InventoryPageState extends State<InventoryPage> {
                           //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
-                        if (groceryJson["visible"]) {
-                          groceryJsons.add(groceryJson);
-                        }
+                        //if (groceryJson["visible"]) {
+                        //  groceryJsons.add(groceryJson);
+                        //}
+                        groceryJsons.add(groceryJson);
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);

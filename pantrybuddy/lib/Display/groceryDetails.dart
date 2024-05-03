@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +5,11 @@ import 'package:pantrybuddy/Display/groceryNameField.dart';
 import 'package:pantrybuddy/Display/groceryQuantityField.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/Inventory_page.dart';
-import 'package:pantrybuddy/pages/account_page.dart';
-import 'package:pantrybuddy/pages/manual_add_page.dart';
-import 'package:pantrybuddy/pages/notif_page.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
-import 'package:pantrybuddy/pages/widgets/sidebar.dart';
+
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'dart:developer';
-import 'package:pantrybuddy/Display/groceryDescription.dart';
 
 class ItemDetails extends StatefulWidget {
   final GroceryItem item;
@@ -28,8 +22,10 @@ class ItemDetails extends StatefulWidget {
 
 class _FoodDetailsState extends State<ItemDetails> {
   final dbRef = FirebaseDatabase.instance.ref();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+
+  @override
   void initState() {
     super.initState();
     _nameController.text = widget.item.name;
@@ -39,9 +35,9 @@ class _FoodDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF2D3447),
+        backgroundColor: const Color(0xFF2D3447),
         appBar: AppBar(
-            title: Text('Item Details',
+            title: const Text('Item Details',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 25.0,
@@ -50,7 +46,7 @@ class _FoodDetailsState extends State<ItemDetails> {
             elevation: 0,
             actions: [
               IconButton(
-                icon: Icon(Icons.info, color: Colors.white),
+                icon: const Icon(Icons.info, color: Colors.white),
                 onPressed: () {},
               )
             ]),
@@ -59,13 +55,13 @@ class _FoodDetailsState extends State<ItemDetails> {
             padding: const EdgeInsets.all(50.0),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text("Name:",
+              const Text("Name:",
                   style: TextStyle(fontSize: 25.0, color: Colors.white)),
               GroceryNameField(
                 nameController: _nameController,
               ),
-              Divider(),
-              Text(
+              const Divider(),
+              const Text(
                 'Quantity:',
                 style: TextStyle(fontSize: 25.0, color: Colors.white),
               ),
@@ -101,6 +97,8 @@ class _FoodDetailsState extends State<ItemDetails> {
 
                       pantry.groceryItems[widget.index].quantity =
                           int.parse(_quantityController.text);
+                      pantry.groceryItems[widget.index].name =
+                          _nameController.text;
                       dbRef
                           .child("foodInventories/$inventoryID")
                           .update(pantry.toJson());
@@ -112,22 +110,31 @@ class _FoodDetailsState extends State<ItemDetails> {
                     },
                     child: const Text('Save'),
                   ),
-                  //ElevatedButton(
-                  //  onPressed: () async {
-                  //    final uid = await getCurrentUID();
-                  //    db
-                  //        .collection('Users')
-                  //        .doc(uid)
-                  //        .collection(widget.food['location'])
-                  //        .doc(widget.food.id)
-                  //        .delete();
-                  //    Navigator.of(context).pushReplacement(
-                  //        MaterialPageRoute(builder: (context) {
-                  //      return AppHome();
-                  //    }));
-                  //  },
-                  //  child: const Text('Delete'),
-                  //),
+                  ElevatedButton(
+                    onPressed: () async {
+                      FoodInventory pantry = await fetchPantry();
+                      log("zzz" + pantry.groceryItems.length.toString());
+                      for (int x = 0; x < pantry.groceryItems.length; x++) {
+                        if (pantry.groceryItems[x].itemId ==
+                            widget.item.itemId) {
+                          pantry.groceryItems.removeAt(x);
+                          break;
+                        }
+                      }
+                      log("zzz" + pantry.groceryItems.length.toString());
+                      String inventoryID = pantry.inventoryId as String;
+                      dbRef
+                          .child("foodInventories/$inventoryID/")
+                          .update(pantry.toJson());
+                      pantry = await fetchPantry();
+                      log("zzz" + pantry.groceryItems.length.toString());
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) {
+                        return InventoryPage();
+                      }));
+                    },
+                    child: const Text('Delete'),
+                  ),
                 ],
               ),
             ]),

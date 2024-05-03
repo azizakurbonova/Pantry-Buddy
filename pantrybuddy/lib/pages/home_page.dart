@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
         dateAdded: DateTime.now(),
         expirationDate: DateTime.now(),
         itemIdType: ItemIdType.MANUAL);
+    groceryItem.visible = false;
     FoodInventory newInventory = FoodInventory(
       inventoryId: inventoryId,
       owner: user.uid,
@@ -68,10 +69,10 @@ class _HomePageState extends State<HomePage> {
 
   Future hasInventory() async {
     String inventoryID = await fetchPantryID();
-    if (inventoryID == "Null") {
-      widget.hasInventory = false;
-    } else {
+    if (inventoryID != null && inventoryID.length >= 7) {
       widget.hasInventory = true;
+    } else {
+      widget.hasInventory = false;
     }
   }
 
