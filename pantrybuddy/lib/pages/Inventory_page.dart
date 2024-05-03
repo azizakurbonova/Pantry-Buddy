@@ -28,6 +28,7 @@ class _InventoryPageState extends State<InventoryPage> {
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
   String code = 'n/a';
   late Future pantryID;
+  String searchText = "";
 
   @override
   void dispose() {
@@ -42,6 +43,10 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Future getData() async {
     return fetchPantryID();
+  }
+
+  String printLatestValue(String text) {
+    return text;
   }
 
   @override
@@ -87,54 +92,64 @@ class _InventoryPageState extends State<InventoryPage> {
 
       //body
       backgroundColor: Colors.green[200],
-      body: StreamBuilder(
-          stream: FirebaseDatabase.instance
-              .ref("users/$myUserID/inventoryID")
-              .onValue,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const CircularProgressIndicator();
-            } else {
-              //log("WE HAVE VALUES");
-              var databaseEvent = snapshot.data!;
-              var databaseSnapshot = databaseEvent.snapshot;
-              String inventoryID = databaseSnapshot.value as String;
-              return StreamBuilder(
-                  stream: FirebaseDatabase.instance
-                      .ref("foodInventories/$inventoryID")
-                      .onValue,
-                  builder: (context, snapshot2) {
-                    Map<String, dynamic> jsonData = {};
-                    if (!snapshot2.hasData) {
-                      return const CircularProgressIndicator();
-                    } else {
-                      var dbevent = snapshot2.data!;
-                      var dbsnapshot = dbevent.snapshot;
-                      for (var item in dbsnapshot.children) {
-                        //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
-                        jsonData[item.key.toString()] = item.value;
+      body: SafeArea(
+          child: Column(children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+        SearchBar(),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+        Expanded(
+            child: Container(
+                child: StreamBuilder(
+                    stream: FirebaseDatabase.instance
+                        .ref("users/$myUserID/inventoryID")
+                        .onValue,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        //log("WE HAVE VALUES");
+                        var databaseEvent = snapshot.data!;
+                        var databaseSnapshot = databaseEvent.snapshot;
+                        String inventoryID = databaseSnapshot.value as String;
+                        return StreamBuilder(
+                            stream: FirebaseDatabase.instance
+                                .ref("foodInventories/$inventoryID")
+                                .onValue,
+                            builder: (context, snapshot2) {
+                              Map<String, dynamic> jsonData = {};
+                              if (!snapshot2.hasData) {
+                                return const CircularProgressIndicator();
+                              } else {
+                                var dbevent = snapshot2.data!;
+                                var dbsnapshot = dbevent.snapshot;
+                                for (var item in dbsnapshot.children) {
+                                  //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+                                  jsonData[item.key.toString()] = item.value;
+                                }
+                                List<dynamic> groceryJsons = [];
+                                for (var map in jsonData["groceryItems"]) {
+                                  Map<String, dynamic> groceryJson = {};
+                                  for (var key in map.keys) {
+                                    //log("translating: ${key.toString()}->${map[key].toString()}");
+                                    groceryJson[key.toString()] = map[key];
+                                  }
+                                  //if (groceryJson["visible"]) {
+                                  //  groceryJsons.add(groceryJson);
+                                  //}
+                                  groceryJsons.add(groceryJson);
+                                }
+                                jsonData["groceryItems"] = groceryJsons;
+                                FoodInventory pantry =
+                                    FoodInventory.fromJson(jsonData);
+                                log(pantry.groceryItems.length.toString());
+                                //If you're reading this i suffered for this :_:
+                                return GroceryList(
+                                    groceries: pantry.groceryItems);
+                              }
+                            });
                       }
-                      List<dynamic> groceryJsons = [];
-                      for (var map in jsonData["groceryItems"]) {
-                        Map<String, dynamic> groceryJson = {};
-                        for (var key in map.keys) {
-                          //log("translating: ${key.toString()}->${map[key].toString()}");
-                          groceryJson[key.toString()] = map[key];
-                        }
-                        //if (groceryJson["visible"]) {
-                        //  groceryJsons.add(groceryJson);
-                        //}
-                        groceryJsons.add(groceryJson);
-                      }
-                      jsonData["groceryItems"] = groceryJsons;
-                      FoodInventory pantry = FoodInventory.fromJson(jsonData);
-                      log(pantry.groceryItems.length.toString());
-                      //If you're reading this i suffered for this :_:
-                      return GroceryList(groceries: pantry.groceryItems);
-                    }
-                  });
-            }
-          }),
+                    }))),
+      ])),
 
       //body: FutureBuilder(
       //    future: pantryID,
