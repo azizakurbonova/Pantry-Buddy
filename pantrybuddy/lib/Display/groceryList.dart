@@ -21,7 +21,7 @@ class GroceryList extends StatelessWidget {
   GroceryList({required this.groceries}) : super();
   @override
   Widget build(BuildContext context) {
-    if (groceries.length <= 0) {
+    if (groceries.length == 0) {
       //Change this to 1 when running live
       return const Text('No food items');
     }

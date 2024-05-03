@@ -18,7 +18,7 @@ import 'package:pantrybuddy/Display/groceryDescription.dart';
 class GroceryCard extends StatelessWidget {
   final GroceryItem item;
   final int index;
-  const GroceryCard({required this.item, required this.index}) : super();
+  GroceryCard({required this.item, required this.index}) : super();
   @override
   Widget build(BuildContext context) {
     return Padding(

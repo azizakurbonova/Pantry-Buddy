@@ -366,6 +366,7 @@ class _ManualAddPageState extends State<ManualAddPage> {
                             expirationDate: DateTime(selectedYear as int,
                                 selectedMonth as int, selectedDay as int),
                             itemIdType: ItemIdType.MANUAL);
+                        groceryItem.visible = true;
                         log("length before" +
                             pantry.groceryItems.length.toString());
                         pantry.appendGroceryItem(groceryItem);
@@ -375,6 +376,10 @@ class _ManualAddPageState extends State<ManualAddPage> {
                         dbRef
                             .child("foodInventories/$inventoryID")
                             .update(pantry.toJson());
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (context) {
+                          return InventoryPage();
+                        }));
                       },
                       child: Text('Submit'),
                       style: ElevatedButton.styleFrom(

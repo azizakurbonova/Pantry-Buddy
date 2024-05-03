@@ -124,10 +124,13 @@ class _InventoryPageState extends State<InventoryPage> {
                           //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
-                        groceryJsons.add(groceryJson);
+                        if (groceryJson["visible"]) {
+                          groceryJsons.add(groceryJson);
+                        }
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
+                      log(pantry.groceryItems.length.toString());
                       //If you're reading this i suffered for this :_:
                       return GroceryList(groceries: pantry.groceryItems);
                     }
