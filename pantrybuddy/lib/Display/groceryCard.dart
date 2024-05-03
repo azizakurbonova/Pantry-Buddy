@@ -17,7 +17,8 @@ import 'package:pantrybuddy/Display/groceryDescription.dart';
 
 class GroceryCard extends StatelessWidget {
   final GroceryItem item;
-  const GroceryCard({required this.item}) : super();
+  final int index;
+  const GroceryCard({required this.item, required this.index}) : super();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,12 +36,12 @@ class GroceryCard extends StatelessWidget {
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
-                          child: Container(
-                            child: Image(
-                                image:
-                                    AssetImage('assets/images/groceries.png'),
-                                height: 50.0),
-                          ),
+                          //child: Container(
+                          //  child: Image(
+                          //      image:
+                          //          AssetImage('assets/images/groceries.png'),
+                          //      height: 50.0),
+                          //),
                         ),
                       ),
                       Padding(
@@ -53,9 +54,8 @@ class GroceryCard extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => ItemDetails(
-                            item: item,
-                          )));
+                      builder: (context) =>
+                          ItemDetails(item: item, index: index)));
             },
           ),
         ));

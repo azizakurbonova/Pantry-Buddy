@@ -29,19 +29,7 @@ class GroceryList extends StatelessWidget {
       shrinkWrap: true,
       itemCount: groceries.length,
       itemBuilder: (BuildContext context, int index) =>
-          GroceryCard(item: groceries[index]),
+          GroceryCard(item: groceries[index], index: index),
     );
-    //return Container(
-    //  child: StreamBuilder(
-    //      stream: groceries as Stream,
-    //      builder: (context, snapshot) {
-    //        if (!snapshot.hasData) return const Text('No food items');
-    //        return new ListView.builder(
-    //            shrinkWrap: true,
-    //            itemCount: snapshot.data.documents.length,
-    //            itemBuilder: (BuildContext context, int index) =>
-    //                GroceryCard(item: snapshot.data.documents[index]));
-    //      }),
-    //);
   }
 }
