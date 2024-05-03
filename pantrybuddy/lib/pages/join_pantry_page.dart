@@ -1,15 +1,10 @@
-//import 'dart:js_interop';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/auth/auth_page.dart';
-import 'package:pantrybuddy/pages/account_page.dart';
-import 'package:pantrybuddy/pages/inventory_page.dart';
-import 'package:pantrybuddy/pages/dc_inventory_page.dart';
+import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
-import 'package:pantrybuddy/reg/login_page.dart';
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
 
 class JoinPantryPage extends StatefulWidget {
@@ -21,17 +16,35 @@ class JoinPantryPage extends StatefulWidget {
 
 class _JoinPantryPageState extends State<JoinPantryPage> {
   final _textController = TextEditingController();
-  String? myUserID = FirebaseAuth.instance.currentUser!.uid;
 
   // this function should add the user to a pantry
   void addUserToPantry(String pantryCode) async {
     final database = FirebaseDatabase.instance.ref();
-    DataSnapshot snapshot = (await database.child('pantries').child(pantryCode).once()) as DataSnapshot;
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final userId = currentUser.uid;
+
+    //add inventoryID to User
+    final userRef = FirebaseDatabase.instance.ref().child('users').child(userId);
+    userRef.update({'inventoryID': pantryCode});
+
+    //add user to list of users in FoodInventory
+    FoodInventory pantry = await fetchPantry();
+    //pantry.appendUser(userId);
+    List<String> users = pantry.users;
+    int newIndex = users.length;
+    database.child('foodInventories/$pantryCode/users').child(newIndex.toString()).set(userId);
+
+    //await database.child('foodInventories/$pantryCode/users').push().set(userId);
+    /*
+    var snapshot = await database.child('pantries').child(pantryCode).once();
     if (snapshot.value != null) {
       database.child('pantries').child(pantryCode).child('users').push().set(pantryCode);
     }
+    */
+    
   }
 
+/*
   void invalidCodeDialog() {
     Widget okButton = TextButton(
       child: Text("OK"),
@@ -54,19 +67,15 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
       },
     );
   }
+*/
 
   @override
   Widget build(BuildContext context) {
-    // can only read information from here. writing functions above doesnt work
-    String inputCode = _textController.text;
-    //print("holder in this moment is" + holder);
-
     return Scaffold(
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         backgroundColor: Colors.green[400],
         elevation: 0, // how flat do we want this
-        title: Text("Top Bar"),
       ),
       endDrawer: sideBar(context),
       body: Center(
@@ -80,6 +89,8 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               fontSize: 25,
             ),
           ),
+          const SizedBox(height: 25),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: TextField(
@@ -99,11 +110,15 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               ),
             ),
           ),
+          const SizedBox(height: 25),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: GestureDetector(
             onTap: () {
-              addUserToPantry(_textController.text);
+              print("Button tapped!");
+              String inputCode = _textController.text;
+              addUserToPantry(inputCode);
             },
             child: Container(
               padding: const EdgeInsets.all(20),
@@ -112,7 +127,7 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Center(
-                child: Text('Sign In',
+                child: Text('Join Pantry',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
