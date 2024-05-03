@@ -30,7 +30,7 @@ class GroceryItemDescription extends StatelessWidget {
               children: [
                 Text(item.name,
                     style: TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 13.0,
                         color: Color(0xFF2D3447),
                         fontWeight: FontWeight.bold),
                     maxLines: 1,
@@ -38,16 +38,16 @@ class GroceryItemDescription extends StatelessWidget {
                 Text('Quantity: ${(item.quantity)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15.0, color: Color(0xFF2D3447))),
+                    style: TextStyle(fontSize: 13.0, color: Color(0xFF2D3447))),
                 Text(
                     '${'Best before:'} ${item.expirationDate.toIso8601String().substring(0, 10)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15.0, color: Color(0xFF2D3447))),
-                //  Text('${'Use in:'} ${daysUntilExpiration(item)} ${'days'}',
-                //      maxLines: 1,
-                //      overflow: TextOverflow.ellipsis,
-                //      style: TextStyle(fontSize: 15.0, color: Color(0xFF2D3447))),
+                    style: TextStyle(fontSize: 13.0, color: Color(0xFF2D3447))),
+                Text('${'Use in:'} ${daysUntilExpiration(item)} ${'days'}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13.0, color: Color(0xFF2D3447))),
               ],
             ))
       ],

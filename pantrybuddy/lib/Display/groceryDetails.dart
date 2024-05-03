@@ -78,9 +78,8 @@ class _FoodDetailsState extends State<ItemDetails> {
                       log("PRESSED");
                       final uid = FirebaseAuth.instance.currentUser!.uid;
                       String inventoryID = await fetchPantryID();
-                      String indexStr = widget.index.toString();
                       DataSnapshot dbsnapshot = await dbRef
-                          .child("foodinventories/$inventoryID")
+                          .child("foodInventories/$inventoryID")
                           .get();
 
                       Map<String, dynamic> jsonData = {};
@@ -101,9 +100,9 @@ class _FoodDetailsState extends State<ItemDetails> {
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
 
                       pantry.groceryItems[widget.index].quantity =
-                          _quantityController.text as int;
+                          int.parse(_quantityController.text);
                       dbRef
-                          .child("foodinventories/$inventoryID")
+                          .child("foodInventories/$inventoryID")
                           .update(pantry.toJson());
 
                       Navigator.of(context).pushReplacement(

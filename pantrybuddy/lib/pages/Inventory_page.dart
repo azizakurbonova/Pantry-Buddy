@@ -98,7 +98,7 @@ class _InventoryPageState extends State<InventoryPage> {
             if (!snapshot.hasData) {
               return const CircularProgressIndicator();
             } else {
-              log("WE HAVE VALUES");
+              //log("WE HAVE VALUES");
               var databaseEvent = snapshot.data!;
               var databaseSnapshot = databaseEvent.snapshot;
               String inventoryID = databaseSnapshot.value as String;
@@ -114,14 +114,14 @@ class _InventoryPageState extends State<InventoryPage> {
                       var dbevent = snapshot2.data!;
                       var dbsnapshot = dbevent.snapshot;
                       for (var item in dbsnapshot.children) {
-                        log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+                        //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
                         jsonData[item.key.toString()] = item.value;
                       }
                       List<dynamic> groceryJsons = [];
                       for (var map in jsonData["groceryItems"]) {
                         Map<String, dynamic> groceryJson = {};
                         for (var key in map.keys) {
-                          log("translating: ${key.toString()}->${map[key].toString()}");
+                          //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
                         groceryJsons.add(groceryJson);
