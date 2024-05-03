@@ -72,7 +72,6 @@ class _FoodDetailsState extends State<ItemDetails> {
                   ElevatedButton(
                     onPressed: () async {
                       log("PRESSED");
-                      final uid = FirebaseAuth.instance.currentUser!.uid;
                       String inventoryID = await fetchPantryID();
                       DataSnapshot dbsnapshot = await dbRef
                           .child("foodInventories/$inventoryID")
@@ -113,7 +112,6 @@ class _FoodDetailsState extends State<ItemDetails> {
                   ElevatedButton(
                     onPressed: () async {
                       FoodInventory pantry = await fetchPantry();
-                      log("zzz" + pantry.groceryItems.length.toString());
                       for (int x = 0; x < pantry.groceryItems.length; x++) {
                         if (pantry.groceryItems[x].itemId ==
                             widget.item.itemId) {
@@ -121,13 +119,11 @@ class _FoodDetailsState extends State<ItemDetails> {
                           break;
                         }
                       }
-                      log("zzz" + pantry.groceryItems.length.toString());
                       String inventoryID = pantry.inventoryId as String;
                       dbRef
                           .child("foodInventories/$inventoryID/")
                           .update(pantry.toJson());
                       pantry = await fetchPantry();
-                      log("zzz" + pantry.groceryItems.length.toString());
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) {
                         return InventoryPage();

@@ -28,7 +28,7 @@ class _InventoryPageState extends State<InventoryPage> {
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
   String code = 'n/a';
   late Future pantryID;
-  TextEditingController searchText = TextEditingController();
+  TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
@@ -47,6 +47,17 @@ class _InventoryPageState extends State<InventoryPage> {
 
   String printLatestValue(String text) {
     return text;
+  }
+
+  List<GroceryItem> filterByName(List<GroceryItem> groceries) {
+    log("FILTERING!!!!!");
+    List<GroceryItem> filteredList = [];
+    for (int x = 0; x < groceries.length; x++) {
+      if (groceries[x].name.contains(searchController.text)) {
+        filteredList.add(groceries[x]);
+      }
+    }
+    return filteredList;
   }
 
   @override
@@ -94,6 +105,28 @@ class _InventoryPageState extends State<InventoryPage> {
       backgroundColor: Colors.green[200],
       body: SafeArea(
           child: Column(children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(40.0)),
+              child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    log(searchController.text);
+                  },
+                  decoration: const InputDecoration(
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      hintText: "Search",
+                      hintStyle: TextStyle(fontSize: 20.0),
+                      icon: Icon(Icons.search),
+                      border: InputBorder.none))),
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.02),
         Expanded(
             child: Container(
                 child: StreamBuilder(
@@ -141,30 +174,13 @@ class _InventoryPageState extends State<InventoryPage> {
                                 log(pantry.groceryItems.length.toString());
                                 //If you're reading this i suffered for this :_:
                                 return GroceryList(
-                                    groceries: pantry.groceryItems,
-                                    filter: searchText.text);
+                                    groceries:
+                                        filterByName(pantry.groceryItems));
                               }
                             });
                       }
                     }))),
       ])),
-
-      //body: FutureBuilder(
-      //    future: pantryID,
-      //    builder: (context, snapshot) {
-      //      switch (snapshot.connectionState) {
-      //        case ConnectionState.none:
-      //        //return Text("None");
-      //        case ConnectionState.waiting:
-      //        //return Text("Waiting");
-      //        case ConnectionState.active:
-      //          //return Text("Active");
-      //          return CircularProgressIndicator();
-      //        case ConnectionState.done:
-      //          log(snapshot.data);
-      //          return Text(snapshot.data);
-      //      }
-      //    }),
     );
   }
 }

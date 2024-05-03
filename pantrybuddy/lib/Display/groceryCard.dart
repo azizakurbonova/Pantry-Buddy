@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/Display/groceryDetails.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/Display/groceryDescription.dart';
+import 'dart:developer';
 
 class GroceryCard extends StatelessWidget {
   final GroceryItem item;
