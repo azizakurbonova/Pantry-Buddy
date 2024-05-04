@@ -232,9 +232,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
                     children: [
                       SizedBox(
                         //month
-                        width: 150,
+                        width: 120,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
                           child: DropdownButtonFormField<int>(
                             value: selectedMonth,
                             onChanged: (value) {
@@ -274,9 +274,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
                       ),
                       SizedBox(
                         //day
-                        width: 150,
+                        width: 120,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
                           child: DropdownButtonFormField<int>(
                             value: selectedDay,
                             onChanged: (value) {
@@ -316,9 +316,9 @@ class _ManualAddPageState extends State<ManualAddPage> {
                       ),
                       SizedBox(
                         //year
-                        width: 150,
+                        width: 120,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
                           child: DropdownButtonFormField<int>(
                             value: selectedYear,
                             onChanged: (value) {
@@ -404,8 +404,8 @@ class _ManualAddPageState extends State<ManualAddPage> {
               ),
             ),
           ),
+          ),
         ),
-      ),
-    );
+      );
   }
 }

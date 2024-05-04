@@ -61,6 +61,11 @@ class FoodInventory {
     groceryItems.add(item);
   }
 
+  void appendUser(String userId) {
+    users.add(userId);
+  }
+
+  //i think set rewrites. we'd do .push().set(userToAdd)?
   bool shareAccess(String currentUserId, String userToAdd) {
     if (currentUserId == owner) {
       if (!users.contains(userToAdd)) {
