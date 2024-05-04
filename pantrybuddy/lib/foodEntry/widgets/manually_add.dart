@@ -11,6 +11,7 @@ import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'dart:developer';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:intl/intl.dart';
 
 class ManualEntryForm extends StatefulWidget {
@@ -217,7 +218,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   List<Widget> _buildActions(BuildContext context) {
-    bool isProductNameRequired = (selectedNameAll! == "N/A" ||
+    bool isProductNameRequired = (selectedNameAll == "N/A" ||
         (','.allMatches(selectedNameAll!).length > 1));
 
     bool isValid = _dateController.text.isNotEmpty &&

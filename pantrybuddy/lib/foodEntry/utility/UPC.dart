@@ -51,7 +51,12 @@ Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int quantity) {
-  final Map nutrition = json.decode(product?['nutrition']);
+  var nutrition = product?['nutrition'];
+
+  // Dynamically build the nutritional information string
+  var nutritionalDetails = nutrition.entries.map((entry) {
+    return "${entry.key}: ${entry.value}";
+  }).join('; ');
 
   return GroceryItem(
       inventoryID: inventoryID,
