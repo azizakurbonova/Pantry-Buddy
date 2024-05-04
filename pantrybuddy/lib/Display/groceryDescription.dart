@@ -16,30 +16,31 @@ class GroceryItemDescription extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.name,
-                  style: const TextStyle(
-                      fontSize: 13.0,
-                      color: Color(0xFF2D3447),
-                      fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  //overflow: TextOverflow.ellipsis
-                ),
+                Text(item.name,
+                    style: const TextStyle(
+                        fontSize: 13.0,
+                        color: Color(0xFF2D3447),
+                        fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
                 Text('Quantity: ${(item.quantity)}',
                     maxLines: 1,
-                    //overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 13.0, color: Color(0xFF2D3447))),
                 Text(
                     '${'Best before:'} ${item.expirationDate.toIso8601String().substring(0, 10)}',
                     maxLines: 1,
-                    //overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 13.0,
                         color: Color.fromARGB(255, 45, 71, 55))),
-                Text('${'Use in:'} ${daysUntilExpiration(item)} ${'days'}',
+                Text(
+                    daysUntilExpiration(item) >= 0
+                        ? '${'Use in:'} ${daysUntilExpiration(item)} ${'days'}'
+                        : '${-1 * daysUntilExpiration(item)} ${' days expired'}',
                     maxLines: 1,
-                    //overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 13.0, color: Color(0xFF2D3447))),
               ],
