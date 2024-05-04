@@ -13,7 +13,9 @@ import 'package:pantrybuddy/pages/inventory_page.dart';
 
 class BarcodeEntryPage extends StatefulWidget {
   final String barcode;
-  BarcodeEntryPage({Key? key, required this.barcode}) : super(key: key);
+  final product;
+  BarcodeEntryPage({Key? key, required this.barcode, required this.product})
+      : super(key: key);
 
   @override
   _BarcodeEntryPageState createState() => _BarcodeEntryPageState();
@@ -28,8 +30,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
   @override
   void initState() async {
     super.initState();
-    final product = await fetchProductByUPC(widget.barcode);
-    _scannedProduct = product!['title'].toString();
+    _scannedProduct = widget.product!['title'].toString();
   }
 
   final user = FirebaseAuth.instance.currentUser!;

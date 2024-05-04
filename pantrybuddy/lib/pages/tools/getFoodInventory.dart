@@ -7,7 +7,6 @@ import 'dart:developer';
 
 Future<FoodInventory> fetchPantry() async {
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-  final uid = FirebaseAuth.instance.currentUser!.uid;
   String inventoryID = await fetchPantryID();
   DataSnapshot dbsnapshot =
       await dbRef.child("foodInventories/$inventoryID").get();

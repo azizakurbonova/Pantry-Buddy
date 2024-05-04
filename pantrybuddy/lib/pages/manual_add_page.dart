@@ -53,11 +53,11 @@ class _ManualAddPageState extends State<ManualAddPage> {
     'Other',
   ];
   String? selectedCat;
-  final List<int> quantityList = new List<int>.generate(15, (i) => i + 1);
+  final List<int> quantityList = List<int>.generate(15, (i) => i + 1);
   int? selectedQuantity;
-  final List<int> monthList = new List<int>.generate(12, (i) => i + 1);
+  final List<int> monthList = List<int>.generate(12, (i) => i + 1);
   int? selectedMonth;
-  final List<int> dayList = new List<int>.generate(31, (i) => i + 1);
+  final List<int> dayList = List<int>.generate(31, (i) => i + 1);
   int? selectedDay;
   final List<int> yearList = [
     //this year and up to seven years in future
@@ -404,8 +404,8 @@ class _ManualAddPageState extends State<ManualAddPage> {
               ),
             ),
           ),
-          ),
         ),
-      );
+      ),
+    );
   }
 }
