@@ -71,7 +71,11 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   List<Widget> _buildFormFields(BuildContext context) {
-    bool isProductNameEnabled = true;
+    bool isProductNameRequired = (selectedNameAll == "N/A" ||
+        (','.allMatches(selectedNameAll!).length >
+            1)); //if product type is N/A or is a list of items
+
+    //product name is optional field except required in certain cases
 
     return [
       DropdownButtonFormField<String>(
@@ -93,6 +97,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
             value == null || value.isEmpty ? "Category is required" : null,
         decoration: InputDecoration(
           labelText: "Select Category",
+          errorText: selectedCategory == null ? 'Category is required' : null,
           contentPadding:
               EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         ),
@@ -118,6 +123,8 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
               : null,
           decoration: InputDecoration(
             labelText: "Select Product Type",
+            errorText:
+                selectedNameAll == null ? "Product type is required" : null,
             contentPadding:
                 EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           ),
@@ -126,21 +133,12 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       SizedBox(height: 20),
       TextFormField(
         controller: productNameController,
-        enabled: isProductNameEnabled,
         decoration: InputDecoration(
             labelText: 'Product Name',
             hintText: 'Enter product name',
-            errorText: (productNameController.text.isEmpty &&
-                    (selectedNameAll == "N/A" || selectedNameAll == null))
-                ? 'Product name is required'
-                : null,
+            errorText:
+                isProductNameRequired ? 'Product name is required' : null,
             labelStyle: TextStyle(color: Colors.black)),
-        validator: (value) {
-          if (isProductNameEnabled && (value == null || value.isEmpty)) {
-            return 'Product name is required';
-          }
-          return null;
-        },
       ),
       SizedBox(height: 20),
       TextFormField(
@@ -318,6 +316,8 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     _quantityController.dispose();
     productNameController.dispose();
     _dateController.dispose();
+    selectedCategory = null;
+    selectedNameAll = null;
     super.dispose();
   }
 }
