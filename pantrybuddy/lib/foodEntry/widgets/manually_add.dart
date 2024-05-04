@@ -265,7 +265,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
             );
           }
         },
-        child: const Text('Add to Pantry'),
+        child: const Text('Submit'),
       ),
     ];
   }
@@ -300,9 +300,6 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     );
 
     try {
-      FoodInventory pantry = await fetchPantry();
-      String pantryID =
-          pantry.inventoryId as String; // Ensure pantryID is not null
       log("length before" + pantry.groceryItems.length.toString());
       pantry.appendGroceryItem(newItem);
       log("length after" + pantry.groceryItems.length.toString());
@@ -312,6 +309,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     }
 
     _quantityController.clear();
+    _dateController.clear();
   }
 
   @override

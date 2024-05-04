@@ -5,25 +5,52 @@ import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/foodEntry/utility/UPC.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
+import 'dart:developer';
 
 //Stateful Widget, calling scanAndFetchProduct() from upc_ean to initiate
 //barcode scanning process, generates the JSON map for Grocery Item,
 //quantity and expiration date needs to be updated with manual input from user
 
 class BarcodeScanner extends StatefulWidget {
-  const BarcodeScanner ({Key? key}) : super(key: key);
+  const BarcodeScanner({Key? key}) : super(key: key);
   @override
-
   State<BarcodeScanner> createState() => _BarcodeScannerState();
 }
 
 class _BarcodeScannerState extends State<BarcodeScanner> {
   GroceryItem? currentGroceryItem;
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+
+  final user = FirebaseAuth.instance.currentUser!;
+  DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AlertDialog(
+      title: Text("Scan Barcode"),
+      content: Form(
+        key: GlobalKey<FormState>(),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _buildFormFields(context),
+          ),
+        ),
+      ),
+      actions: _buildActions(context),
+    );
+  }
+
+  List<Widget> _buildFormFields(BuildContext context) {
+    return [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
       appBar: AppBar(
         title: const Text('Scan Grocery Item'),
       ),
@@ -37,13 +64,44 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
               keyboardType: TextInputType.number,
               // Optional: Add validation for input
             ),
-            ElevatedButton(
-              onPressed: () async => await setExpirationDate(context),
-              child: const Text('Set Expiration Date'),
-            ),
+            TextField(
+                controller:
+                    _dateController, //editing controller of this TextField
+                decoration: InputDecoration(
+                    icon: Icon(Icons.calendar_today), //icon of text field
+                    labelText: "Enter Expiration Date", //label text of field,
+                    errorText: _dateController.text.isEmpty
+                        ? 'Expiration date is required'
+                        : null,
+                    labelStyle: TextStyle(color: Colors.black)),
+                readOnly: true, // when true user cannot edit text
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(), //get today's date
+                      firstDate: DateTime
+                          .now(), //DateTime.now() - not to allow to choose before today.
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 25)));
+
+                  if (pickedDate != null) {
+                    String formattedDate = DateFormat('yyyy-MM-dd').format(
+                        pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+                    debugPrint(
+                        formattedDate); //formatted date output using intl package =>  2022-07-04
+
+                    setState(() {
+                      _dateController.text =
+                          formattedDate; //set foratted date to TextField value.
+                    });
+                  } else {
+                    debugPrint("Date is not selected");
+                  }
+                }),
             // Additional UI elements as needed
           ],
-          ElevatedButton( //scan UPC/EAN barcode
+          ElevatedButton(
+            //scan UPC/EAN barcode
             onPressed: () async => await scanAndAddProduct(),
             child: const Text('Scan Product'),
           ),
@@ -53,67 +111,37 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
   }
 
   Future<void> scanAndAddProduct() async {
-    GroceryItem? item = await scanAndFetchProduct();
+    final DateTime expirationDate = _dateController.text.isNotEmpty
+        ? DateTime.parse(_dateController.text)
+        : DateTime.now();
 
-    if (item != null) {
-      int quantity = int.tryParse(_quantityController.text) ?? 1; // Default to 1 if parsing fails
-      
+    final int quantity = _quantityController.text.isNotEmpty
+        ? int.parse(_quantityController.text)
+        : 1;
 
-      User? user = FirebaseAuth.instance.currentUser;
-      String? userId = user?.uid;
+    FoodInventory pantry = await fetchPantry();
+    String pantryID = pantry.inventoryId as String;
 
-      if (user != null) {
-      // Fetch inventoryId from user's database entry, field is "pantry"
-      final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
-      final DataSnapshot userSnapshot = await dbref.child("users/$user.uid/inventoryId").get();
-      String pantry = userSnapshot.value.toString();
+    GroceryItem? newItem = await scanAndFetchProduct();
 
-      FoodInventory inventoryManager = FoodInventory(
-        owner : userId!,
-        inventoryId : pantry
-      );
-
-      // Write to groceryItems DB
-      DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
-      DatabaseReference newInventoryRef = ref.push();
-      String? itemId = newInventoryRef.key;
-      
-      setState(() {
-        currentGroceryItem = item;
-        currentGroceryItem!.quantity = quantity; // Update quantity based on input
-        currentGroceryItem!.itemId = itemId;
-        currentGroceryItem!.inventoryID = pantry;
-      });
-
-      //Update GroceryItems DB
-      await ref.push().set(currentGroceryItem!.toJson());
-
-      //Update FoodInventory DB
-      inventoryManager.addGroceryItem(currentGroceryItem!);
+    try {
+      log("length before" + pantry.groceryItems.length.toString());
+      pantry.appendGroceryItem(newItem!);
+      log("length after" + pantry.groceryItems.length.toString());
+      dbRef.child("foodInventories/$pantryID").update(pantry.toJson());
+    } catch (e) {
+      debugPrint("Error adding item to pantry: $e");
     }
-      _quantityController.clear();
-  }
-}
 
-  Future<void> setExpirationDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 5)), // Set a range up to five years
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        currentGroceryItem!.expirationDate = pickedDate;
-      });
-    }
+    _quantityController.clear();
+    _dateController.clear();
   }
 
   //to avoid memory leak, dispose of quantityController
   @override
   void dispose() {
     _quantityController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 }

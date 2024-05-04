@@ -159,9 +159,6 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
 
     if (item != null) {
       try {
-        FoodInventory pantry = await fetchPantry();
-        String pantryID =
-            pantry.inventoryId as String; // Ensure pantryID is not null
         log("length before" + pantry.groceryItems.length.toString());
         pantry.appendGroceryItem(item);
         log("length after" + pantry.groceryItems.length.toString());
@@ -222,12 +219,12 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
               TextFormField(
                 controller: _quantityController,
                 decoration: InputDecoration(
-                  labelText: 'Quantity',
-                  errorText: (_quantityController.text.isEmpty ||
-                          int.parse(_quantityController.text) <= 0)
-                      ? 'Quantity is required'
-                      : null,
-                ),
+                    labelText: 'Quantity',
+                    errorText: (_quantityController.text.isEmpty ||
+                            int.parse(_quantityController.text) <= 0)
+                        ? 'Quantity is required'
+                        : null,
+                    labelStyle: TextStyle(color: Colors.black)),
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter
@@ -249,12 +246,12 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                   controller:
                       _dateController, //editing controller of this TextField
                   decoration: InputDecoration(
-                    icon: Icon(Icons.calendar_today), //icon of text field
-                    labelText: "Enter Expiration Date", //label text of field,
-                    errorText: _dateController.text.isEmpty
-                        ? 'Expiration date is required'
-                        : null,
-                  ),
+                      icon: Icon(Icons.calendar_today), //icon of text field
+                      labelText: "Enter Expiration Date", //label text of field,
+                      errorText: _dateController.text.isEmpty
+                          ? 'Expiration date is required'
+                          : null,
+                      labelStyle: TextStyle(color: Colors.black)),
                   readOnly: true, // when true user cannot edit text
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
@@ -334,7 +331,7 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                   );
                 }
               },
-              child: const Text('Add to Inventory'),
+              child: const Text('Submit'),
             ),
           ],
         );
