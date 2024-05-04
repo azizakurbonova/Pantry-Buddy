@@ -6,8 +6,6 @@ import "package:pantrybuddy/foodEntry/utility/MANUAL.dart";
 import "package:pantrybuddy/models/grocery_item.dart";
 import 'package:pantrybuddy/models/food_inventory.dart';
 import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart";
-import 'package:path/path.dart' as path;
-import 'dart:io';
 import "package:pantrybuddy/foodEntry/utility/csv.dart";
 
 class ManualEntryForm extends StatefulWidget {
@@ -35,17 +33,10 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   Future<void> loadData() async {
-    // Load and parse the categories and expiration data from CSV files.
-    var currDir = Directory.current.path;
-    String filePath =
-        path.join(currDir, 'lib', 'foodEntry', 'externalDB', 'foodKeeper.csv');
+    List<List<dynamic>> csvData = await loadCsv('assets/foodKeeper.csv');
+    List<Map<String, dynamic>> expirations = parseCsv(csvData);
 
-    final expirationData = await loadCsv(filePath);
-
-    // Create lists of maps to hold the parsed data.
-    List<Map<String, dynamic>> csvData = parseCsv(expirationData);
-
-    var dropdownData = await prepareDropdownData(csvData);
+    var dropdownData = await prepareDropdownData(expirations);
     setState(() {
       categoryNames = dropdownData['Category_Name'];
       nameAllOptions = dropdownData['Name_ALL'];
@@ -61,16 +52,21 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
           onChanged: (value) {
             setState(() {
               selectedCategory = value;
-              selectedNameAllOptions = nameAllOptions[value];
+              selectedNameAllOptions = nameAllOptions[value] ?? [];
               selectedNameAll = null; // Reset the L2 dropdown when L1 changes
             });
           },
-          items: categoryNames.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Text(category),
-            );
-          }).toList(),
+          items: categoryNames.isNotEmpty
+              ? categoryNames.map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList()
+              : [
+                  const DropdownMenuItem<String>(
+                      value: 'Loading...', child: Text('Loading...'))
+                ],
           hint: const Text("Select a Category"),
         ),
         if (selectedCategory != null && selectedCategory != "N/A") ...[
@@ -169,7 +165,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
       final DataSnapshot userSnapshot =
           await dbref.child("users/$user.uid/inventoryId").get();
-      
+
       String pantry = userSnapshot.value.toString();
 
       // Write to groceryItems DB
@@ -179,8 +175,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
 
       GroceryItem newItem = GroceryItem(
         inventoryID: pantry,
-        itemId:
-            itemId, 
+        itemId: itemId,
         name: itemName,
         category: [category],
         quantity: quantity,

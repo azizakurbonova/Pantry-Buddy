@@ -1,15 +1,16 @@
-import 'dart:io';
-import 'package:csv/csv.dart' as csv_lib;
-import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 
-// Load CSV data from a file path and return as a list of lists.
-Future<List<List<dynamic>>> loadCsv(String filePath) async {
-  final input = File(filePath).openRead();
-  return await input.transform(utf8.decoder).transform(const csv_lib.CsvToListConverter()).toList();
+Future<List<List<dynamic>>> loadCsv(String assetPath) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final csvString = await rootBundle.loadString(assetPath);
+  List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
+  return csvData;
 }
 
-// Parse the CSV data into a list of maps for easier data manipulation.
 List<Map<String, dynamic>> parseCsv(List<List<dynamic>> csvData) {
+  WidgetsFlutterBinding.ensureInitialized();
   List<String> headers = csvData[0].cast<String>();
   List<Map<String, dynamic>> data = [];
   for (final row in csvData.skip(1)) {
