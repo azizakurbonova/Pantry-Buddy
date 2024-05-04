@@ -54,7 +54,8 @@ Future<List<Spoonacular>> autocompleteSearch_helper(String apiUrl) async {
 
 //once item is selected in the autosearch, have to retrieve more information
 //example: https://api.spoonacular.com/food/products/22347?apiKey=41a82396931e43039ec29a6356ec8dc1
-Future<GroceryItem?> idSearch_products(String id) async {
+Future<GroceryItem?> idSearch_products(
+    String id, String inventoryID, DateTime expiration, int setQuantity) async {
   final String apiUrl =
       'https://api.spoonacular.com/food/products/$id?apiKey=41a82396931e43039ec29a6356ec8dc1';
   try {
@@ -64,7 +65,8 @@ Future<GroceryItem?> idSearch_products(String id) async {
       if (product != null) {
         debugPrint('Product Name: ${product['title']}');
 
-        return createGroceryItem_Product(product);
+        return createGroceryItem_Product(
+            product, inventoryID, expiration, setQuantity);
       }
       return null;
     } else {
@@ -80,7 +82,8 @@ Future<GroceryItem?> idSearch_products(String id) async {
 }
 
 //example: https://api.spoonacular.com/food/ingredients/9266/information?apiKey=41a82396931e43039ec29a6356ec8dc1&amount=1
-Future<GroceryItem?> idSearch_ingredients(String id) async {
+Future<GroceryItem?> idSearch_ingredients(
+    String id, String inventoryID, DateTime expiration, int setQuantity) async {
   final String apiUrl =
       'https://api.spoonacular.com/food/ingredients/$id/information?apiKey=41a82396931e43039ec29a6356ec8dc1&amount=1';
   try {
@@ -90,7 +93,8 @@ Future<GroceryItem?> idSearch_ingredients(String id) async {
       if (product != null) {
         debugPrint('Product Name: ${product['name']}');
 
-        return createGroceryItem_Ingredient(product);
+        return createGroceryItem_Ingredient(
+            product, inventoryID, expiration, setQuantity);
       }
       return null;
     } else {
@@ -106,7 +110,8 @@ Future<GroceryItem?> idSearch_ingredients(String id) async {
 }
 
 //example: https://api.spoonacular.com/food/menuItems/424571?apiKey=41a82396931e43039ec29a6356ec8dc1
-Future<GroceryItem?> idSearch_menuItems(String id) async {
+Future<GroceryItem?> idSearch_menuItems(
+    String id, String inventoryID, DateTime expiration, int setQuantity) async {
   final String apiUrl =
       'https://api.spoonacular.com/food/menuItems/$id?apiKey=41a82396931e43039ec29a6356ec8dc1';
   try {
@@ -116,7 +121,8 @@ Future<GroceryItem?> idSearch_menuItems(String id) async {
       if (product != null) {
         debugPrint('Product Name: ${product['title']}');
 
-        return createGroceryItem_Menu(product);
+        return createGroceryItem_Menu(
+            product, inventoryID, expiration, setQuantity);
       }
       return null;
     } else {
@@ -132,7 +138,8 @@ Future<GroceryItem?> idSearch_menuItems(String id) async {
 }
 
 // Function to parse JSON and create a GroceryItem
-GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product) {
+GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
+    String inventoryID, DateTime expiration, int setQuantity) {
   var nutrition = product?['nutrition'];
 
   // Dynamically build the nutritional information string
@@ -141,14 +148,13 @@ GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product) {
   }).join('; ');
 
   return GroceryItem(
-      inventoryID: "temp",
+      inventoryID: inventoryID,
       itemId: product?['id'].toString(),
       name: product?['title'] ?? 'No title available',
       category: product?['breadcrumbs'] ?? 'Unknown category',
-      quantity: 1, // Default quantity
+      quantity: setQuantity, // Default quantity
       dateAdded: DateTime.now(),
-      expirationDate: DateTime.now()
-          .add(const Duration(days: 5)), // Example expiration date
+      expirationDate: expiration,
       itemIdType: ItemIdType.AUTO,
       nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
@@ -156,7 +162,8 @@ GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product) {
 }
 
 // Function to parse JSON and create a GroceryItem
-GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product) {
+GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
+    String inventoryID, DateTime expiration, int setQuantity) {
   var nutrition = product?['nutrition'];
 
   // Dynamically build the nutritional information string
@@ -165,14 +172,13 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product) {
   }).join('; ');
 
   return GroceryItem(
-      inventoryID: "temp",
+      inventoryID: inventoryID,
       itemId: product?['id'].toString(),
       name: product?['name'] ?? 'No name available',
       category: product?['categoryPath'] ?? 'Unknown category',
-      quantity: 1, // Default quantity
+      quantity: setQuantity,
       dateAdded: DateTime.now(),
-      expirationDate: DateTime.now()
-          .add(const Duration(days: 5)), // Example expiration date
+      expirationDate: expiration,
       itemIdType: ItemIdType.AUTO,
       nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
@@ -180,7 +186,8 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product) {
 }
 
 // Function to parse JSON and create a GroceryItem
-GroceryItem createGroceryItem_Product(Map<String, dynamic>? product) {
+GroceryItem createGroceryItem_Product(Map<String, dynamic>? product,
+    String inventoryID, DateTime expiration, int setQuantity) {
   var nutrition = product?['nutrition'];
 
   // Dynamically build the nutritional information string
@@ -189,14 +196,13 @@ GroceryItem createGroceryItem_Product(Map<String, dynamic>? product) {
   }).join('; ');
 
   return GroceryItem(
-      inventoryID: "temp",
+      inventoryID: inventoryID,
       itemId: product?['id'].toString(),
       name: product?['title'] ?? 'No title available',
       category: product?['breadcrumbs'] ?? 'Unknown category',
-      quantity: 1, // Default quantity
+      quantity: setQuantity, // Default quantity
       dateAdded: DateTime.now(),
-      expirationDate:
-          DateTime.now().add(Duration(days: 5)), // Example expiration date
+      expirationDate: expiration, // Example expiration date
       itemIdType: ItemIdType.AUTO,
       nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,

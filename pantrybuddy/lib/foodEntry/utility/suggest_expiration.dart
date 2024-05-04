@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:csv/csv.dart' as csv_lib;
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/foodEntry/widgets/auto_search.dart';
-import 'package:path/path.dart' as path;
 import 'package:string_similarity/string_similarity.dart';
 import "package:pantrybuddy/foodEntry/utility/csv.dart";
 
@@ -109,7 +105,7 @@ Future<String> suggestExpiration_Auto(
     String starting;
 
     // Construct the expiration suggestion string if a matching guideline is found.
-    if (result.bestMatch.rating! > 0.4) {
+    if (result.bestMatch.rating! > 0.8) {
       expiration = expirations[result.bestMatchIndex];
       starting =
           'Based on similar expiration guidelines for ${result.bestMatch.target.toString().toLowerCase().trim()}, this item should be consumed within: \n';
