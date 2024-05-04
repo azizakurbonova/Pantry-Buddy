@@ -33,6 +33,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   @override
   void dispose() {
+    searchController.dispose();
     super.dispose();
   }
 
@@ -101,11 +102,16 @@ class _InventoryPageState extends State<InventoryPage> {
             label: 'Scan Barcode',
             onTap: () async {
               final barcode = await scanBarcode();
+              if (barcode == null) {
+                return;
+              }
               if (barcode != 'Unknown' && barcode != '-1') {
                 // If barcode is successfully scanned, navigate to the entry page
+                final product = await fetchProductByUPC(barcode);
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => BarcodeEntryPage(barcode: barcode!),
+                    builder: (context) =>
+                        BarcodeEntryPage(barcode: barcode!, product: product),
                   ),
                 );
               }
