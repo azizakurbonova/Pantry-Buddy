@@ -25,6 +25,8 @@ void main() {
 //Includes methods to update the database directly
 class FoodInventory {
   String? inventoryId;
+  int consumed;
+  int discarded;
   String
       owner; //user who initialized the food inventory and is the only one that can share access to the inventory with others
   List<String> users;
@@ -33,6 +35,8 @@ class FoodInventory {
   FoodInventory({
     this.inventoryId,
     required this.owner,
+    this.consumed = 0,
+    this.discarded = 0,
     List<GroceryItem>? groceryItems,
     List<String>? users,
   })  : groceryItems = groceryItems ?? [],
@@ -108,13 +112,14 @@ class FoodInventory {
   // Static method to create a FoodInventory object from a JSON map
   static FoodInventory fromJson(Map<String, dynamic> json) {
     return FoodInventory(
-      inventoryId: json['inventoryId'],
-      owner: json['owner'],
-      groceryItems: (json['groceryItems'] as List)
-          .map((item) => GroceryItem.fromJson(item))
-          .toList(),
-      users: List<String>.from(json['users']),
-    );
+        inventoryId: json['inventoryId'],
+        owner: json['owner'],
+        groceryItems: (json['groceryItems'] as List)
+            .map((item) => GroceryItem.fromJson(item))
+            .toList(),
+        users: List<String>.from(json['users']),
+        consumed: json['consumed'],
+        discarded: json['discarded']);
   }
 
   Map<String, dynamic> toJson() {
@@ -123,6 +128,8 @@ class FoodInventory {
       'owner': owner,
       'users': users,
       'groceryItems': groceryItems.map((item) => item.toJson()).toList(),
+      'consumed': consumed,
+      'discarded': discarded,
     };
   }
 }

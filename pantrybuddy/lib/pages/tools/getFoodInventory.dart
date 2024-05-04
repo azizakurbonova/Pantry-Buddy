@@ -14,14 +14,14 @@ Future<FoodInventory> fetchPantry() async {
 
   Map<String, dynamic> jsonData = {};
   for (var item in dbsnapshot.children) {
-    log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+    //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
     jsonData[item.key.toString()] = item.value;
   }
   List<dynamic> groceryJsons = [];
   for (var map in jsonData["groceryItems"]) {
     Map<String, dynamic> groceryJson = {};
     for (var key in map.keys) {
-      log("translating: ${key.toString()}->${map[key].toString()}");
+      //log("translating: ${key.toString()}->${map[key].toString()}");
       groceryJson[key.toString()] = map[key];
     }
     groceryJsons.add(groceryJson);

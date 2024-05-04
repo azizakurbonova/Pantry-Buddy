@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/Display/groceryDetails.dart';
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'package:pantrybuddy/Display/groceryDescription.dart';
+import 'dart:developer';
 
 class GroceryCard extends StatelessWidget {
   final GroceryItem item;
@@ -14,7 +15,7 @@ class GroceryCard extends StatelessWidget {
         child: Card(
           color: daysUntilExpiration(item) < 0 ? Colors.red[200] : Colors.white,
           child: InkWell(
-            child: Container(
+            child: SizedBox(
                 height: 90,
                 child: Padding(
                   padding: const EdgeInsets.all(5),

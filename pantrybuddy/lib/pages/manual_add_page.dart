@@ -363,7 +363,7 @@ class _ManualAddPageState extends State<ManualAddPage> {
                   const SizedBox(height: 35),
                   ElevatedButton(
                       onPressed: () async {
-                        log("TRYING");
+                        //log("TRYING");
                         FoodInventory pantry = await fetchPantry();
                         String pantryID = pantry.inventoryId as String;
                         GroceryItem groceryItem = GroceryItem(
@@ -376,12 +376,12 @@ class _ManualAddPageState extends State<ManualAddPage> {
                                 itemIdType: ItemIdType.MANUAL),
                             invento;
                         groceryItem.visible = true;
-                        log("length before" +
-                            pantry.groceryItems.length.toString());
+                        //log("length before" +
+                        // pantry.groceryItems.length.toString());
                         pantry.appendGroceryItem(groceryItem);
                         String inventoryID = pantry.inventoryId as String;
-                        log("length after" +
-                            pantry.groceryItems.length.toString());
+                        //log("length after" +
+                        //  pantry.groceryItems.length.toString());
                         dbRef
                             .child("foodInventories/$inventoryID")
                             .update(pantry.toJson());

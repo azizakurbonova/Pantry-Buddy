@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
 
     // this code reads only once.
     //final readCode = FirebaseDatabase.instance.ref();
-    //final snapshot = await readCode.child('users/$myUser/joinCode').get();
+    //final snapshot = await readCo de.child('users/$myUser/joinCode').get();
 
     String? inventoryId = newInventoryID;
     GroceryItem groceryItem = GroceryItem(
@@ -52,6 +52,8 @@ class _HomePageState extends State<HomePage> {
       owner: user.uid,
       users: [user.uid],
       groceryItems: [groceryItem],
+      consumed: 0,
+      discarded: 0,
     );
 
     // User newUser = User(
