@@ -36,9 +36,10 @@ class GroceryCard extends StatelessWidget {
                           //),
                         ),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.only(left: 30.0),
-                          child: GroceryItemDescription(item: item))
+                      Expanded(
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 30.0),
+                              child: GroceryItemDescription(item: item)))
                     ],
                   ),
                 )),
