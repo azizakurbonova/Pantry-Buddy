@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -103,15 +105,35 @@ class _InventoryPageState extends State<InventoryPage> {
             onTap: () async {
               final barcode = await scanBarcode();
               if (barcode == null) {
-                return;
+                // Show a error dialog if not successful
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Error"),
+                      content: const Text("Barcode scanning not successful"),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) {
+                              return InventoryPage();
+                            })); // Dismiss the dialog
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
               if (barcode != 'Unknown' && barcode != '-1') {
                 // If barcode is successfully scanned, navigate to the entry page
-                final product = await fetchProductByUPC(barcode);
+                final product = await fetchProductByUPC(barcode!);
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>
-                        BarcodeEntryPage(barcode: barcode!, product: product),
+                        BarcodeEntryPage(barcode: barcode, product: product),
                   ),
                 );
               }

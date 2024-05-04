@@ -28,7 +28,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
   String? _scannedProduct;
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     _scannedProduct = widget.product!['title'].toString();
   }
