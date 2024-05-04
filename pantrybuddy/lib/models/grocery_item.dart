@@ -32,10 +32,8 @@ class GroceryItem {
   DateTime? dateConsumed;
   DateTime? dateDiscarded;
   DateTime expirationDate;
-  String? nutriScore;
-  String? ecoScore;
   ItemIdType itemIdType;
-  String? nutritionalInfo;
+  Map? nutritionalInfo;
   bool visible;
   String? image;
   String inventoryID;
@@ -49,8 +47,6 @@ class GroceryItem {
     required this.expirationDate,
     this.dateConsumed,
     this.dateDiscarded,
-    this.nutriScore,
-    this.ecoScore,
     required this.itemIdType,
     this.nutritionalInfo,
     this.visible = true,
@@ -103,8 +99,6 @@ class GroceryItem {
       'dateConsumed': dateConsumed?.toIso8601String(),
       'dateDiscarded': dateDiscarded?.toIso8601String(),
       'expirationDate': expirationDate.toIso8601String(),
-      'nutriScore': nutriScore,
-      'ecoScore': ecoScore,
       'itemIdType': itemIdType.name,
       'nutritionalInfo': nutritionalInfo,
       'visible': visible,
@@ -128,8 +122,6 @@ class GroceryItem {
         dateDiscarded: json['dateDiscarded'] != null
             ? DateTime.parse(json['dateDiscarded'])
             : null,
-        nutriScore: json['nutriScore'],
-        ecoScore: json['ecoScore'],
         itemIdType:
             ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
         nutritionalInfo: json['nutritionalInfo'],

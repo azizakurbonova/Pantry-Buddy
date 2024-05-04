@@ -140,7 +140,7 @@ Future<GroceryItem?> idSearch_menuItems(
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = json.decode(product?['nutrition']);
 
   // Dynamically build the nutritional information string
   var nutritionalDetails = nutrition.entries.map((entry) {
@@ -164,7 +164,7 @@ GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = json.decode(product?['nutrition']);
 
   // Dynamically build the nutritional information string
   var nutritionalDetails = nutrition.entries.map((entry) {
@@ -188,7 +188,7 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Product(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = json.decode(product?['nutrition']);
 
   // Dynamically build the nutritional information string
   var nutritionalDetails = nutrition.entries.map((entry) {
