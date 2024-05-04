@@ -7,7 +7,6 @@ import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/Inventory_page.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
-
 import 'package:pantrybuddy/models/grocery_item.dart';
 import 'dart:developer';
 
@@ -47,20 +46,21 @@ class _FoodDetailsState extends State<ItemDetails> {
     return Scaffold(
         backgroundColor: const Color(0xFF2D3447),
         appBar: AppBar(
-          title: const Text('Item Details',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.w100)),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          //actions: [
-          //  IconButton(
-          //    icon: const Icon(Icons.info, color: Colors.white),
-          //    onPressed: () {},
-          //  )
-          //]
-        ),
+            title: const Text('Item Details',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.w100)),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.info, color: Colors.white),
+                onPressed: () {
+                  if (widget.item.nutritionalInfo != null) {}
+                },
+              )
+            ]),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(50.0),
