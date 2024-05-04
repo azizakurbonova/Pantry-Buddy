@@ -33,7 +33,7 @@ class GroceryItem {
   DateTime? dateDiscarded;
   DateTime expirationDate;
   ItemIdType itemIdType;
-  Map? nutritionalInfo;
+  String? nutritionalInfo;
   bool visible;
   String? image;
   String inventoryID;
@@ -124,7 +124,8 @@ class GroceryItem {
             : null,
         itemIdType:
             ItemIdType.values.firstWhere((e) => e.name == json['itemIdType']),
-        nutritionalInfo: json['nutritionalInfo'],
+        nutritionalInfo:
+            json['nutrition'] != null ? json['nutrition'].toString() : null,
         visible: json['visible'] ?? true,
         image: json['image']);
   }
