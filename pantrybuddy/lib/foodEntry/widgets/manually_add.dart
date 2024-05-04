@@ -218,15 +218,6 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   List<Widget> _buildActions(BuildContext context) {
-    bool isProductNameRequired = (selectedNameAll == "N/A" ||
-        (','.allMatches(selectedNameAll!).length > 1));
-
-    bool isValid = _dateController.text.isNotEmpty &&
-        _quantityController.text.isNotEmpty &&
-        (int.parse(_quantityController.text) > 0) &&
-        (isProductNameRequired && productNameController.text.isNotEmpty) &&
-        (selectedNameAll != null) &&
-        (selectedCategory != null);
     return [
       TextButton(
         onPressed: () => {
@@ -239,7 +230,12 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       ),
       TextButton(
         onPressed: () {
-          if (isValid) {
+          if (_dateController.text.isNotEmpty &&
+              _quantityController.text.isNotEmpty &&
+              (int.parse(_quantityController.text) > 0) &&
+              (selectedNameAll != null ||
+                  selectedNameAll != "N/A" ||
+                  productNameController.text.isNotEmpty)) {
             addEntry(context);
             Navigator.of(context)
                 .pushReplacement(MaterialPageRoute(builder: (context) {
