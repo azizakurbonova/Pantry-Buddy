@@ -26,10 +26,13 @@ class GroceryCard extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           //child: Container(
-                          //  child: Image(
+                          //  child:
+                          //  Image(
                           //      image:
                           //          AssetImage('assets/images/groceries.png'),
-                          //      height: 50.0),
+                          //      height: item.image != null && item.image != ""
+                          //          ? 50.0
+                          //          : 0),
                           //),
                         ),
                       ),
