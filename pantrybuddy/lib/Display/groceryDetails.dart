@@ -44,7 +44,7 @@ class _FoodDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFF2D3447),
+        backgroundColor: Color.fromARGB(153, 104, 127, 185).withOpacity(.5),
         appBar: AppBar(
             title: const Text('Item Details',
                 style: TextStyle(
@@ -67,17 +67,19 @@ class _FoodDetailsState extends State<ItemDetails> {
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text("Name:",
-                  style: TextStyle(fontSize: 25.0, color: Colors.white)),
+                  style: TextStyle(fontSize: 25.0, color: Colors.black)),
               GroceryNameField(
                 nameController: _nameController,
               ),
               const Divider(),
+              const SizedBox(height: 20),
               const Text(
                 'Quantity:',
-                style: TextStyle(fontSize: 25.0, color: Colors.white),
+                style: TextStyle(fontSize: 25.0, color: Colors.black),
               ),
               GroceryQuantityField(quantityController: _quantityController),
               Divider(),
+              const SizedBox(height: 20),
               Column(
                 children: [
                   Row(
@@ -128,6 +130,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                         },
                         child: const Text('Save'),
                       ),
+                      const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () async {
                           FoodInventory pantry = await fetchPantry();
@@ -155,6 +158,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       FoodInventory pantry = await fetchPantry();
@@ -178,6 +182,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                     },
                     child: const Text('Mark as Discarded'),
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       FoodInventory pantry = await fetchPantry();

@@ -56,7 +56,7 @@ class _AccountPageState extends State<AccountPage> {
                     } else {
                       //selectable so can copy paste
                       return SelectableText(
-                        "Your Pantry ID is: ${snapshot.data}\nCopy and paste to share with your friends and have them join your pantry!",
+                        "Your Pantry ID is: ${snapshot.data}\n\nCopy and paste to share with your friends and have them join your pantry!",
                         style: TextStyle(fontSize: 22),
                         textAlign: TextAlign.center,
                       );

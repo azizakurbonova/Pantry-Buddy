@@ -20,16 +20,16 @@ class _FoodNameTextFieldState extends State<GroceryNameField> {
         TextField(
           controller: widget._nameController,
           textAlign: TextAlign.center,
-          cursorColor: Colors.white,
+          cursorColor: Colors.black,
           decoration: const InputDecoration(
               hintText: "Mushrooms, Chicken,...",
               hintStyle: TextStyle(
                   fontStyle: FontStyle.italic,
-                  color: Colors.white30,
+                  color: Colors.black,
                   fontSize: 20.0),
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white))),
-          style: const TextStyle(color: Colors.white, fontSize: 20.0),
+          style: const TextStyle(color: Colors.black, fontSize: 20.0),
         ),
       ],
     );
