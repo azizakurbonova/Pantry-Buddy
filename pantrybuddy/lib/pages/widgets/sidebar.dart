@@ -49,18 +49,20 @@ Widget sideBar(BuildContext context) {
             },
           ),
           ListTile(
-              leading: Icon(Icons.logout, color: Colors.black),
-              title: Text(
-                "Sign Out",
-                style: TextStyle(fontSize: 20, color: Colors.black),
-              ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LoginPage(
-                          showRegisterPage: () {},
-                        )));
-              }),
+            leading: Icon(Icons.logout, color: Colors.black),
+            title: Text(
+              "Sign Out",
+              style: TextStyle(fontSize: 20, color: Colors.black),
+            ),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => LoginPage(showRegisterPage: () {})),
+                (Route<dynamic> route) => false,
+              );
+            },
+          )
         ],
       ),
     ),

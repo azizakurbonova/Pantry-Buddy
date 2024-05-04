@@ -57,12 +57,15 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Add Item to Pantry"),
-      content: Form(
-        key: GlobalKey<FormState>(),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _buildFormFields(context),
+      content: Padding(
+        padding: const EdgeInsets.all(16.0), // Added global padding
+        child: Form(
+          key: GlobalKey<FormState>(),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _buildFormFields(context),
+            ),
           ),
         ),
       ),
