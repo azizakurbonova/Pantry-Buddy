@@ -131,7 +131,6 @@ class _InventoryPageState extends State<DCInventoryPage> {
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
-                      log(pantry.groceryItems.length.toString());
                       return GroceryList(groceries: pantry.groceryItems);
                     }
                   });

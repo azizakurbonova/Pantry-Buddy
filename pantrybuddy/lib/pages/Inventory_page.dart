@@ -5,11 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/Display/groceryList.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
-import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/manual_add_page.dart';
-import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 import 'package:pantrybuddy/pages/widgets/appbar.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
@@ -50,7 +47,6 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   List<GroceryItem> filterByName(List<GroceryItem> groceries) {
-    log("FILTERING!!!!!");
     List<GroceryItem> filteredList = [];
     for (int x = 0; x < groceries.length; x++) {
       if (groceries[x].name.contains(searchController.text)) {
@@ -61,7 +57,6 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   List<GroceryItem> sortByExpirationDate(List<GroceryItem> groceries) {
-    log("SORTING BY EXPIRATION DATE!!!");
     groceries.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
     return groceries;
   }
@@ -122,7 +117,7 @@ class _InventoryPageState extends State<InventoryPage> {
               child: TextField(
                   controller: searchController,
                   onChanged: (value) {
-                    log(searchController.text);
+                    //log(searchController.text);
                   },
                   decoration: const InputDecoration(
                       enabledBorder: InputBorder.none,
@@ -177,7 +172,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                 jsonData["groceryItems"] = groceryJsons;
                                 FoodInventory pantry =
                                     FoodInventory.fromJson(jsonData);
-                                log(pantry.groceryItems.length.toString());
+                                //log(pantry.groceryItems.length.toString());
                                 //If you're reading this i suffered for this :_:
                                 return GroceryList(
                                     groceries: sortByExpirationDate(

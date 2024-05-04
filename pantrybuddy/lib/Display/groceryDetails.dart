@@ -32,6 +32,16 @@ class _FoodDetailsState extends State<ItemDetails> {
     _quantityController.text = widget.item.quantity.toString();
   }
 
+  int getIndex(List<GroceryItem> groceries, GroceryItem item) {
+    for (int x = 0; x < groceries.length; x++) {
+      if (item.dateAdded.toIso8601String() ==
+          groceries[x].dateAdded.toIso8601String()) {
+        return x;
+      }
+    }
+    return -1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +81,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      log("PRESSED");
+                      //log("PRESSED");
                       String inventoryID = await fetchPantryID();
                       DataSnapshot dbsnapshot = await dbRef
                           .child("foodInventories/$inventoryID")
@@ -79,28 +89,31 @@ class _FoodDetailsState extends State<ItemDetails> {
 
                       Map<String, dynamic> jsonData = {};
                       for (var item in dbsnapshot.children) {
-                        log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+                        //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
                         jsonData[item.key.toString()] = item.value;
                       }
                       List<dynamic> groceryJsons = [];
                       for (var map in jsonData["groceryItems"]) {
                         Map<String, dynamic> groceryJson = {};
                         for (var key in map.keys) {
-                          log("translating: ${key.toString()}->${map[key].toString()}");
+                          //log("translating: ${key.toString()}->${map[key].toString()}");
                           groceryJson[key.toString()] = map[key];
                         }
                         groceryJsons.add(groceryJson);
                       }
                       jsonData["groceryItems"] = groceryJsons;
                       FoodInventory pantry = FoodInventory.fromJson(jsonData);
-
-                      pantry.groceryItems[widget.index].quantity =
-                          int.parse(_quantityController.text);
-                      pantry.groceryItems[widget.index].name =
-                          _nameController.text;
+                      pantry
+                          .groceryItems[
+                              getIndex(pantry.groceryItems, widget.item)]
+                          .quantity = int.parse(_quantityController.text);
+                      pantry
+                          .groceryItems[
+                              getIndex(pantry.groceryItems, widget.item)]
+                          .name = _nameController.text;
                       dbRef
                           .child("foodInventories/$inventoryID")
-                          .update(pantry.toJson());
+                          .set(pantry.toJson());
 
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) {
@@ -115,6 +128,8 @@ class _FoodDetailsState extends State<ItemDetails> {
                       for (int x = 0; x < pantry.groceryItems.length; x++) {
                         if (pantry.groceryItems[x].itemId ==
                             widget.item.itemId) {
+                          log("Want to delete: " + widget.item.name.toString());
+                          log("Deleting: " + pantry.groceryItems[x].name);
                           pantry.groceryItems.removeAt(x);
                           break;
                         }
@@ -122,7 +137,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                       String inventoryID = pantry.inventoryId as String;
                       dbRef
                           .child("foodInventories/$inventoryID/")
-                          .update(pantry.toJson());
+                          .set(pantry.toJson());
                       pantry = await fetchPantry();
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) {

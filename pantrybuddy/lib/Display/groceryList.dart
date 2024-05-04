@@ -5,7 +5,6 @@ import 'dart:developer';
 
 class GroceryList extends StatelessWidget {
   List<GroceryItem> groceries;
-  TextEditingController _searchController = TextEditingController();
 
   GroceryList({required this.groceries}) : super();
   @override
@@ -14,7 +13,7 @@ class GroceryList extends StatelessWidget {
       //Change this to 1 when running live
       return const Text('No food items');
     }
-    _searchController.text = "";
+    //log("sub-groceries length ${groceries.length.toString()}");
     return SafeArea(
       child: Column(
         children: [
@@ -29,15 +28,4 @@ class GroceryList extends StatelessWidget {
       ),
     );
   }
-}
-
-List<GroceryItem> filterByName(List<GroceryItem> groceries, String name) {
-  log("FILTERING!!!!!");
-  List<GroceryItem> filteredList = [];
-  for (int x = 0; x < groceries.length; x++) {
-    if (groceries[x].name.contains(name)) {
-      filteredList.add(groceries[x]);
-    }
-  }
-  return filteredList;
 }

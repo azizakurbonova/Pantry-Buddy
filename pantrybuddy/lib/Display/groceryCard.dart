@@ -15,7 +15,7 @@ class GroceryCard extends StatelessWidget {
         child: Card(
           color: daysUntilExpiration(item) < 0 ? Colors.red[200] : Colors.white,
           child: InkWell(
-            child: Container(
+            child: SizedBox(
                 height: 90,
                 child: Padding(
                   padding: const EdgeInsets.all(5),
