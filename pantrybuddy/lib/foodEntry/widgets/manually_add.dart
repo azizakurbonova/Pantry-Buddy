@@ -11,6 +11,8 @@ import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'dart:developer';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 
 class ManualEntryForm extends StatefulWidget {
   const ManualEntryForm({Key? key}) : super(key: key);
@@ -29,12 +31,10 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   final TextEditingController _quantityController = TextEditingController();
   TextEditingController productNameController =
       TextEditingController(); //product name if dropdown is N/A
-  DateTime? expirationDate;
+  final TextEditingController _dateController = TextEditingController();
 
   final user = FirebaseAuth.instance.currentUser!;
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-
-  String? errorMessage;
 
   @override
   void initState() {
@@ -62,15 +62,15 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: _buildFormFields(),
+            children: _buildFormFields(context),
           ),
         ),
       ),
-      actions: _buildActions(),
+      actions: _buildActions(context),
     );
   }
 
-  List<Widget> _buildFormFields() {
+  List<Widget> _buildFormFields(BuildContext context) {
     bool isProductNameEnabled = true;
 
     return [
@@ -89,14 +89,8 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
             child: Text(category),
           );
         }).toList(),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            errorMessage = "Category is required";
-            return errorMessage;
-          }
-          errorMessage = null;
-          return errorMessage;
-        },
+        validator: (value) =>
+            value == null || value.isEmpty ? "Category is required" : null,
         decoration: InputDecoration(
           labelText: "Select Category",
           contentPadding:
@@ -119,14 +113,9 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
                 );
               }).toList() ??
               [],
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              errorMessage = "Product type is required";
-              return errorMessage;
-            }
-            errorMessage = null;
-            return errorMessage;
-          },
+          validator: (value) => value == null || value.isEmpty
+              ? "Product type is required"
+              : null,
           decoration: InputDecoration(
             labelText: "Select Product Type",
             contentPadding:
@@ -139,26 +128,30 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
         controller: productNameController,
         enabled: isProductNameEnabled,
         decoration: InputDecoration(
-          labelText: 'Product Name',
-          hintText: 'Enter product name',
-        ),
+            labelText: 'Product Name',
+            hintText: 'Enter product name',
+            errorText: (productNameController.text.isEmpty &&
+                    (selectedNameAll == "N/A" || selectedNameAll == null))
+                ? 'Product name is required'
+                : null,
+            labelStyle: TextStyle(color: Colors.black)),
         validator: (value) {
           if (isProductNameEnabled && (value == null || value.isEmpty)) {
-            errorMessage = 'Product name is required';
-            return errorMessage;
+            return 'Product name is required';
           }
-          errorMessage = null;
-          return errorMessage;
+          return null;
         },
       ),
       SizedBox(height: 20),
       TextFormField(
         controller: _quantityController,
         decoration: InputDecoration(
-          labelText: 'Quantity',
-          errorText:
-              _quantityController.text.isEmpty ? 'Quantity is required' : null,
-        ),
+            labelText: 'Quantity',
+            errorText: (_quantityController.text.isEmpty ||
+                    int.parse(_quantityController.text) <= 0)
+                ? 'Quantity is required'
+                : null,
+            labelStyle: TextStyle(color: Colors.black)),
         keyboardType: TextInputType.number,
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter
@@ -166,30 +159,49 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
         ],
         validator: (value) {
           if (value == null || value.isEmpty) {
-            errorMessage = 'Please enter a quantity';
-            return errorMessage;
+            return 'Quantity is required';
           }
           final n = int.tryParse(value);
           if (n == null || n <= 0) {
-            errorMessage = 'Please enter a valid positive whole number';
-            return errorMessage;
+            return 'Please enter a valid positive number'; // Check for non-integer and non-positive values
           }
-          errorMessage = null;
-          return errorMessage;
+          return null; // Return null if the input is valid
         },
       ),
       SizedBox(height: 20),
-      ElevatedButton(
-        onPressed: () => setExpirationDate(context),
-        child: const Text('Set Expiration Date'),
-      ),
+      TextField(
+          controller: _dateController, //editing controller of this TextField
+          decoration: InputDecoration(
+              icon: Icon(Icons.calendar_today), //icon of text field
+              labelText: "Enter Expiration Date", //label text of field,
+              errorText: _dateController.text.isEmpty
+                  ? 'Expiration date is required'
+                  : null,
+              labelStyle: TextStyle(color: Colors.black)),
+          readOnly: true, // when true user cannot edit text
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(), //get today's date
+                firstDate: DateTime
+                    .now(), //DateTime.now() - not to allow to choose before today.
+                lastDate: DateTime.now().add(const Duration(days: 365 * 25)));
+
+            if (pickedDate != null) {
+              String formattedDate = DateFormat('yyyy-MM-dd').format(
+                  pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+              debugPrint(
+                  formattedDate); //formatted date output using intl package =>  2022-07-04
+
+              setState(() {
+                _dateController.text =
+                    formattedDate; //set foratted date to TextField value.
+              });
+            } else {
+              debugPrint("Date is not selected");
+            }
+          }),
       SizedBox(height: 10),
-      if (expirationDate != null)
-        Text('Selected date: ${expirationDate!.toLocal()}'),
-      expirationDate == null
-          ? Text("Expiration date is required",
-              style: TextStyle(color: Colors.red))
-          : Text('Selected date: ${expirationDate!.toLocal()}'),
       if (selectedNameAll != null && selectedNameAll != "N/A") ...[
         FutureBuilder<String>(
           future: suggestExpiration_Manual(selectedNameAll!),
@@ -207,7 +219,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     ];
   }
 
-  List<Widget> _buildActions() {
+  List<Widget> _buildActions(BuildContext context) {
     return [
       TextButton(
         onPressed: () => {
@@ -220,9 +232,13 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
       ),
       TextButton(
         onPressed: () {
-          if (expirationDate != null &&
-              (GlobalKey<FormState>().currentState?.validate() ?? false)) {
-            addEntry();
+          if (_dateController.text.isNotEmpty &&
+              _quantityController.text.isNotEmpty &&
+              (int.parse(_quantityController.text) > 0) &&
+              (selectedNameAll != null ||
+                  selectedNameAll != "N/A" ||
+                  productNameController.text.isNotEmpty)) {
+            addEntry(context);
             Navigator.of(context)
                 .pushReplacement(MaterialPageRoute(builder: (context) {
               return InventoryPage();
@@ -234,7 +250,8 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text("Error"),
-                  content: Text(errorMessage!),
+                  content: const Text(
+                      "Please fill all required fields and set an expiration date."),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
@@ -253,35 +270,16 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     ];
   }
 
-  Future<void> setExpirationDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now()
-          .add(const Duration(days: 365 * 5)), // Set a range up to five years
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        expirationDate = pickedDate;
-      });
-    } else {
-      debugPrint('Expiration date not set.');
-    }
-  }
-
-  Future<void> addEntry() async {
-    String itemName = productNameController.text;
+  Future<void> addEntry(BuildContext context) async {
+    String itemName = productNameController.text.isNotEmpty
+        ? productNameController.text
+        : selectedNameAll!;
     String category = selectedCategory ??
         "Uncategorized"; // Default category if none selected
 
-    await setExpirationDate(context);
-
-    if (expirationDate == null) {
-      debugPrint('Expiration date is required');
-      return;
-    }
+    final DateTime expirationDate = _dateController.text.isNotEmpty
+        ? DateTime.parse(_dateController.text)
+        : DateTime.now();
 
     final int quantity = _quantityController.text.isNotEmpty
         ? int.parse(_quantityController.text)
@@ -321,6 +319,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     // Clean up the controller when the widget is disposed.
     _quantityController.dispose();
     productNameController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 }

@@ -274,8 +274,8 @@ void main() {
 
     // Test retrieving more detailed product information
     test('idSearch_products retrieves product details', () async {
-      final product =
-          await idSearch_products("22347"); // Using a known product ID
+      final product = await idSearch_products(
+          "22347", "temp", DateTime.now(), 1); // Using a known product ID
       expect(product, isNotNull);
       expect(
           product!.name,
@@ -285,16 +285,16 @@ void main() {
     });
 
     test('idSearch_products retrieves menu item details', () async {
-      final product =
-          await idSearch_menuItems("424571"); // Using a known product ID
+      final product = await idSearch_menuItems(
+          "424571", "temp", DateTime.now(), 1); // Using a known product ID
       expect(product, isNotNull);
       expect(product!.name, equals("Bacon King Burger"));
       expect(product.itemIdType, ItemIdType.AUTO);
     });
 
     test('idSearch_products retrieves ingredients details', () async {
-      final product =
-          await idSearch_ingredients("9266"); // Using a known product ID
+      final product = await idSearch_ingredients(
+          "9266", "temp", DateTime.now(), 1); // Using a known product ID
       expect(product, isNotNull);
       expect(product!.name, equals("pineapples"));
       expect(product.itemIdType, ItemIdType.AUTO);
@@ -310,7 +310,8 @@ void main() {
         var product = jsonDecode(response.body);
 
         // Create a GroceryItem from the fetched product
-        GroceryItem item = createGroceryItem_Menu(product);
+        GroceryItem item =
+            createGroceryItem_Menu(product, "temp", DateTime.now(), 1);
 
         // Check that the item has been correctly populated
         expect(item.name, isNotEmpty);
@@ -333,7 +334,8 @@ void main() {
         var product = jsonDecode(response.body);
 
         // Create a GroceryItem from the fetched ingredient
-        GroceryItem item = createGroceryItem_Ingredient(product);
+        GroceryItem item =
+            createGroceryItem_Ingredient(product, "temp", DateTime.now(), 1);
 
         // Check that the item has been correctly populated
         expect(item.name, isNotEmpty);
@@ -355,7 +357,8 @@ void main() {
         var product = jsonDecode(response.body);
 
         // Create a GroceryItem from the fetched product
-        GroceryItem item = createGroceryItem_Product(product);
+        GroceryItem item =
+            createGroceryItem_Product(product, "temp", DateTime.now(), 1);
 
         // Check that the item has been correctly populated
         expect(item.name, isNotEmpty);

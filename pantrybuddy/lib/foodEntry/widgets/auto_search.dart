@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:pantrybuddy/foodEntry/utility/AUTO.dart";
 import 'package:firebase_database/firebase_database.dart';
@@ -12,7 +13,7 @@ import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'dart:developer';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:flutter/services.dart';
-
+import 'package:intl/intl.dart';
 //The user will select to search between products, ingredients, and menu items
 //Simply because the endpoints are separate and there is no way to
 //combine results
@@ -29,14 +30,14 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
   SearchType _selectedSearchType = SearchType.products;
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   List<Spoonacular> _searchResults = [];
-  DateTime? expirationDate;
   GroceryItem? selectedGroceryItem;
 
   final user = FirebaseAuth.instance.currentUser!;
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
-  String? errorMessage;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
   void dispose() {
     _searchController.dispose();
     _quantityController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -62,9 +64,15 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
             padding: const EdgeInsets.all(8.0),
             child: CupertinoSegmentedControl<SearchType>(
               children: const {
-                SearchType.products: Text('Products'),
-                SearchType.ingredients: Text('Ingredients'),
-                SearchType.menuItems: Text('Menu Items'),
+                SearchType.products: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('Products')),
+                SearchType.ingredients: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('Ingredients')),
+                SearchType.menuItems: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text('Menu Items')),
               },
               onValueChanged: (SearchType value) {
                 setState(() {
@@ -75,6 +83,7 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                 });
               },
               groupValue: _selectedSearchType,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
             ),
           ),
           Padding(
@@ -119,36 +128,15 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
         ]));
   }
 
-  Future<void> setExpirationDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now()
-          .add(const Duration(days: 365 * 5)), // Set a range up to five years
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        expirationDate = pickedDate;
-      });
-    } else {
-      debugPrint('Expiration date not set.');
-    }
-  }
-
   Future<void> _addGroceryItem(
       BuildContext context, Spoonacular suggestion) async {
-    await setExpirationDate(context);
-
-    if (expirationDate == null) {
-      debugPrint('Expiration date is required');
-      return;
-    }
-
     final int quantity = _quantityController.text.isNotEmpty
         ? int.parse(_quantityController.text)
         : 1;
+
+    final DateTime expirationDate = _dateController.text.isNotEmpty
+        ? DateTime.parse(_dateController.text)
+        : DateTime.now();
 
     FoodInventory pantry = await fetchPantry();
     String pantryID = pantry.inventoryId as String;
@@ -218,7 +206,9 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
       BuildContext context, Spoonacular selectedResult) async {
     // Validate inputs before proceeding
     bool isValid() {
-      return _quantityController.text.isNotEmpty && expirationDate != null;
+      return (_quantityController.text.isNotEmpty &&
+          _dateController.text.isNotEmpty &&
+          int.parse(_quantityController.text) > 0);
     }
 
     await showDialog(
@@ -233,7 +223,8 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                 controller: _quantityController,
                 decoration: InputDecoration(
                   labelText: 'Quantity',
-                  errorText: _quantityController.text.isEmpty
+                  errorText: (_quantityController.text.isEmpty ||
+                          int.parse(_quantityController.text) <= 0)
                       ? 'Quantity is required'
                       : null,
                 ),
@@ -244,30 +235,51 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                 ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    errorMessage = 'Quantity is required';
-                    return errorMessage;
+                    return 'Please enter a quantity';
                   }
                   final n = int.tryParse(value);
                   if (n == null || n <= 0) {
-                    errorMessage = 'Please enter a valid positive number';
-                    return errorMessage;
+                    return 'Please enter a valid positive number';
                   }
-                  errorMessage = null;
-                  return errorMessage;
+                  return null;
                 },
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => setExpirationDate(context),
-                child: const Text('Set Expiration Date'),
-              ),
+              TextField(
+                  controller:
+                      _dateController, //editing controller of this TextField
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.calendar_today), //icon of text field
+                    labelText: "Enter Expiration Date", //label text of field,
+                    errorText: _dateController.text.isEmpty
+                        ? 'Expiration date is required'
+                        : null,
+                  ),
+                  readOnly: true, // when true user cannot edit text
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(), //get today's date
+                        firstDate: DateTime
+                            .now(), //DateTime.now() - not to allow to choose before today.
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 25)));
+
+                    if (pickedDate != null) {
+                      String formattedDate = DateFormat('yyyy-MM-dd').format(
+                          pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+                      debugPrint(
+                          formattedDate); //formatted date output using intl package =>  2022-07-04
+
+                      setState(() {
+                        _dateController.text =
+                            formattedDate; //set foratted date to TextField value.
+                      });
+                    } else {
+                      debugPrint("Date is not selected");
+                    }
+                  }),
               SizedBox(height: 10),
-              if (expirationDate != null)
-                Text('Selected date: ${expirationDate!.toLocal()}'),
-              expirationDate == null
-                  ? Text("Expiration date is required",
-                      style: TextStyle(color: Colors.red))
-                  : Text('Selected date: ${expirationDate!.toLocal()}'),
               FutureBuilder<String>(
                   future: suggestExpiration_Auto(
                       selectedResult.name, _selectedSearchType),
@@ -278,7 +290,8 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                     } else {
                       return const CircularProgressIndicator();
                     }
-                  })
+                  }),
+              SizedBox(height: 10)
             ],
           ),
           actions: [
@@ -306,7 +319,8 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text("Error"),
-                        content: Text(errorMessage!),
+                        content: const Text(
+                            "Please fill all required fields and set an expiration date."),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
