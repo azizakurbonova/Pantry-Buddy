@@ -289,15 +289,15 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     String pantryID = pantry.inventoryId as String;
 
     GroceryItem newItem = GroceryItem(
-      inventoryID: pantryID,
-      name: itemName,
-      category: [category.toString()],
-      quantity: quantity,
-      dateAdded: DateTime.now(),
-      expirationDate: expirationDate!,
-      itemIdType: ItemIdType.MANUAL,
-      visible: true,
-    );
+        inventoryID: pantryID,
+        name: itemName,
+        category: [category.toString()],
+        quantity: quantity,
+        dateAdded: DateTime.now(),
+        expirationDate: expirationDate!,
+        itemIdType: ItemIdType.MANUAL,
+        visible: true,
+        image: "");
 
     try {
       log("length before" + pantry.groceryItems.length.toString());
