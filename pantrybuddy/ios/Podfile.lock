@@ -8,16 +8,16 @@ PODS:
     - FirebaseCore (= 10.24.0)
   - Firebase/Database (10.24.0):
     - Firebase/CoreOnly
-    - FirebaseDatabase (~> 10.20.0)
-  - firebase_auth (4.17.4):
-    - Firebase/Auth (= 10.20.0)
+    - FirebaseDatabase (~> 10.24.0)
+  - firebase_auth (4.19.4):
+    - Firebase/Auth (= 10.24.0)
     - firebase_core
     - Flutter
-  - firebase_core (2.25.4):
-    - Firebase/CoreOnly (= 10.20.0)
+  - firebase_core (2.30.1):
+    - Firebase/CoreOnly (= 10.24.0)
     - Flutter
-  - firebase_database (10.4.6):
-    - Firebase/Database (= 10.20.0)
+  - firebase_database (10.5.4):
+    - Firebase/Database (= 10.24.0)
     - firebase_core
     - Flutter
   - FirebaseAppCheckInterop (10.25.0)
@@ -432,16 +432,17 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/pointer_interceptor_ios/ios"
 
 SPEC CHECKSUMS:
-  Firebase: 10c8cb12fb7ad2ae0c09ffc86cd9c1ab392a0031
-  firebase_auth: 29a10d4129d53aa690c10dbd838ed1a059ef0c9b
-  firebase_core: a46c312d8bae4defa3d009b2aa7b5b413aeb394e
-  firebase_database: fcf0ecd9e488b7bbd7830e4c8449d0de28e18dc3
-  FirebaseAppCheckInterop: e81bdb1cdb82f8e0cef353ba5018a8402682032c
-  FirebaseAuth: 9c5c400d2c3055d8ae3a0284944c86fa95d48dac
-  FirebaseCore: 28045c1560a2600d284b9c45a904fe322dc890b6
-  FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
-  FirebaseDatabase: 7e838abb62ac2e1a1c792cbeb51df3c4b6607f54
-  FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
+  camera_avfoundation: 759172d1a77ae7be0de08fc104cfb79738b8a59e
+  Firebase: 91fefd38712feb9186ea8996af6cbdef41473442
+  firebase_auth: b782567cafd5cfd64debf54638a9f29b63abd7bf
+  firebase_core: 7f1e1156934d0da3be260174812842df9420e4ab
+  firebase_database: bc70c451e6f510ec59c5690fdca67d8f46d6b2c6
+  FirebaseAppCheckInterop: 5da5ce93e8797a215e3f677fb0654b74e736c8b8
+  FirebaseAuth: 711d01cccefaf10035b3090a92956d0dd4f99088
+  FirebaseCore: 11dc8a16dfb7c5e3c3f45ba0e191a33ac4f50894
+  FirebaseCoreInternal: 910a81992c33715fec9263ca7381d59ab3a750b7
+  FirebaseDatabase: 09752515c6abf792b6f61ca6d0354952a8c1feb9
+  FirebaseSharedSwift: 0274086954b1b2d5fd7e829eccc587044d72a4ba
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_barcode_scanner: 7a1144744c28dc0c57a8de7218ffe5ec59a9e4bf
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
@@ -500,6 +501,6 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   SSZipArchive: cefe1364104a0231268a5deb8495bdf2861f52f0
 
-PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
+PODFILE CHECKSUM: e272e928f3a34260872cbcab4a6daa852ad2c583
 
 COCOAPODS: 1.15.0

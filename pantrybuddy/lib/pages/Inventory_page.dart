@@ -72,7 +72,7 @@ class _InventoryPageState extends State<InventoryPage> {
         overlayOpacity: .4,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.add_box),
+            child: Icon(Icons.add_box_outlined),
             label: 'Manual Entry',
             onTap: () {
               Navigator.of(context).push(
@@ -81,11 +81,11 @@ class _InventoryPageState extends State<InventoryPage> {
           ),
           SpeedDialChild(
             child: Icon(Icons.barcode_reader),
-            label: 'Scan (UPC/EAN)',
+            label: 'Scan Barcode',
           ),
           SpeedDialChild(
-            child: Icon(Icons.add_a_photo),
-            label: 'Photo (PLU)',
+            child: Icon(Icons.manage_search),
+            label: 'Search Spoonacular',
           ),
         ],
       ),
