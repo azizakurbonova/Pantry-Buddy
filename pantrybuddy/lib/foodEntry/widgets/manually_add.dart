@@ -6,12 +6,17 @@ import "package:pantrybuddy/foodEntry/utility/MANUAL.dart";
 import "package:pantrybuddy/models/grocery_item.dart";
 import 'package:pantrybuddy/models/food_inventory.dart';
 import "package:pantrybuddy/foodEntry/utility/suggest_expiration.dart";
-import 'package:path/path.dart' as path;
-import 'dart:io';
 import "package:pantrybuddy/foodEntry/utility/csv.dart";
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
+import 'dart:developer';
+import 'package:pantrybuddy/pages/inventory_page.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 
 class ManualEntryForm extends StatefulWidget {
   const ManualEntryForm({Key? key}) : super(key: key);
+
   @override
   State<ManualEntryForm> createState() => _ManualEntryFormState();
 }
@@ -26,7 +31,10 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   final TextEditingController _quantityController = TextEditingController();
   TextEditingController productNameController =
       TextEditingController(); //product name if dropdown is N/A
-  DateTime? expirationDate;
+  final TextEditingController _dateController = TextEditingController();
+
+  final user = FirebaseAuth.instance.currentUser!;
+  DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
   @override
   void initState() {
@@ -35,17 +43,10 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   }
 
   Future<void> loadData() async {
-    // Load and parse the categories and expiration data from CSV files.
-    var currDir = Directory.current.path;
-    String filePath =
-        path.join(currDir, 'lib', 'foodEntry', 'externalDB', 'foodKeeper.csv');
+    List<List<dynamic>> csvData = await loadCsv('assets/foodKeeper.csv');
+    List<Map<String, dynamic>> expirations = parseCsv(csvData);
 
-    final expirationData = await loadCsv(filePath);
-
-    // Create lists of maps to hold the parsed data.
-    List<Map<String, dynamic>> csvData = parseCsv(expirationData);
-
-    var dropdownData = await prepareDropdownData(csvData);
+    var dropdownData = await prepareDropdownData(expirations);
     setState(() {
       categoryNames = dropdownData['Category_Name'];
       nameAllOptions = dropdownData['Name_ALL'];
@@ -54,153 +55,261 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DropdownButton<String>(
-          value: selectedCategory,
+    return AlertDialog(
+      title: Text("Add Item to Pantry"),
+      content: Form(
+        key: GlobalKey<FormState>(),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _buildFormFields(context),
+          ),
+        ),
+      ),
+      actions: _buildActions(context),
+    );
+  }
+
+  List<Widget> _buildFormFields(BuildContext context) {
+    bool isProductNameEnabled = true;
+
+    return [
+      DropdownButtonFormField<String>(
+        value: selectedCategory,
+        onChanged: (value) {
+          setState(() {
+            selectedCategory = value;
+            selectedNameAllOptions = nameAllOptions[value] ?? [];
+            selectedNameAll = null; // Reset when L1 changes
+          });
+        },
+        items: categoryNames.map((String category) {
+          return DropdownMenuItem<String>(
+            value: category,
+            child: Text(category),
+          );
+        }).toList(),
+        validator: (value) =>
+            value == null || value.isEmpty ? "Category is required" : null,
+        decoration: InputDecoration(
+          labelText: "Select Category",
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+        ),
+      ),
+      SizedBox(height: 20),
+      if (selectedCategory != null && selectedCategory != "N/A") ...[
+        DropdownButtonFormField<String>(
+          value: selectedNameAll,
           onChanged: (value) {
             setState(() {
-              selectedCategory = value;
-              selectedNameAllOptions = nameAllOptions[value];
-              selectedNameAll = null; // Reset the L2 dropdown when L1 changes
+              selectedNameAll = value;
             });
           },
-          items: categoryNames.map((String category) {
-            return DropdownMenuItem<String>(
-              value: category,
-              child: Text(category),
-            );
-          }).toList(),
-          hint: const Text("Select a Category"),
-        ),
-        if (selectedCategory != null && selectedCategory != "N/A") ...[
-          DropdownButton<String>(
-            value: selectedNameAll,
-            onChanged: (value) {
-              setState(() {
-                selectedNameAll = value;
-              });
-            },
-            items: selectedNameAllOptions?.map((String name) {
-                  return DropdownMenuItem<String>(
-                    value: name,
-                    child: Text(name),
-                  );
-                }).toList() ??
-                [],
-            hint: const Text("Select Product"),
-          ),
-        ],
-        TextField(
-          controller: productNameController,
+          items: selectedNameAllOptions?.map((String name) {
+                return DropdownMenuItem<String>(
+                  value: name,
+                  child: Text(name),
+                );
+              }).toList() ??
+              [],
+          validator: (value) => value == null || value.isEmpty
+              ? "Product type is required"
+              : null,
           decoration: InputDecoration(
-            labelText: 'Product Name',
-            enabled: selectedNameAll == "N/A" ||
-                selectedNameAll!
-                    .contains(', '), // Enable only if selected product is N/A
+            labelText: "Select Product Type",
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           ),
-        ),
-        TextFormField(
-          controller: _quantityController,
-          decoration: const InputDecoration(labelText: 'Quantity'),
-          keyboardType: TextInputType.number,
-        ),
-        ElevatedButton(
-          onPressed: () => setExpirationDate(context),
-          child: const Text('Set Expiration Date'),
-        ),
-        if (selectedNameAll != null && selectedNameAll != "N/A") ...[
-          FutureBuilder<String>(
-            future: suggestExpiration_Manual(selectedNameAll!),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Text(
-                    snapshot.data ?? "No expiration guideline available.");
-              } else {
-                return const CircularProgressIndicator();
-              }
-            },
-          ),
-        ],
-        ElevatedButton(
-          onPressed: addEntry,
-          child: const Text('Add to Pantry'),
         ),
       ],
-    );
+      SizedBox(height: 20),
+      TextFormField(
+        controller: productNameController,
+        enabled: isProductNameEnabled,
+        decoration: InputDecoration(
+            labelText: 'Product Name',
+            hintText: 'Enter product name',
+            errorText: (productNameController.text.isEmpty &&
+                    (selectedNameAll == "N/A" || selectedNameAll == null))
+                ? 'Product name is required'
+                : null,
+            labelStyle: TextStyle(color: Colors.black)),
+        validator: (value) {
+          if (isProductNameEnabled && (value == null || value.isEmpty)) {
+            return 'Product name is required';
+          }
+          return null;
+        },
+      ),
+      SizedBox(height: 20),
+      TextFormField(
+        controller: _quantityController,
+        decoration: InputDecoration(
+            labelText: 'Quantity',
+            errorText: (_quantityController.text.isEmpty ||
+                    int.parse(_quantityController.text) <= 0)
+                ? 'Quantity is required'
+                : null,
+            labelStyle: TextStyle(color: Colors.black)),
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter
+              .digitsOnly, // Only allows digits to be entered
+        ],
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Quantity is required';
+          }
+          final n = int.tryParse(value);
+          if (n == null || n <= 0) {
+            return 'Please enter a valid positive number'; // Check for non-integer and non-positive values
+          }
+          return null; // Return null if the input is valid
+        },
+      ),
+      SizedBox(height: 20),
+      TextField(
+          controller: _dateController, //editing controller of this TextField
+          decoration: InputDecoration(
+              icon: Icon(Icons.calendar_today), //icon of text field
+              labelText: "Enter Expiration Date", //label text of field,
+              errorText: _dateController.text.isEmpty
+                  ? 'Expiration date is required'
+                  : null,
+              labelStyle: TextStyle(color: Colors.black)),
+          readOnly: true, // when true user cannot edit text
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(), //get today's date
+                firstDate: DateTime
+                    .now(), //DateTime.now() - not to allow to choose before today.
+                lastDate: DateTime.now().add(const Duration(days: 365 * 25)));
+
+            if (pickedDate != null) {
+              String formattedDate = DateFormat('yyyy-MM-dd').format(
+                  pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+              debugPrint(
+                  formattedDate); //formatted date output using intl package =>  2022-07-04
+
+              setState(() {
+                _dateController.text =
+                    formattedDate; //set foratted date to TextField value.
+              });
+            } else {
+              debugPrint("Date is not selected");
+            }
+          }),
+      SizedBox(height: 10),
+      if (selectedNameAll != null && selectedNameAll != "N/A") ...[
+        FutureBuilder<String>(
+          future: suggestExpiration_Manual(selectedNameAll!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Text(
+                  snapshot.data ?? "No expiration guideline available.");
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
+        SizedBox(height: 10)
+      ]
+    ];
   }
 
-  Future<void> setExpirationDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now()
-          .add(const Duration(days: 365 * 5)), // Set a range up to five years
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        expirationDate = pickedDate;
-      });
-    }
+  List<Widget> _buildActions(BuildContext context) {
+    return [
+      TextButton(
+        onPressed: () => {
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (context) {
+            return InventoryPage();
+          }))
+        },
+        child: const Text('Cancel'),
+      ),
+      TextButton(
+        onPressed: () {
+          if (_dateController.text.isNotEmpty &&
+              _quantityController.text.isNotEmpty &&
+              (int.parse(_quantityController.text) > 0) &&
+              (selectedNameAll != null ||
+                  selectedNameAll != "N/A" ||
+                  productNameController.text.isNotEmpty)) {
+            addEntry(context);
+            Navigator.of(context)
+                .pushReplacement(MaterialPageRoute(builder: (context) {
+              return InventoryPage();
+            }));
+          } else {
+            // Show a dialog if the form is not valid
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Error"),
+                  content: const Text(
+                      "Please fill all required fields and set an expiration date."),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Dismiss the dialog
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        },
+        child: const Text('Submit'),
+      ),
+    ];
   }
 
-  Future<void> addEntry() async {
-    String itemName = selectedNameAll != "N/A" && selectedNameAll != null
-        ? selectedNameAll!
-        : productNameController.text;
-    int quantity = int.tryParse(_quantityController.text) ??
-        1; // Default to 1 if parsing fails
+  Future<void> addEntry(BuildContext context) async {
+    String itemName = productNameController.text.isNotEmpty
+        ? productNameController.text
+        : selectedNameAll!;
     String category = selectedCategory ??
         "Uncategorized"; // Default category if none selected
 
-    if (expirationDate == null) {
-      // Handle error - expiration date is required
-      debugPrint("Expiration date must be set.");
-      return;
-    }
+    final DateTime expirationDate = _dateController.text.isNotEmpty
+        ? DateTime.parse(_dateController.text)
+        : DateTime.now();
 
-    // Write to groceryItems DB
-    DatabaseReference ref = FirebaseDatabase.instance.ref("groceryItems");
-    DatabaseReference newInventoryRef = ref.push();
-    String? itemId = newInventoryRef.key;
+    final int quantity = _quantityController.text.isNotEmpty
+        ? int.parse(_quantityController.text)
+        : 1;
+
+    FoodInventory pantry = await fetchPantry();
+    String pantryID = pantry.inventoryId as String;
 
     GroceryItem newItem = GroceryItem(
-      inventoryID: "temp",
-      itemId:
-          itemId, // Assuming this is generated elsewhere or not needed at creation
+      inventoryID: pantryID,
       name: itemName,
-      category: [category],
+      category: [category.toString()],
       quantity: quantity,
       dateAdded: DateTime.now(),
       expirationDate: expirationDate!,
-      itemIdType: ItemIdType.MANUAL, // Example, adjust as needed
+      itemIdType: ItemIdType.MANUAL,
       visible: true,
     );
 
-    await ref.push().set(newItem.toJson());
-
-    User? user = FirebaseAuth.instance.currentUser;
-    String? userId = user?.uid;
-
-    if (user != null) {
-      // Fetch inventoryId from user's database entry, field is "pantry"
-      final DatabaseReference dbref = FirebaseDatabase.instance.ref('users');
-      final DataSnapshot userSnapshot =
-          await dbref.child("users/$user.uid/inventoryId").get();
-      String pantry = userSnapshot.value.toString();
-
-      FoodInventory inventoryManager =
-          FoodInventory(owner: userId!, inventoryId: pantry);
-
-      inventoryManager.addGroceryItem(newItem);
+    try {
+      log("length before" + pantry.groceryItems.length.toString());
+      pantry.appendGroceryItem(newItem);
+      log("length after" + pantry.groceryItems.length.toString());
+      dbRef.child("foodInventories/$pantryID").update(pantry.toJson());
+    } catch (e) {
+      debugPrint("Error adding item to pantry: $e");
     }
 
-    debugPrint("Created Food Product: ${newItem.name}");
-
     _quantityController.clear();
-    productNameController.clear();
+    _dateController.clear();
   }
 
   @override
@@ -208,6 +317,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
     // Clean up the controller when the widget is disposed.
     _quantityController.dispose();
     productNameController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 }
