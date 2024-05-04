@@ -44,23 +44,23 @@ class _FoodDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(153, 104, 127, 185).withOpacity(.5),
+        backgroundColor: Color.fromARGB(153, 173, 197, 255),
         appBar: AppBar(
-            title: const Text('Item Details',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.w100)),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.info, color: Colors.white),
-                onPressed: () {
-                  if (widget.item.nutritionalInfo != null) {}
-                },
-              )
-            ]),
+          title: const Text('Item Details',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25.0,
+                  //fontWeight: FontWeight.w100
+                  )),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          //actions: [
+          //  IconButton(
+          //    icon: const Icon(Icons.info, color: Colors.white),
+          //    onPressed: () {},
+          //  )
+          //]
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(50.0),
@@ -72,14 +72,14 @@ class _FoodDetailsState extends State<ItemDetails> {
                 nameController: _nameController,
               ),
               const Divider(),
-              const SizedBox(height: 20),
+              const SizedBox(height:10),
               const Text(
                 'Quantity:',
                 style: TextStyle(fontSize: 25.0, color: Colors.black),
               ),
               GroceryQuantityField(quantityController: _quantityController),
               Divider(),
-              const SizedBox(height: 20),
+              const SizedBox(height:10),
               Column(
                 children: [
                   Row(
@@ -130,7 +130,8 @@ class _FoodDetailsState extends State<ItemDetails> {
                         },
                         child: const Text('Save'),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width:8),
+
                       ElevatedButton(
                         onPressed: () async {
                           FoodInventory pantry = await fetchPantry();
@@ -158,7 +159,17 @@ class _FoodDetailsState extends State<ItemDetails> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height:8),
+
+                  Text (
+                    "or mark as:",
+                    style: TextStyle(fontSize:14),
+                  ),
+                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                   ElevatedButton(
                     onPressed: () async {
                       FoodInventory pantry = await fetchPantry();
@@ -180,9 +191,10 @@ class _FoodDetailsState extends State<ItemDetails> {
                         return InventoryPage();
                       }));
                     },
-                    child: const Text('Mark as Discarded'),
+                    child: const Text('Discarded'),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(width:8),
+
                   ElevatedButton(
                     onPressed: () async {
                       FoodInventory pantry = await fetchPantry();
@@ -203,8 +215,10 @@ class _FoodDetailsState extends State<ItemDetails> {
                         return InventoryPage();
                       }));
                     },
-                    child: const Text('Mark as Consumed'),
+                    child: const Text('Consumed'),
                   )
+                    ]
+                  ),
                 ],
               ),
             ]),
