@@ -47,19 +47,20 @@ class _FoodDetailsState extends State<ItemDetails> {
     return Scaffold(
         backgroundColor: const Color(0xFF2D3447),
         appBar: AppBar(
-            title: const Text('Item Details',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.w100)),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.info, color: Colors.white),
-                onPressed: () {},
-              )
-            ]),
+          title: const Text('Item Details',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.w100)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          //actions: [
+          //  IconButton(
+          //    icon: const Icon(Icons.info, color: Colors.white),
+          //    onPressed: () {},
+          //  )
+          //]
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(50.0),
@@ -79,48 +80,80 @@ class _FoodDetailsState extends State<ItemDetails> {
               Divider(),
               Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      //log("PRESSED");
-                      String inventoryID = await fetchPantryID();
-                      DataSnapshot dbsnapshot = await dbRef
-                          .child("foodInventories/$inventoryID")
-                          .get();
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          //log("PRESSED");
+                          String inventoryID = await fetchPantryID();
+                          DataSnapshot dbsnapshot = await dbRef
+                              .child("foodInventories/$inventoryID")
+                              .get();
 
-                      Map<String, dynamic> jsonData = {};
-                      for (var item in dbsnapshot.children) {
-                        //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
-                        jsonData[item.key.toString()] = item.value;
-                      }
-                      List<dynamic> groceryJsons = [];
-                      for (var map in jsonData["groceryItems"]) {
-                        Map<String, dynamic> groceryJson = {};
-                        for (var key in map.keys) {
-                          //log("translating: ${key.toString()}->${map[key].toString()}");
-                          groceryJson[key.toString()] = map[key];
-                        }
-                        groceryJsons.add(groceryJson);
-                      }
-                      jsonData["groceryItems"] = groceryJsons;
-                      FoodInventory pantry = FoodInventory.fromJson(jsonData);
-                      pantry
-                          .groceryItems[
-                              getIndex(pantry.groceryItems, widget.item)]
-                          .quantity = int.parse(_quantityController.text);
-                      pantry
-                          .groceryItems[
-                              getIndex(pantry.groceryItems, widget.item)]
-                          .name = _nameController.text;
-                      dbRef
-                          .child("foodInventories/$inventoryID")
-                          .set(pantry.toJson());
+                          Map<String, dynamic> jsonData = {};
+                          for (var item in dbsnapshot.children) {
+                            //log("TRYING TO TRANSLATE: ${item.key.toString()}->${item.value.toString()}");
+                            jsonData[item.key.toString()] = item.value;
+                          }
+                          List<dynamic> groceryJsons = [];
+                          for (var map in jsonData["groceryItems"]) {
+                            Map<String, dynamic> groceryJson = {};
+                            for (var key in map.keys) {
+                              //log("translating: ${key.toString()}->${map[key].toString()}");
+                              groceryJson[key.toString()] = map[key];
+                            }
+                            groceryJsons.add(groceryJson);
+                          }
+                          jsonData["groceryItems"] = groceryJsons;
+                          FoodInventory pantry =
+                              FoodInventory.fromJson(jsonData);
+                          pantry
+                              .groceryItems[
+                                  getIndex(pantry.groceryItems, widget.item)]
+                              .quantity = int.parse(_quantityController.text);
+                          pantry
+                              .groceryItems[
+                                  getIndex(pantry.groceryItems, widget.item)]
+                              .name = _nameController.text;
+                          dbRef
+                              .child("foodInventories/$inventoryID")
+                              .set(pantry.toJson());
 
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) {
-                        return InventoryPage();
-                      }));
-                    },
-                    child: const Text('Save'),
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                            return InventoryPage();
+                          }));
+                        },
+                        child: const Text('Save'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          FoodInventory pantry = await fetchPantry();
+                          for (int x = 0; x < pantry.groceryItems.length; x++) {
+                            if (pantry.groceryItems[x].itemId ==
+                                widget.item.itemId) {
+                              log("Want to delete: " +
+                                  widget.item.name.toString());
+                              log("Deleting: " + pantry.groceryItems[x].name);
+                              pantry.groceryItems.removeAt(x);
+                              break;
+                            }
+                          }
+                          String inventoryID = pantry.inventoryId as String;
+                          dbRef
+                              .child("foodInventories/$inventoryID/")
+                              .set(pantry.toJson());
+                          pantry = await fetchPantry();
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                            return InventoryPage();
+                          }));
+                        },
+                        child: const Text('Delete'),
+                      ),
+                    ],
                   ),
                   ElevatedButton(
                     onPressed: () async {
@@ -128,8 +161,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                       for (int x = 0; x < pantry.groceryItems.length; x++) {
                         if (pantry.groceryItems[x].itemId ==
                             widget.item.itemId) {
-                          log("Want to delete: " + widget.item.name.toString());
-                          log("Deleting: " + pantry.groceryItems[x].name);
+                          pantry.discarded += pantry.groceryItems[x].quantity;
                           pantry.groceryItems.removeAt(x);
                           break;
                         }
@@ -144,8 +176,30 @@ class _FoodDetailsState extends State<ItemDetails> {
                         return InventoryPage();
                       }));
                     },
-                    child: const Text('Delete'),
+                    child: const Text('Mark as Discarded'),
                   ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      FoodInventory pantry = await fetchPantry();
+                      for (int x = 0; x < pantry.groceryItems.length; x++) {
+                        if (pantry.groceryItems[x].itemId ==
+                            widget.item.itemId) {
+                          pantry.consumed += pantry.groceryItems[x].quantity;
+                          pantry.groceryItems.removeAt(x);
+                          break;
+                        }
+                      }
+                      String inventoryID = pantry.inventoryId as String;
+                      dbRef
+                          .child("foodInventories/$inventoryID/")
+                          .set(pantry.toJson());
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) {
+                        return InventoryPage();
+                      }));
+                    },
+                    child: const Text('Mark as Consumed'),
+                  )
                 ],
               ),
             ]),

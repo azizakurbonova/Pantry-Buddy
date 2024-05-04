@@ -58,6 +58,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   List<GroceryItem> sortByExpirationDate(List<GroceryItem> groceries) {
     groceries.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
+    groceries.removeAt(0);
     return groceries;
   }
 
@@ -175,8 +176,9 @@ class _InventoryPageState extends State<InventoryPage> {
                                 //log(pantry.groceryItems.length.toString());
                                 //If you're reading this i suffered for this :_:
                                 return GroceryList(
-                                    groceries: sortByExpirationDate(
-                                        filterByName(pantry.groceryItems)));
+                                    groceries: filterByName(
+                                        sortByExpirationDate(
+                                            pantry.groceryItems)));
                               }
                             });
                       }
