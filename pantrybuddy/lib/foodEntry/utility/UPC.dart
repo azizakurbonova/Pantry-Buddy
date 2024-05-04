@@ -67,7 +67,7 @@ GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product,
       dateAdded: DateTime.now(),
       expirationDate: expiration, // Example expiration date
       itemIdType: ItemIdType.UPC,
-      nutritionalInfo: nutrition, // All nutritional info as a string
+      nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
       image: product?['image']);
 }

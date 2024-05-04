@@ -156,7 +156,7 @@ GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
       dateAdded: DateTime.now(),
       expirationDate: expiration,
       itemIdType: ItemIdType.AUTO,
-      nutritionalInfo: nutrition, // All nutritional info as a string
+      nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
       image: product?['images'][0]);
 }
@@ -180,7 +180,7 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
       dateAdded: DateTime.now(),
       expirationDate: expiration,
       itemIdType: ItemIdType.AUTO,
-      nutritionalInfo: nutrition, // All nutritional info as a string
+      nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
       image: product?['image']);
 }
@@ -204,7 +204,7 @@ GroceryItem createGroceryItem_Product(Map<String, dynamic>? product,
       dateAdded: DateTime.now(),
       expirationDate: expiration, // Example expiration date
       itemIdType: ItemIdType.AUTO,
-      nutritionalInfo: nutrition, // All nutritional info as a string
+      nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
       image: product?['image']);
 }
