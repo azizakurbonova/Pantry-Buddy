@@ -93,6 +93,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
             value == null || value.isEmpty ? "Category is required" : null,
         decoration: InputDecoration(
           labelText: "Select Category",
+          errorText: selectedCategory == null ? "Category is required" : null,
           contentPadding:
               EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         ),
@@ -118,6 +119,8 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
               : null,
           decoration: InputDecoration(
             labelText: "Select Product Type",
+            errorText:
+                selectedNameAll == null ? "Product type is required" : null,
             contentPadding:
                 EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           ),
