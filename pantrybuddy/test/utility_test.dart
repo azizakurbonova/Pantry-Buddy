@@ -189,7 +189,8 @@ void main() {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         Map<String, dynamic> productData = json.decode(response.body);
-        GroceryItem item = createGroceryItemFromSpoonacular(productData);
+        GroceryItem item = createGroceryItemFromSpoonacular(
+            productData, "temp", DateTime.now(), 1);
 
         // Assertions to validate the creation of the GroceryItem
         expect(item.itemId, equals(productData['id'].toString()));

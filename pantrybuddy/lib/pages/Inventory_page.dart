@@ -18,6 +18,7 @@ import 'dart:developer';
 import 'package:pantrybuddy/foodEntry/widgets/scan_barcode.dart';
 import 'package:pantrybuddy/foodEntry/widgets/manually_add.dart';
 import 'package:pantrybuddy/foodEntry/widgets/auto_search.dart';
+import 'package:pantrybuddy/foodEntry/utility/UPC.dart';
 
 class InventoryPage extends StatefulWidget {
   InventoryPage({Key? key}) : super(key: key);
@@ -102,19 +103,25 @@ class _InventoryPageState extends State<InventoryPage> {
           SpeedDialChild(
             child: Icon(Icons.barcode_reader),
             label: 'Scan Barcode',
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => BarcodeScanner()));
-            }
+            onTap: () async {
+              final barcode = await scanBarcode();
+              if (barcode != 'Unknown' && barcode != '-1') {
+                // If barcode is successfully scanned, navigate to the entry page
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => BarcodeEntryPage(barcode: barcode!),
+                  ),
+                );
+              }
+            },
           ),
           SpeedDialChild(
-            child: Icon(Icons.add_a_photo),
-            label: 'Search for Item',
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AutoSearchForm()));
-            }
-          ),
+              child: Icon(Icons.search),
+              label: 'Search for Item',
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AutoSearchForm()));
+              }),
         ],
       ),
 

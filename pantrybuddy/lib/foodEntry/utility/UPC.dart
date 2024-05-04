@@ -49,7 +49,8 @@ Future<Map<String, dynamic>?> fetchProductByUPC(String upcCode) async {
 }
 
 // Function to parse JSON and create a GroceryItem
-GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product) {
+GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product,
+    String inventoryID, DateTime expiration, int quantity) {
   var nutrition = product?['nutrition'];
 
   // Dynamically build the nutritional information string
@@ -58,28 +59,29 @@ GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product) {
   }).join('; ');
 
   return GroceryItem(
-      inventoryID: "temp",
+      inventoryID: inventoryID,
       itemId: product?['id'].toString(),
       name: product?['title'] ?? 'No title available',
       category: product?['breadcrumbs'] ?? 'Unknown category',
-      quantity: 1, // Default quantity
+      quantity: quantity, // Default quantity
       dateAdded: DateTime.now(),
-      expirationDate:
-          DateTime.now().add(Duration(days: 5)), // Example expiration date
+      expirationDate: expiration, // Example expiration date
       itemIdType: ItemIdType.UPC,
       nutritionalInfo: nutritionalDetails, // All nutritional info as a string
       visible: true,
       image: product?['image']);
 }
 
-Future<GroceryItem?> scanAndFetchProduct() async {
+Future<GroceryItem?> scanAndFetchProduct(
+    String inventoryID, DateTime expiration, int quantity) async {
   final barcode = await scanBarcode();
   if (barcode != null) {
     final product = await fetchProductByUPC(barcode);
     if (product != null) {
       debugPrint('Product Name: ${product['title']}');
 
-      return createGroceryItemFromSpoonacular(product);
+      return createGroceryItemFromSpoonacular(
+          product, inventoryID, expiration, quantity);
     }
     return null;
   }

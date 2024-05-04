@@ -8,109 +8,147 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'dart:developer';
+import 'package:flutter/services.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
 
-//Stateful Widget, calling scanAndFetchProduct() from upc_ean to initiate
-//barcode scanning process, generates the JSON map for Grocery Item,
-//quantity and expiration date needs to be updated with manual input from user
+class BarcodeEntryPage extends StatefulWidget {
+  final String barcode;
+  BarcodeEntryPage({Key? key, required this.barcode}) : super(key: key);
 
-class BarcodeScanner extends StatefulWidget {
-  const BarcodeScanner({Key? key}) : super(key: key);
   @override
-  State<BarcodeScanner> createState() => _BarcodeScannerState();
+  _BarcodeEntryPageState createState() => _BarcodeEntryPageState();
 }
 
-class _BarcodeScannerState extends State<BarcodeScanner> {
-  GroceryItem? currentGroceryItem;
+class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
+  String? _scannedProduct;
+
+  @override
+  void initState() async {
+    super.initState();
+    final product = await fetchProductByUPC(widget.barcode);
+    _scannedProduct = product!['title'].toString();
+  }
 
   final user = FirebaseAuth.instance.currentUser!;
   DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("Scan Barcode"),
-      content: Form(
-        key: GlobalKey<FormState>(),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _buildFormFields(context),
-          ),
-        ),
-      ),
-      actions: _buildActions(context),
-    );
-  }
-
-  List<Widget> _buildFormFields(BuildContext context) {
-    return [];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      appBar: AppBar(
-        title: const Text('Scan Grocery Item'),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text('Barcode Entry')),
       body: Column(
         children: [
-          if (currentGroceryItem != null) ...[
-            Text('Scanned Item: ${currentGroceryItem!.name}'),
-            TextFormField(
-              controller: _quantityController,
-              decoration: const InputDecoration(labelText: 'Quantity'),
-              keyboardType: TextInputType.number,
-              // Optional: Add validation for input
-            ),
-            TextField(
-                controller:
-                    _dateController, //editing controller of this TextField
-                decoration: InputDecoration(
-                    icon: Icon(Icons.calendar_today), //icon of text field
-                    labelText: "Enter Expiration Date", //label text of field,
-                    errorText: _dateController.text.isEmpty
-                        ? 'Expiration date is required'
-                        : null,
-                    labelStyle: TextStyle(color: Colors.black)),
-                readOnly: true, // when true user cannot edit text
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(), //get today's date
-                      firstDate: DateTime
-                          .now(), //DateTime.now() - not to allow to choose before today.
-                      lastDate:
-                          DateTime.now().add(const Duration(days: 365 * 25)));
+          Text('Scanned Barcode: ${widget.barcode}'),
+          SizedBox(height: 10),
+          Text(
+              'Product Name: ${_scannedProduct == null ? "Not Available" : _scannedProduct}'),
+          SizedBox(height: 20),
+          TextFormField(
+            controller: _quantityController,
+            decoration: InputDecoration(
+                labelText: 'Quantity',
+                errorText: (_quantityController.text.isEmpty ||
+                        int.parse(_quantityController.text) <= 0)
+                    ? 'Quantity is required'
+                    : null,
+                labelStyle: TextStyle(color: Colors.black)),
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter
+                  .digitsOnly, // Only allows digits to be entered
+            ],
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Quantity is required';
+              }
+              final n = int.tryParse(value);
+              if (n == null || n <= 0) {
+                return 'Please enter a valid positive number'; // Check for non-integer and non-positive values
+              }
+              return null; // Return null if the input is valid
+            },
+          ),
+          SizedBox(height: 20),
+          TextField(
+              controller:
+                  _dateController, //editing controller of this TextField
+              decoration: InputDecoration(
+                  icon: Icon(Icons.calendar_today), //icon of text field
+                  labelText: "Enter Expiration Date", //label text of field,
+                  errorText: _dateController.text.isEmpty
+                      ? 'Expiration date is required'
+                      : null,
+                  labelStyle: TextStyle(color: Colors.black)),
+              readOnly: true, // when true user cannot edit text
+              onTap: () async {
+                DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(), //get today's date
+                    firstDate: DateTime
+                        .now(), //DateTime.now() - not to allow to choose before today.
+                    lastDate:
+                        DateTime.now().add(const Duration(days: 365 * 25)));
 
-                  if (pickedDate != null) {
-                    String formattedDate = DateFormat('yyyy-MM-dd').format(
-                        pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
-                    debugPrint(
-                        formattedDate); //formatted date output using intl package =>  2022-07-04
+                if (pickedDate != null) {
+                  String formattedDate = DateFormat('yyyy-MM-dd').format(
+                      pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+                  debugPrint(
+                      formattedDate); //formatted date output using intl package =>  2022-07-04
 
-                    setState(() {
-                      _dateController.text =
-                          formattedDate; //set foratted date to TextField value.
-                    });
-                  } else {
-                    debugPrint("Date is not selected");
-                  }
-                }),
-            // Additional UI elements as needed
-          ],
-          ElevatedButton(
-            //scan UPC/EAN barcode
-            onPressed: () async => await scanAndAddProduct(),
-            child: const Text('Scan Product'),
+                  setState(() {
+                    _dateController.text =
+                        formattedDate; //set foratted date to TextField value.
+                  });
+                } else {
+                  debugPrint("Date is not selected");
+                }
+              }),
+          SizedBox(height: 20),
+          TextButton(
+            onPressed: () {
+              if (_dateController.text.isNotEmpty &&
+                  _quantityController.text.isNotEmpty &&
+                  _scannedProduct != null) {
+                addEntry(context);
+                Navigator.of(context)
+                    .pushReplacement(MaterialPageRoute(builder: (context) {
+                  return InventoryPage();
+                }));
+              } else {
+                // Show a dialog if the form is not valid
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Error"),
+                      content: _scannedProduct == null
+                          ? const Text("Product information not found")
+                          : const Text(
+                              "Please fill all required fields and set an expiration date."),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Dismiss the dialog
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+            },
+            child: const Text('Submit'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> scanAndAddProduct() async {
+  Future<void> addEntry(BuildContext context) async {
     final DateTime expirationDate = _dateController.text.isNotEmpty
         ? DateTime.parse(_dateController.text)
         : DateTime.now();
@@ -122,7 +160,8 @@ class _BarcodeScannerState extends State<BarcodeScanner> {
     FoodInventory pantry = await fetchPantry();
     String pantryID = pantry.inventoryId as String;
 
-    GroceryItem? newItem = await scanAndFetchProduct();
+    GroceryItem? newItem =
+        await scanAndFetchProduct(pantryID, expirationDate, quantity);
 
     try {
       log("length before" + pantry.groceryItems.length.toString());
