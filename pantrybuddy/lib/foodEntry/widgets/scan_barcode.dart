@@ -112,6 +112,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
             onPressed: () {
               if (_dateController.text.isNotEmpty &&
                   _quantityController.text.isNotEmpty &&
+                  int.parse(_quantityController.text) > 0 &&
                   _scannedProduct != null) {
                 addEntry(context);
                 Navigator.of(context)
