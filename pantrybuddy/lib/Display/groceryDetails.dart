@@ -33,12 +33,38 @@ class _FoodDetailsState extends State<ItemDetails> {
 
   int getIndex(List<GroceryItem> groceries, GroceryItem item) {
     for (int x = 0; x < groceries.length; x++) {
-      if (item.dateAdded.toIso8601String() ==
-          groceries[x].dateAdded.toIso8601String()) {
+      if ((item.dateAdded.toIso8601String() ==
+              groceries[x].dateAdded.toIso8601String()) &&
+          (item.name == groceries[x].name) &&
+          (item.quantity == groceries[x].quantity)) {
         return x;
       }
     }
     return -1;
+  }
+
+  Map<String, String> parseNutritionalInfo(String? nutritionalInfo) {
+    Map<String, String> nutritionMap = {};
+    if (nutritionalInfo == null || nutritionalInfo.isEmpty) {
+      return nutritionMap;
+    }
+
+    List<String> entries = nutritionalInfo.split(';');
+    for (var entry in entries) {
+      if (entry.contains(':')) {
+        List<String> parts = entry.split(':');
+        if (parts.length >= 2) {
+          String key = parts[0].trim();
+          String value = parts[1].trim();
+          nutritionMap[key] = value;
+        }
+      }
+    }
+    return nutritionMap;
+  }
+
+  List<String> processCategories(List<dynamic> categories) {
+    return categories.map((category) => category.toString()).toList();
   }
 
   @override
@@ -46,21 +72,75 @@ class _FoodDetailsState extends State<ItemDetails> {
     return Scaffold(
         backgroundColor: Color.fromARGB(153, 173, 197, 255),
         appBar: AppBar(
-          title: const Text('Item Details',
-              style: TextStyle(
+            title: const Text('Item Details',
+                style: TextStyle(
                   color: Colors.black,
                   fontSize: 25.0,
                   //fontWeight: FontWeight.w100
-                  )),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          //actions: [
-          //  IconButton(
-          //    icon: const Icon(Icons.info, color: Colors.white),
-          //    onPressed: () {},
-          //  )
-          //]
-        ),
+                )),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.info, color: Colors.white),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Item Details"),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: [
+                              Text(
+                                  "Categories: ${processCategories(widget.item.category).join(", ")}",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              parseNutritionalInfo(widget.item.nutritionalInfo)
+                                      .isNotEmpty
+                                  ? DataTable(
+                                      columns: const <DataColumn>[
+                                        DataColumn(label: Text('Nutrient')),
+                                        DataColumn(label: Text('Value')),
+                                      ],
+                                      rows: parseNutritionalInfo(
+                                              widget.item.nutritionalInfo)
+                                          .entries
+                                          .map((entry) => DataRow(
+                                                cells: <DataCell>[
+                                                  DataCell(Text(entry.key)),
+                                                  DataCell(Text(entry.value)),
+                                                ],
+                                              ))
+                                          .toList(),
+                                    )
+                                  : const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 20),
+                                      child: Text(
+                                        "Nutritional information not available",
+                                        style:
+                                            TextStyle(color: Colors.redAccent),
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text("Close"),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              )
+            ]),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(50.0),
@@ -72,14 +152,14 @@ class _FoodDetailsState extends State<ItemDetails> {
                 nameController: _nameController,
               ),
               const Divider(),
-              const SizedBox(height:10),
+              const SizedBox(height: 10),
               const Text(
                 'Quantity:',
                 style: TextStyle(fontSize: 25.0, color: Colors.black),
               ),
               GroceryQuantityField(quantityController: _quantityController),
               Divider(),
-              const SizedBox(height:10),
+              const SizedBox(height: 10),
               Column(
                 children: [
                   Row(
@@ -130,8 +210,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                         },
                         child: const Text('Save'),
                       ),
-                      const SizedBox(width:8),
-
+                      const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () async {
                           FoodInventory pantry = await fetchPantry();
@@ -159,66 +238,68 @@ class _FoodDetailsState extends State<ItemDetails> {
                       ),
                     ],
                   ),
-                  const SizedBox(height:8),
-
-                  Text (
+                  const SizedBox(height: 8),
+                  Text(
                     "or mark as:",
-                    style: TextStyle(fontSize:14),
+                    style: TextStyle(fontSize: 14),
                   ),
-                  
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      FoodInventory pantry = await fetchPantry();
-                      for (int x = 0; x < pantry.groceryItems.length; x++) {
-                        if (pantry.groceryItems[x].itemId ==
-                            widget.item.itemId) {
-                          pantry.discarded += pantry.groceryItems[x].quantity;
-                          pantry.groceryItems.removeAt(x);
-                          break;
-                        }
-                      }
-                      String inventoryID = pantry.inventoryId as String;
-                      dbRef
-                          .child("foodInventories/$inventoryID/")
-                          .set(pantry.toJson());
-                      pantry = await fetchPantry();
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) {
-                        return InventoryPage();
-                      }));
-                    },
-                    child: const Text('Discarded'),
-                  ),
-                  const SizedBox(width:8),
-
-                  ElevatedButton(
-                    onPressed: () async {
-                      FoodInventory pantry = await fetchPantry();
-                      for (int x = 0; x < pantry.groceryItems.length; x++) {
-                        if (pantry.groceryItems[x].itemId ==
-                            widget.item.itemId) {
-                          pantry.consumed += pantry.groceryItems[x].quantity;
-                          pantry.groceryItems.removeAt(x);
-                          break;
-                        }
-                      }
-                      String inventoryID = pantry.inventoryId as String;
-                      dbRef
-                          .child("foodInventories/$inventoryID/")
-                          .set(pantry.toJson());
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) {
-                        return InventoryPage();
-                      }));
-                    },
-                    child: const Text('Consumed'),
-                  )
-                    ]
-                  ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            FoodInventory pantry = await fetchPantry();
+                            for (int x = 0;
+                                x < pantry.groceryItems.length;
+                                x++) {
+                              if (pantry.groceryItems[x].itemId ==
+                                  widget.item.itemId) {
+                                pantry.discarded +=
+                                    pantry.groceryItems[x].quantity;
+                                pantry.groceryItems.removeAt(x);
+                                break;
+                              }
+                            }
+                            String inventoryID = pantry.inventoryId as String;
+                            dbRef
+                                .child("foodInventories/$inventoryID/")
+                                .set(pantry.toJson());
+                            pantry = await fetchPantry();
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) {
+                              return InventoryPage();
+                            }));
+                          },
+                          child: const Text('Discarded'),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () async {
+                            FoodInventory pantry = await fetchPantry();
+                            for (int x = 0;
+                                x < pantry.groceryItems.length;
+                                x++) {
+                              if (pantry.groceryItems[x].itemId ==
+                                  widget.item.itemId) {
+                                pantry.consumed +=
+                                    pantry.groceryItems[x].quantity;
+                                pantry.groceryItems.removeAt(x);
+                                break;
+                              }
+                            }
+                            String inventoryID = pantry.inventoryId as String;
+                            dbRef
+                                .child("foodInventories/$inventoryID/")
+                                .set(pantry.toJson());
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) {
+                              return InventoryPage();
+                            }));
+                          },
+                          child: const Text('Consumed'),
+                        )
+                      ]),
                 ],
               ),
             ]),
