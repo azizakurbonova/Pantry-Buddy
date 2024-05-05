@@ -49,7 +49,9 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
             Text(
                 'Product Name: ${_scannedProduct == null ? "Not Available" : _scannedProduct}'),
             SizedBox(height: 20),
-            TextFormField(
+            Padding (
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: TextFormField(
               controller: _quantityController,
               decoration: InputDecoration(
                 labelText: 'Quantity',
@@ -75,8 +77,11 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
                 return null;
               },
             ),
+            ),
             SizedBox(height: 20),
-            TextField(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: TextField(
               controller: _dateController,
               decoration: InputDecoration(
                 icon: Icon(Icons.calendar_today),
@@ -106,6 +111,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
                   debugPrint("Date is not selected");
                 }
               },
+            ),
             ),
             SizedBox(height: 20),
             TextButton(

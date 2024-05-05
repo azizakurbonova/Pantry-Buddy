@@ -43,6 +43,30 @@ class _FoodDetailsState extends State<ItemDetails> {
     return -1;
   }
 
+  Map<String, String> parseNutritionalInfo(String? nutritionalInfo) {
+    Map<String, String> nutritionMap = {};
+    if (nutritionalInfo == null || nutritionalInfo.isEmpty) {
+      return nutritionMap;
+    }
+
+    List<String> entries = nutritionalInfo.split(';');
+    for (var entry in entries) {
+      if (entry.contains(':')) {
+        List<String> parts = entry.split(':');
+        if (parts.length >= 2) {
+          String key = parts[0].trim();
+          String value = parts[1].trim();
+          nutritionMap[key] = value;
+        }
+      }
+    }
+    return nutritionMap;
+  }
+
+  List<String> processCategories(List<dynamic> categories) {
+    return categories.map((category) => category.toString()).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +83,62 @@ class _FoodDetailsState extends State<ItemDetails> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.info, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Item Details"),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: [
+                              Text(
+                                  "Categories: ${processCategories(widget.item.category).join(", ")}",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              parseNutritionalInfo(widget.item.nutritionalInfo)
+                                      .isNotEmpty
+                                  ? DataTable(
+                                      columns: const <DataColumn>[
+                                        DataColumn(label: Text('Nutrient')),
+                                        DataColumn(label: Text('Value')),
+                                      ],
+                                      rows: parseNutritionalInfo(
+                                              widget.item.nutritionalInfo)
+                                          .entries
+                                          .map((entry) => DataRow(
+                                                cells: <DataCell>[
+                                                  DataCell(Text(entry.key)),
+                                                  DataCell(Text(entry.value)),
+                                                ],
+                                              ))
+                                          .toList(),
+                                    )
+                                  : const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 20),
+                                      child: Text(
+                                        "Nutritional information not available",
+                                        style:
+                                            TextStyle(color: Colors.redAccent),
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text("Close"),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               )
             ]),
         body: Center(
