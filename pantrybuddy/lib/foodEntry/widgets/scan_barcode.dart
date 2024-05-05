@@ -40,112 +40,112 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Barcode Entry')),
-      body: Column(
-        children: [
-          Text('Scanned Barcode: ${widget.barcode}'),
-          SizedBox(height: 10),
-          Text(
-              'Product Name: ${_scannedProduct == null ? "Not Available" : _scannedProduct}'),
-          SizedBox(height: 20),
-          TextFormField(
-            controller: _quantityController,
-            decoration: InputDecoration(
+      body: Padding(
+        padding: const EdgeInsets.all(12.0), // Set padding here
+        child: Column(
+          children: [
+            Text('Scanned Barcode: ${widget.barcode}'),
+            SizedBox(height: 10),
+            Text(
+                'Product Name: ${_scannedProduct == null ? "Not Available" : _scannedProduct}'),
+            SizedBox(height: 20),
+            TextFormField(
+              controller: _quantityController,
+              decoration: InputDecoration(
                 labelText: 'Quantity',
                 errorText: (_quantityController.text.isEmpty ||
                         int.parse(_quantityController.text) <= 0)
                     ? 'Quantity is required'
                     : null,
-                labelStyle: TextStyle(color: Colors.black)),
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter
-                  .digitsOnly, // Only allows digits to be entered
-            ],
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Quantity is required';
-              }
-              final n = int.tryParse(value);
-              if (n == null || n <= 0) {
-                return 'Please enter a valid positive number'; // Check for non-integer and non-positive values
-              }
-              return null; // Return null if the input is valid
-            },
-          ),
-          SizedBox(height: 20),
-          TextField(
-              controller:
-                  _dateController, //editing controller of this TextField
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter
+                    .digitsOnly, // Only allows digits to be entered
+              ],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Quantity is required';
+                }
+                final n = int.tryParse(value);
+                if (n == null || n <= 0) {
+                  return 'Please enter a valid positive number';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _dateController,
               decoration: InputDecoration(
-                  icon: Icon(Icons.calendar_today), //icon of text field
-                  labelText: "Enter Expiration Date", //label text of field,
-                  errorText: _dateController.text.isEmpty
-                      ? 'Expiration date is required'
-                      : null,
-                  labelStyle: TextStyle(color: Colors.black)),
-              readOnly: true, // when true user cannot edit text
+                icon: Icon(Icons.calendar_today),
+                labelText: "Enter Expiration Date",
+                errorText: _dateController.text.isEmpty
+                    ? 'Expiration date is required'
+                    : null,
+                labelStyle: TextStyle(color: Colors.black),
+              ),
+              readOnly: true,
               onTap: () async {
                 DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(), //get today's date
-                    firstDate: DateTime
-                        .now(), //DateTime.now() - not to allow to choose before today.
-                    lastDate:
-                        DateTime.now().add(const Duration(days: 365 * 25)));
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365 * 25)),
+                );
 
                 if (pickedDate != null) {
-                  String formattedDate = DateFormat('yyyy-MM-dd').format(
-                      pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
-                  debugPrint(
-                      formattedDate); //formatted date output using intl package =>  2022-07-04
-
+                  String formattedDate =
+                      DateFormat('yyyy-MM-dd').format(pickedDate);
+                  debugPrint(formattedDate);
                   setState(() {
-                    _dateController.text =
-                        formattedDate; //set foratted date to TextField value.
+                    _dateController.text = formattedDate;
                   });
                 } else {
                   debugPrint("Date is not selected");
                 }
-              }),
-          SizedBox(height: 20),
-          TextButton(
-            onPressed: () {
-              if (_dateController.text.isNotEmpty &&
-                  _quantityController.text.isNotEmpty &&
-                  int.parse(_quantityController.text) > 0 &&
-                  _scannedProduct != null) {
-                addEntry(context);
-                Navigator.of(context)
-                    .pushReplacement(MaterialPageRoute(builder: (context) {
-                  return InventoryPage();
-                }));
-              } else {
-                // Show a dialog if the form is not valid
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("Error"),
-                      content: _scannedProduct == null
-                          ? const Text("Product information not found")
-                          : const Text(
-                              "Please fill all required fields and set an expiration date."),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Dismiss the dialog
-                          },
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
-            },
-            child: const Text('Submit'),
-          ),
-        ],
+              },
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                if (_dateController.text.isNotEmpty &&
+                    _quantityController.text.isNotEmpty &&
+                    int.parse(_quantityController.text) > 0 &&
+                    _scannedProduct != null) {
+                  addEntry(context);
+                  Navigator.of(context)
+                      .pushReplacement(MaterialPageRoute(builder: (context) {
+                    return InventoryPage();
+                  }));
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Error"),
+                        content: _scannedProduct == null
+                            ? const Text("Product information not found")
+                            : const Text(
+                                "Please fill all required fields and set an expiration date."),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
     );
   }
