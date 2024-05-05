@@ -104,8 +104,8 @@ class _InventoryPageState extends State<InventoryPage> {
             label: 'Scan Barcode',
             onTap: () async {
               final barcode = await scanBarcode();
-              if (barcode == null || barcode == 'Unknown' || barcode == '-1') {
-                // Show an error dialog if barcode scanning was not successful
+              if (barcode == null) {
+                // Show a error dialog if not successful
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -114,20 +114,24 @@ class _InventoryPageState extends State<InventoryPage> {
                       content: const Text("Barcode scanning not successful"),
                       actions: <Widget>[
                         TextButton(
-                          onPressed: () =>
-                              Navigator.of(context).pop(), // Close the dialog
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) {
+                              return InventoryPage();
+                            })); // Dismiss the dialog
+                          },
                           child: const Text('OK'),
                         ),
                       ],
                     );
                   },
                 );
-              } else if (barcode != 'Unknown' && barcode != '-1') {
-                // If a valid barcode is scanned, attempt to fetch the product
-                final product = await fetchProductByUPC(barcode);
-                if (product != null ||
-                    (product!['status'].toString() == "failure")) {
-                  // Navigate to the entry page if the product is found
+              }
+              if (barcode != 'Unknown' && barcode != '-1') {
+                // If barcode is successfully scanned, navigate to the entry page
+                final product = await fetchProductByUPC(barcode!);
+                if (product != null &&
+                    product['status'].toString() != "failure") {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) =>
@@ -135,7 +139,6 @@ class _InventoryPageState extends State<InventoryPage> {
                     ),
                   );
                 } else {
-                  // Show an error dialog if the product is not found
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -144,8 +147,12 @@ class _InventoryPageState extends State<InventoryPage> {
                         content: const Text("Product not found"),
                         actions: <Widget>[
                           TextButton(
-                            onPressed: () =>
-                                Navigator.of(context).pop(), // Close the dialog
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (context) {
+                                return InventoryPage();
+                              })); // Dismiss the dialog
+                            },
                             child: const Text('OK'),
                           ),
                         ],
