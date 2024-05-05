@@ -36,12 +36,13 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   // remove user from pantry
-  void removeUserFromPantry(String pantryCode) async {
+  void removeUserFromPantry() async {
     final database = FirebaseDatabase.instance.ref();
     final currentUser = FirebaseAuth.instance.currentUser!;
     final userId = currentUser.uid;
-    //remove user from list of users in FoodInventory
     FoodInventory pantry = await fetchPantry();
+    final String pantryCode = await fetchPantryID();
+    //remove user from list of users in FoodInventory
     List<String> users = pantry.users;
     int indexToRemove = users.indexOf(userId); //find their index
     if (indexToRemove != -1) { // if user exists in list
@@ -53,8 +54,11 @@ class _AccountPageState extends State<AccountPage> {
     userRef.update({'inventoryID': null});
   }
 
-  void deletePantry(String ownerId, List<String> users) {
-    if (FirebaseAuth.instance.currentUser?.uid != ownerId) {
+  Future<void> deletePantry() async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final userId = currentUser.uid;
+    FoodInventory pantry = await fetchPantry();
+    if (userId != pantry.owner) {
       AlertDialog(
         content: Text('Only the owner has permission to delete the pantry!')
       );
@@ -63,13 +67,14 @@ class _AccountPageState extends State<AccountPage> {
     final databaseReference = FirebaseDatabase.instance.ref();
 
     //remove inventoryid from every user
+    List<String> users = pantry.users;
     for (String userId in users) {
       databaseReference.child('users').child(userId).update({'pantry': null});
     }
 
     //delete FoodInventory
-    String pantry = fetchPantryID() as String;
-    databaseReference.child('foodInventories').child(pantry).remove();
+    final String pantryCode = await fetchPantryID();
+    databaseReference.child('foodInventories').child(pantryCode).remove();
 
     Navigator.push( //nav to home page
       context,
@@ -81,19 +86,19 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  void deleteAccount() {
-    FoodInventory pantry = fetchPantry() as FoodInventory;
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (FirebaseAuth.instance.currentUser?.uid != pantry.owner) {
-      List<String> users = pantry.users;
-      deletePantry(pantry.owner, users);
-    } //if owner, delete the pantry
+  void deleteAccount() async {
+    FoodInventory pantry = await fetchPantry();
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final userId = currentUser.uid;
+    if (userId != pantry.owner) {
+      removeUserFromPantry();
+    } //if not owner, leave pantry
     else { 
-      removeUserFromPantry(fetchPantry() as String);
-    }// else, just remove from pantry
+      deletePantry();
+    }// if owner, delete pantry
     //then delete user from database
     final databaseReference = FirebaseDatabase.instance.ref();
-    databaseReference.child('users').child(userId!).remove();
+    databaseReference.child('users').child(userId).remove();
     //and firebase auth
     FirebaseAuth.instance.currentUser?.delete();
     Navigator.pushReplacement(
@@ -150,7 +155,7 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        removeUserFromPantry(fetchPantryID() as String);
+                        removeUserFromPantry();
                       },
                       child: Text('Leave Pantry'),
                     ),
@@ -158,7 +163,7 @@ class _AccountPageState extends State<AccountPage> {
 
                     ElevatedButton(
                       onPressed: () async {
-                        // Implement owner delete pantry functionality
+                        deletePantry();
                       },
                       child: Text('Delete Pantry (Owner)'),
                     ),
