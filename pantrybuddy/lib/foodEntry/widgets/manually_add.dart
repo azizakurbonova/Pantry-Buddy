@@ -100,6 +100,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
           contentPadding:
               EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         ),
+        isExpanded: true,
       ),
       SizedBox(height: 20),
       if (selectedCategory != null && selectedCategory != "N/A") ...[
@@ -127,6 +128,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
             contentPadding:
                 EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           ),
+          isExpanded: true,
         ),
       ],
       SizedBox(height: 20),
