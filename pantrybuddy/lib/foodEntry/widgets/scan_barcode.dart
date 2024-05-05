@@ -30,7 +30,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
   @override
   void initState() {
     super.initState();
-    _scannedProduct = widget.product!['title'].toString();
+    _scannedProduct = widget.product['title'].toString();
   }
 
   final user = FirebaseAuth.instance.currentUser!;
