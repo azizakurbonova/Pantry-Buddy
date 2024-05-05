@@ -143,8 +143,9 @@ class _InventoryPageState extends State<InventoryPage> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text("Error"),
-                        content: const Text("Product not found"),
+                        title: const Text("Product not found"),
+                        content: const Text(
+                            "We don't have this item in our database. Try another method of entry!"),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
