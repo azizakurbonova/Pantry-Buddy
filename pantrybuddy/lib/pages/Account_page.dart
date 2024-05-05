@@ -43,6 +43,9 @@ class _AccountPageState extends State<AccountPage> {
     final userId = currentUser.uid;
     FoodInventory pantry = await fetchPantry();
     final String pantryCode = await fetchPantryID();
+    if (userId == pantry.owner) { //if owner tries to leave, just delete pantry
+      deletePantry();
+    }
     //remove user from list of users in FoodInventory
     List<String> users = pantry.users;
     int indexToRemove = users.indexOf(userId); //find their index
