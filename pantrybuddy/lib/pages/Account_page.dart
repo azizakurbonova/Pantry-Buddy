@@ -67,7 +67,10 @@ class _AccountPageState extends State<AccountPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text('Only the owner has permission to delete the pantry!'),
+            content: Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Text('Only the owner has permission to delete the pantry!'),
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -86,7 +89,7 @@ class _AccountPageState extends State<AccountPage> {
     //remove inventoryid from every user
     List<String> users = pantry.users;
     for (String userId in users) {
-      databaseReference.child('users').child(userId).update({'pantry': null});
+      databaseReference.child('users').child(userId).update({'inventoryID': null});
     }
 
     //delete FoodInventory
