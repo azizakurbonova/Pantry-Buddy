@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 //import 'package:pantrybuddy/pages/join_pantry_page.dart';
@@ -119,6 +120,14 @@ class _JoinPantryPageState extends State<JoinPantryPage> {
               print("Button tapped!");
               String inputCode = _textController.text;
               addUserToPantry(inputCode);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return InventoryPage();
+                  },
+                ),
+              );
             },
             child: Container(
               padding: const EdgeInsets.all(20),
