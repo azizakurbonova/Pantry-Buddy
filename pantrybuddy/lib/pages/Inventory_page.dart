@@ -130,12 +130,35 @@ class _InventoryPageState extends State<InventoryPage> {
               if (barcode != 'Unknown' && barcode != '-1') {
                 // If barcode is successfully scanned, navigate to the entry page
                 final product = await fetchProductByUPC(barcode!);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        BarcodeEntryPage(barcode: barcode, product: product),
-                  ),
-                );
+                if (product != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          BarcodeEntryPage(barcode: barcode, product: product),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Error"),
+                        content: const Text("Product not found"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (context) {
+                                return InventoryPage();
+                              })); // Dismiss the dialog
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               }
             },
           ),

@@ -161,8 +161,8 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
     FoodInventory pantry = await fetchPantry();
     String pantryID = pantry.inventoryId as String;
 
-    GroceryItem? newItem =
-        await scanAndFetchProduct(pantryID, expirationDate, quantity);
+    GroceryItem? newItem = createGroceryItemFromSpoonacular(
+        widget.product, pantryID, expirationDate, quantity);
 
     try {
       log("length before" + pantry.groceryItems.length.toString());
