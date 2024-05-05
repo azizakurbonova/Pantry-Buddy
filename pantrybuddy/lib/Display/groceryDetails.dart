@@ -43,27 +43,31 @@ class _FoodDetailsState extends State<ItemDetails> {
     return -1;
   }
 
-  Map<String, String> parseNutritionalInfo(String? nutritionalInfo) {
-    Map<String, String> nutritionMap = {};
+  Map<String, List<String>> parseNutritionalInfo(String? nutritionalInfo) {
+    Map<String, List<String>> nutritionMap = {};
     if (nutritionalInfo == null || nutritionalInfo.isEmpty) {
       return nutritionMap;
     }
 
-    List<String> entries = nutritionalInfo.split(';');
+    List<String> entries = nutritionalInfo.split('; ');
     for (var entry in entries) {
-      if (entry.contains(':')) {
-        List<String> parts = entry.split(':');
-        if (parts.length >= 2) {
-          String key = parts[0].trim();
-          String value = parts[1].trim();
-          nutritionMap[key] = value;
-        }
+      List<String> parts = entry.split(', ');
+      if (parts.length >= 3) {
+        String name = parts[0].trim();
+        String amount = parts[1].trim();
+        String percentDaily = parts[2].trim();
+
+        nutritionMap[name] = [amount, percentDaily];
       }
     }
+
     return nutritionMap;
   }
 
   List<String> processCategories(List<dynamic> categories) {
+    if (categories.isEmpty) {
+      return ["No category information available"];
+    }
     return categories.map((category) => category.toString()).toList();
   }
 
@@ -103,6 +107,9 @@ class _FoodDetailsState extends State<ItemDetails> {
                                       columns: const <DataColumn>[
                                         DataColumn(label: Text('Nutrient')),
                                         DataColumn(label: Text('Value')),
+                                        DataColumn(
+                                            label:
+                                                Text('Percent of Daily Needs'))
                                       ],
                                       rows: parseNutritionalInfo(
                                               widget.item.nutritionalInfo)
@@ -110,7 +117,10 @@ class _FoodDetailsState extends State<ItemDetails> {
                                           .map((entry) => DataRow(
                                                 cells: <DataCell>[
                                                   DataCell(Text(entry.key)),
-                                                  DataCell(Text(entry.value)),
+                                                  DataCell(
+                                                      Text(entry.value[0])),
+                                                  DataCell(
+                                                      Text(entry.value[1])),
                                                 ],
                                               ))
                                           .toList(),

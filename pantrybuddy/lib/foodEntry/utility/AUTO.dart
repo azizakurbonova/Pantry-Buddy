@@ -140,11 +140,15 @@ Future<GroceryItem?> idSearch_menuItems(
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = product?['nutrition']['nutrients'];
 
   // Dynamically build the nutritional information string
-  var nutritionalDetails = nutrition.entries.map((entry) {
-    return "${entry.key}: ${entry.value}";
+  var nutritionalDetails = nutrition.map((nutrient) {
+    String name = nutrient['name'] ?? 'Unknown';
+    String amount = nutrient['amount'].toString();
+    String unit = nutrient['unit'] ?? '';
+    String percentDaily = nutrient['percentOfDailyNeeds'].toString();
+    return "$name, $amount $unit, $percentDaily";
   }).join('; ');
 
   return GroceryItem(
@@ -164,11 +168,15 @@ GroceryItem createGroceryItem_Menu(Map<String, dynamic>? product,
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = product?['nutrition']['nutrients'];
 
   // Dynamically build the nutritional information string
-  var nutritionalDetails = nutrition.entries.map((entry) {
-    return "${entry.key}: ${entry.value}";
+  var nutritionalDetails = nutrition.map((nutrient) {
+    String name = nutrient['name'] ?? 'Unknown';
+    String amount = nutrient['amount'].toString();
+    String unit = nutrient['unit'] ?? '';
+    String percentDaily = nutrient['percentOfDailyNeeds'].toString();
+    return "$name, $amount $unit, $percentDaily";
   }).join('; ');
 
   return GroceryItem(
@@ -188,11 +196,15 @@ GroceryItem createGroceryItem_Ingredient(Map<String, dynamic>? product,
 // Function to parse JSON and create a GroceryItem
 GroceryItem createGroceryItem_Product(Map<String, dynamic>? product,
     String inventoryID, DateTime expiration, int setQuantity) {
-  var nutrition = product?['nutrition'];
+  var nutrition = product?['nutrition']['nutrients'];
 
   // Dynamically build the nutritional information string
-  var nutritionalDetails = nutrition.entries.map((entry) {
-    return "${entry.key}: ${entry.value}";
+  var nutritionalDetails = nutrition.map((nutrient) {
+    String name = nutrient['name'] ?? 'Unknown';
+    String amount = nutrient['amount'].toString();
+    String unit = nutrient['unit'] ?? '';
+    String percentDaily = nutrient['percentOfDailyNeeds'].toString();
+    return "$name, $amount $unit, $percentDaily";
   }).join('; ');
 
   return GroceryItem(
