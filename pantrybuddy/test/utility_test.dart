@@ -164,7 +164,18 @@ void main() {
       expect(result['title'],
           'Swan Flour'); // Expecting specific title based on known data
     });
+    test('fetches product data from a live API call - product not found',
+        () async {
+      // Assuming fetchProductByUPC uses a real http client and real API key
+      const upcCode =
+          '000942423 '; // Known UPC code that will return valid data
+      Map<String, dynamic>? result = await fetchProductByUPC(upcCode);
 
+      //debugPrint((result!['status'].toString() == "failure").toString());
+      // Verify that the API returns a non-null result
+      expect(result, isNotNull);
+      expect(result!['status'].toString() == "failure", isTrue);
+    });
     test('creates GroceryItem', () async {
       // Assuming fetchProductByUPC uses a real http client and real API key
       const upcCode =

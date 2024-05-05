@@ -125,7 +125,8 @@ class _InventoryPageState extends State<InventoryPage> {
               } else if (barcode != 'Unknown' && barcode != '-1') {
                 // If a valid barcode is scanned, attempt to fetch the product
                 final product = await fetchProductByUPC(barcode);
-                if (product != null) {
+                if (product != null ||
+                    (product!['status'].toString() == "failure")) {
                   // Navigate to the entry page if the product is found
                   Navigator.of(context).push(
                     MaterialPageRoute(
