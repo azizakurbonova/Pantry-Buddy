@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/models/food_inventory.dart';
 import 'package:pantrybuddy/pages/home_page.dart';
+import 'package:pantrybuddy/pages/join_pantry_page.dart';
 import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:pantrybuddy/pages/tools/getPantryID.dart';
@@ -59,8 +60,21 @@ class _AccountPageState extends State<AccountPage> {
     final userId = currentUser.uid;
     FoodInventory pantry = await fetchPantry();
     if (userId != pantry.owner) {
-      AlertDialog(
-        content: Text('Only the owner has permission to delete the pantry!')
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text('Only the owner has permission to delete the pantry!'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        }
       );
       return;
     }
@@ -75,15 +89,6 @@ class _AccountPageState extends State<AccountPage> {
     //delete FoodInventory
     final String pantryCode = await fetchPantryID();
     databaseReference.child('foodInventories').child(pantryCode).remove();
-
-    Navigator.push( //nav to home page
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return HomePage();
-        },
-      ),
-    );
   }
 
   void deleteAccount() async {
@@ -101,10 +106,6 @@ class _AccountPageState extends State<AccountPage> {
     databaseReference.child('users').child(userId).remove();
     //and firebase auth
     FirebaseAuth.instance.currentUser?.delete();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage(showRegisterPage: () {  },)),
-    );
   }
 
   @override
@@ -156,6 +157,14 @@ class _AccountPageState extends State<AccountPage> {
                     ElevatedButton(
                       onPressed: () async {
                         removeUserFromPantry();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HomePage();
+                            },
+                          ),
+                        );
                       },
                       child: Text('Leave Pantry'),
                     ),
@@ -164,6 +173,14 @@ class _AccountPageState extends State<AccountPage> {
                     ElevatedButton(
                       onPressed: () async {
                         deletePantry();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return HomePage();
+                            },
+                          ),
+                        );
                       },
                       child: Text('Delete Pantry (Owner)'),
                     ),
@@ -177,15 +194,15 @@ class _AccountPageState extends State<AccountPage> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return const ForgotPasswordPage();
-                                },
-                              ),
-                            );
-                          },
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return const ForgotPasswordPage();
+                            },
+                          ),
+                        );
+                      },
                       child: Text('Change Password'),
                     ),
                     SizedBox(width: 4),
@@ -193,6 +210,14 @@ class _AccountPageState extends State<AccountPage> {
                     ElevatedButton(
                       onPressed: () async {
                         deleteAccount();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return LoginPage(showRegisterPage: () {  },);
+                            },
+                          ),
+                        );
                       },
                       child: Text('Delete Account'),
                     ),
