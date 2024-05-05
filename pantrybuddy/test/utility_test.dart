@@ -304,7 +304,7 @@ void main() {
       expect(product.itemIdType, ItemIdType.AUTO);
     });
 
-    test('idSearch_products retrieves ingredients details', () async {
+    test('idSearch_ingredients retrieves ingredients details', () async {
       final product = await idSearch_ingredients(
           "9266", "temp", DateTime.now(), 1); // Using a known product ID
       expect(product, isNotNull);
@@ -349,6 +349,7 @@ void main() {
         GroceryItem item =
             createGroceryItem_Ingredient(product, "temp", DateTime.now(), 1);
 
+        debugPrint(item.nutritionalInfo);
         // Check that the item has been correctly populated
         expect(item.name, isNotEmpty);
         expect(item.category, isNotEmpty);
