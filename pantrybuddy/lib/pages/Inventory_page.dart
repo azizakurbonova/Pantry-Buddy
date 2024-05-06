@@ -230,18 +230,22 @@ class _InventoryPageState extends State<InventoryPage> {
                                   jsonData[item.key.toString()] = item.value;
                                 }
                                 List<dynamic> groceryJsons = [];
-                                for (var map in jsonData["groceryItems"]) {
-                                  Map<String, dynamic> groceryJson = {};
-                                  for (var key in map.keys) {
-                                    //log("translating: ${key.toString()}->${map[key].toString()}");
-                                    groceryJson[key.toString()] = map[key];
+                                if (jsonData['groceryItems'] == null) {
+                                  jsonData["groceryItems"] = [];
+                                } else {
+                                  for (var map in jsonData["groceryItems"]) {
+                                    Map<String, dynamic> groceryJson = {};
+                                    for (var key in map.keys) {
+                                      //log("translating: ${key.toString()}->${map[key].toString()}");
+                                      groceryJson[key.toString()] = map[key];
+                                    }
+                                    //if (groceryJson["visible"]) {
+                                    //  groceryJsons.add(groceryJson);
+                                    //}
+                                    groceryJsons.add(groceryJson);
                                   }
-                                  //if (groceryJson["visible"]) {
-                                  //  groceryJsons.add(groceryJson);
-                                  //}
-                                  groceryJsons.add(groceryJson);
+                                  jsonData["groceryItems"] = groceryJsons;
                                 }
-                                jsonData["groceryItems"] = groceryJsons;
                                 FoodInventory pantry =
                                     FoodInventory.fromJson(jsonData);
                                 //log(pantry.groceryItems.length.toString());
