@@ -65,7 +65,13 @@ class _InventoryPageState extends State<InventoryPage> {
 
   List<GroceryItem> sortByExpirationDate(List<GroceryItem> groceries) {
     groceries.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
-    groceries.removeAt(0);
+    for (int x = 0; x < groceries.length; x++) {
+      if (groceries[x].name == "dummy") {
+        groceries.removeAt(x);
+        break;
+      }
+    }
+    //groceries.removeAt(0);
     return groceries;
   }
 
