@@ -37,17 +37,17 @@ class _HomePageState extends State<HomePage> {
     //final readCode = FirebaseDatabase.instance.ref();
     //final snapshot = await readCo de.child('users/$myUser/joinCode').get();
 
-    String? inventoryId = newInventoryID;
+    String? inventoryID = newInventoryID;
     GroceryItem groceryItem = GroceryItem(
         name: "dummy",
-        inventoryID: inventoryId as String,
+        inventoryID: inventoryID as String,
         category: ['test'],
         dateAdded: DateTime.now(),
         expirationDate: DateTime.now(),
         itemIdType: ItemIdType.MANUAL);
     groceryItem.visible = false;
     FoodInventory newInventory = FoodInventory(
-      inventoryId: inventoryId,
+      inventoryID: inventoryID,
       owner: user.uid,
       users: [user.uid],
       groceryItems: [groceryItem],
@@ -60,20 +60,20 @@ class _HomePageState extends State<HomePage> {
     // );
 
     await FirebaseDatabase.instance
-        .ref("foodInventories/$inventoryId")
+        .ref("foodInventories/$inventoryID")
         .set(newInventory.toJson());
 
     await FirebaseDatabase.instance.ref("users/$myUser").update({
-      "inventoryID": inventoryId,
+      "inventoryID": inventoryID,
     });
   }
 
   Future hasInventory() async {
-    //FoodInventory pantry = await fetchPantry();
-    //return pantry.owner != "Null";
-    widget.hasInventory = true;
+    FoodInventory pantry = await fetchPantry();
+    widget.hasInventory = (pantry.owner != "Null");
     log(await fetchPantryID());
-    return await fetchPantryID() != "Null";
+    //log(await fetchPantry());
+    //return await fetchPantryID() != "Null";
   }
 
   @override

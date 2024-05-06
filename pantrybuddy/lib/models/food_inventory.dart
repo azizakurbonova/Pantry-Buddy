@@ -7,7 +7,7 @@ Example Use of class methods to update firebase
 
 void main() {
   var inventory = FoodInventory(
-    inventoryId: '123456',
+    inventoryID: '123456',
     owner: 'user123',
   );
 
@@ -24,7 +24,7 @@ void main() {
 
 //Includes methods to update the database directly
 class FoodInventory {
-  String? inventoryId;
+  String? inventoryID;
   int consumed;
   int discarded;
   String
@@ -33,7 +33,7 @@ class FoodInventory {
   List<GroceryItem> groceryItems;
 
   FoodInventory({
-    this.inventoryId,
+    this.inventoryID,
     required this.owner,
     this.consumed = 0,
     this.discarded = 0,
@@ -50,7 +50,7 @@ class FoodInventory {
         .any((existingItem) => existingItem.itemId == item.itemId)) {
       groceryItems.add(item);
       dbRef
-          .child('foodInventories/${this.inventoryId}/groceryItems')
+          .child('foodInventories/${this.inventoryID}/groceryItems')
           .push()
           .set(item.toJson());
       //each push() generates a unique identifier and ensures that the new data is added as a new child under the list.
@@ -70,7 +70,7 @@ class FoodInventory {
     if (currentUserId == owner) {
       if (!users.contains(userToAdd)) {
         users.add(userToAdd);
-        dbRef.child('foodInventories/${this.inventoryId}/users').set(users);
+        dbRef.child('foodInventories/${this.inventoryID}/users').set(users);
         return true; // Indicate operation success
       } else {
         debugPrint("User already has access.");
@@ -86,7 +86,7 @@ class FoodInventory {
     if (currentUserId == owner) {
       if (users.contains(userToRemove)) {
         users.remove(userToRemove);
-        dbRef.child('foodInventories/${this.inventoryId}/users').set(users);
+        dbRef.child('foodInventories/${this.inventoryID}/users').set(users);
         return true; // Indicate operation success
       } else {
         debugPrint(
@@ -101,7 +101,7 @@ class FoodInventory {
 
   Future<FoodInventory?> viewInventory() async {
     DataSnapshot snapshot =
-        await dbRef.child('foodInventories/${this.inventoryId}').get();
+        await dbRef.child('foodInventories/${this.inventoryID}').get();
     if (snapshot.exists) {
       return FoodInventory.fromJson(
           Map<String, dynamic>.from(snapshot.value as Map));
@@ -112,7 +112,7 @@ class FoodInventory {
   // Static method to create a FoodInventory object from a JSON map
   static FoodInventory fromJson(Map<String, dynamic> json) {
     return FoodInventory(
-        inventoryId: json['inventoryId'],
+        inventoryID: json['inventoryID'],
         owner: json['owner'],
         groceryItems: (json['groceryItems'] as List)
             .map((item) => GroceryItem.fromJson(item))
@@ -124,7 +124,7 @@ class FoodInventory {
 
   Map<String, dynamic> toJson() {
     return {
-      'inventoryId': inventoryId,
+      'inventoryID': inventoryID,
       'owner': owner,
       'users': users,
       'groceryItems': groceryItems.map((item) => item.toJson()).toList(),

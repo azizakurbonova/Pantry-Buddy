@@ -253,7 +253,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                               break;
                             }
                           }
-                          String inventoryID = pantry.inventoryId as String;
+                          String inventoryID = pantry.inventoryID as String;
                           dbRef
                               .child("foodInventories/$inventoryID/")
                               .set(pantry.toJson());
@@ -290,7 +290,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                                 break;
                               }
                             }
-                            String inventoryID = pantry.inventoryId as String;
+                            String inventoryID = pantry.inventoryID as String;
                             dbRef
                                 .child("foodInventories/$inventoryID/")
                                 .set(pantry.toJson());
@@ -317,7 +317,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                                 break;
                               }
                             }
-                            String inventoryID = pantry.inventoryId as String;
+                            String inventoryID = pantry.inventoryID as String;
                             dbRef
                                 .child("foodInventories/$inventoryID/")
                                 .set(pantry.toJson());

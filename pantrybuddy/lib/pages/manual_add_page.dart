@@ -365,10 +365,10 @@ class _ManualAddPageState extends State<ManualAddPage> {
                       onPressed: () async {
                         //log("TRYING");
                         FoodInventory pantry = await fetchPantry();
-                        String pantryID = pantry.inventoryId as String;
+                        String inventoryID = pantry.inventoryID as String;
                         GroceryItem groceryItem = GroceryItem(
                                 name: _nameController.text,
-                                inventoryID: pantryID,
+                                inventoryID: inventoryID,
                                 category: [selectedCat.toString()],
                                 dateAdded: DateTime.now(),
                                 expirationDate: DateTime(selectedYear as int,
@@ -379,7 +379,6 @@ class _ManualAddPageState extends State<ManualAddPage> {
                         //log("length before" +
                         // pantry.groceryItems.length.toString());
                         pantry.appendGroceryItem(groceryItem);
-                        String inventoryID = pantry.inventoryId as String;
                         //log("length after" +
                         //  pantry.groceryItems.length.toString());
                         dbRef

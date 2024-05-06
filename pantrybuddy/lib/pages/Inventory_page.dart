@@ -30,7 +30,7 @@ class _InventoryPageState extends State<InventoryPage> {
   final user = FirebaseAuth.instance.currentUser!;
   String? myUserID = FirebaseAuth.instance.currentUser!.uid;
   String code = 'n/a';
-  late Future pantryID;
+  late Future inventoryID;
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -41,7 +41,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   @override
   void initState() {
-    pantryID = getData();
+    inventoryID = getData();
     super.initState();
   }
 
