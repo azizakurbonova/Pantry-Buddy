@@ -103,16 +103,8 @@ class _AccountPageState extends State<AccountPage> {
     }
 
     //delete FoodInventory
-    databaseReference.child('foodInventories/$pantryCode').remove();
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return HomePage();
-        },
-      ),
-    );
+    String? pantryCode = pantry.inventoryId;
+    databaseReference.child('foodInventories').child(pantryCode!).remove();
   }
 
   void deleteAccount() async {
