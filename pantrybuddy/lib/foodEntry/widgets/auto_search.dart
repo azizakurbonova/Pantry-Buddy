@@ -293,12 +293,7 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
           ),
           actions: [
             TextButton(
-              onPressed: () => {
-                Navigator.of(context)
-                    .pushReplacement(MaterialPageRoute(builder: (context) {
-                  return InventoryPage();
-                }))
-              },
+              onPressed: () => {Navigator.of(context).pop()},
               child: const Text('Cancel'),
             ),
             TextButton(

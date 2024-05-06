@@ -230,12 +230,7 @@ class _ManualEntryFormState extends State<ManualEntryForm> {
   List<Widget> _buildActions(BuildContext context) {
     return [
       TextButton(
-        onPressed: () => {
-          Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (context) {
-            return InventoryPage();
-          }))
-        },
+        onPressed: () => {Navigator.of(context).pop()},
         child: const Text('Cancel'),
       ),
       TextButton(
