@@ -335,12 +335,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
         Map userData = userSnapshot.value as Map;
         String userToShareID = userData.keys.first;
 
+        bool hasPantryAlready = (userData.keys.inventoryID == "Null");
+
         if (!users.contains(userToShareID)) {
           users.add(userToShareID);
           await dbRef.child('foodInventories/$inventoryID').update({'users': users});
 
           // Set the shared user's pantry field to this pantry ID
-          await dbRef.child('users/$userToShareID').update({'pantry': inventoryID});
+          await dbRef.child('users/$userToShareID').update({'inventoryID': inventoryID});
           showDialog(
             context: context,
             builder: (BuildContext context) {
