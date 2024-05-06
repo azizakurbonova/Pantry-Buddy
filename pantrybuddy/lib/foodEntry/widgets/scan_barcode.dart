@@ -49,69 +49,70 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
             Text(
                 'Product Name: ${_scannedProduct == null ? "Not Available" : _scannedProduct}'),
             SizedBox(height: 20),
-            Padding (
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
-              controller: _quantityController,
-              decoration: InputDecoration(
-                labelText: 'Quantity',
-                errorText: (_quantityController.text.isEmpty ||
-                        int.parse(_quantityController.text) <= 0)
-                    ? 'Quantity is required'
-                    : null,
-                labelStyle: TextStyle(color: Colors.black),
+                controller: _quantityController,
+                decoration: InputDecoration(
+                  labelText: 'Quantity',
+                  errorText: (_quantityController.text.isEmpty ||
+                          int.parse(_quantityController.text) <= 0)
+                      ? 'Quantity is required'
+                      : null,
+                  labelStyle: TextStyle(color: Colors.black),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter
+                      .digitsOnly, // Only allows digits to be entered
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Quantity is required';
+                  }
+                  final n = int.tryParse(value);
+                  if (n == null || n <= 0) {
+                    return 'Please enter a valid positive number';
+                  }
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter
-                    .digitsOnly, // Only allows digits to be entered
-              ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Quantity is required';
-                }
-                final n = int.tryParse(value);
-                if (n == null || n <= 0) {
-                  return 'Please enter a valid positive number';
-                }
-                return null;
-              },
-            ),
             ),
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: TextField(
-              controller: _dateController,
-              decoration: InputDecoration(
-                icon: Icon(Icons.calendar_today),
-                labelText: "Enter Expiration Date",
-                errorText: _dateController.text.isEmpty
-                    ? 'Expiration date is required'
-                    : null,
-                labelStyle: TextStyle(color: Colors.black),
-              ),
-              readOnly: true,
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365 * 25)),
-                );
+              child: TextField(
+                controller: _dateController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.calendar_today),
+                  labelText: "Enter Expiration Date",
+                  errorText: _dateController.text.isEmpty
+                      ? 'Expiration date is required'
+                      : null,
+                  labelStyle: TextStyle(color: Colors.black),
+                ),
+                readOnly: true,
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate:
+                        DateTime.now().add(const Duration(days: 365 * 25)),
+                  );
 
-                if (pickedDate != null) {
-                  String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
-                  debugPrint(formattedDate);
-                  setState(() {
-                    _dateController.text = formattedDate;
-                  });
-                } else {
-                  debugPrint("Date is not selected");
-                }
-              },
-            ),
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(pickedDate);
+                    debugPrint(formattedDate);
+                    setState(() {
+                      _dateController.text = formattedDate;
+                    });
+                  } else {
+                    debugPrint("Date is not selected");
+                  }
+                },
+              ),
             ),
             SizedBox(height: 20),
             TextButton(
@@ -150,6 +151,15 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
               },
               child: const Text('Submit'),
             ),
+            TextButton(
+              onPressed: () => {
+                Navigator.of(context)
+                    .pushReplacement(MaterialPageRoute(builder: (context) {
+                  return InventoryPage();
+                }))
+              }, // return back to inventory page,
+              child: const Text('Cancel'),
+            )
           ],
         ),
       ),
