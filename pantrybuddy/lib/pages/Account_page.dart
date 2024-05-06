@@ -43,18 +43,23 @@ class _AccountPageState extends State<AccountPage> {
     final userId = currentUser.uid;
     FoodInventory pantry = await fetchPantry();
     final String pantryCode = await fetchPantryID();
-    if (userId == pantry.owner) { //if owner tries to leave, just delete pantry
+    if (userId == pantry.owner) {
+      //if owner tries to leave, just delete pantry
       deletePantry();
     }
     //remove user from list of users in FoodInventory
     List<String> users = pantry.users;
     int indexToRemove = users.indexOf(userId); //find their index
-    if (indexToRemove != -1) { // if user exists in list
+    if (indexToRemove != -1) {
+      // if user exists in list
       users.removeAt(indexToRemove); // Remove the user from the list
-      await database.child('foodInventories/$pantryCode/users').set(users); // update
+      await database
+          .child('foodInventories/$pantryCode/users')
+          .set(users); // update
     }
     //remove inventoryID from User
-    final userRef = FirebaseDatabase.instance.ref().child('users').child(userId);
+    final userRef =
+        FirebaseDatabase.instance.ref().child('users').child(userId);
     userRef.update({'inventoryID': null});
   }
 
@@ -64,37 +69,50 @@ class _AccountPageState extends State<AccountPage> {
     FoodInventory pantry = await fetchPantry();
     if (userId != pantry.owner) {
       showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Text('Only the owner has permission to delete the pantry!'),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child:
+                    Text('Only the owner has permission to delete the pantry!'),
               ),
-            ],
-          );
-        }
-      );
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
       return;
     }
     final databaseReference = FirebaseDatabase.instance.ref();
 
     //remove inventoryid from every user
     List<String> users = pantry.users;
+    String pantryCode = pantry.inventoryId as String;
+
     for (String userId in users) {
-      databaseReference.child('users').child(userId).update({'inventoryID': null});
+      //working
+      Map<String, dynamic> update = {};
+      update['inventoryID'] = "Null";
+      databaseReference.child('users/$userId').update(update);
     }
 
     //delete FoodInventory
-    final String pantryCode = await fetchPantryID();
-    databaseReference.child('foodInventories').child(pantryCode).remove();
+    databaseReference.child('foodInventories/$pantryCode').remove();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return HomePage();
+        },
+      ),
+    );
   }
 
   void deleteAccount() async {
@@ -104,9 +122,9 @@ class _AccountPageState extends State<AccountPage> {
     if (userId != pantry.owner) {
       removeUserFromPantry();
     } //if not owner, leave pantry
-    else { 
+    else {
       deletePantry();
-    }// if owner, delete pantry
+    } // if owner, delete pantry
     //then delete user from database
     final databaseReference = FirebaseDatabase.instance.ref();
     databaseReference.child('users').child(userId).remove();
@@ -117,118 +135,116 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        elevation: 0,
-      ),
-      endDrawer: sideBar(context),
-      backgroundColor: Colors.green[200],
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FutureBuilder<String>(
-                    future: pantryId,
-                    builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else {
+        appBar: AppBar(
+          backgroundColor: Colors.green[400],
+          elevation: 0,
+        ),
+        endDrawer: sideBar(context),
+        backgroundColor: Colors.green[200],
+        body: SafeArea(
+            child: Center(
+                child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+              FutureBuilder<String>(
+                future: pantryId,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else {
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
-                    //selectable so can copy paste
-                      return Container (
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 251, 226, 255),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: SelectableText(
-                        "Your Pantry ID is: ${snapshot.data}\n\nCopy and paste to share with your friends and have them join your pantry!",
-                        style: TextStyle(fontSize: 22),
-                        textAlign: TextAlign.center,
-                      ));
+                      //selectable so can copy paste
+                      return Container(
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 251, 226, 255),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: SelectableText(
+                            "Your Pantry ID is: ${snapshot.data}\n\nCopy and paste to share with your friends and have them join your pantry!",
+                            style: TextStyle(fontSize: 22),
+                            textAlign: TextAlign.center,
+                          ));
                     }
                   }
                 },
               ),
-
               SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        removeUserFromPantry();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return HomePage();
-                            },
-                          ),
-                        );
-                      },
-                      child: Text('Leave Pantry'),
-                    ),
-                    SizedBox(width: 4),
-
-                    ElevatedButton(
-                      onPressed: () async {
-                        deletePantry();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return HomePage();
-                            },
-                          ),
-                        );
-                      },
-                      child: Text('Delete Pantry (Owner)'),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return const ForgotPasswordPage();
-                            },
-                          ),
-                        );
-                      },
-                      child: Text('Change Password'),
-                    ),
-                    SizedBox(width: 4),
-
-                    ElevatedButton(
-                      onPressed: () async {
-                        deleteAccount();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return LoginPage(showRegisterPage: () {  },);
-                            },
-                          ),
-                        );
-                      },
-                      child: Text('Delete Account'),
-                    ),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      removeUserFromPantry();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return HomePage();
+                          },
+                        ),
+                      );
+                    },
+                    child: Text('Leave Pantry'),
+                  ),
+                  SizedBox(width: 4),
+                  ElevatedButton(
+                    onPressed: () async {
+                      deletePantry();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return HomePage();
+                          },
+                        ),
+                      );
+                    },
+                    child: Text('Delete Pantry (Owner)'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ForgotPasswordPage();
+                          },
+                        ),
+                      );
+                    },
+                    child: Text('Change Password'),
+                  ),
+                  SizedBox(width: 4),
+                  ElevatedButton(
+                    onPressed: () async {
+                      deleteAccount();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return LoginPage(
+                              showRegisterPage: () {},
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Text('Delete Account'),
+                  ),
+                ],
+              ),
             ])))));
   }
 }
