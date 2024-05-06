@@ -29,6 +29,11 @@ class AccountPageV2 extends StatefulWidget {
   State<AccountPageV2> createState() => _AccountPageV2State();
 }
 
+Future<String> getPantryJoin() async {
+  String code = fetchPantryID().toString();
+  return code;
+}
+
 class _AccountPageV2State extends State<AccountPageV2> {
   final TextEditingController _emailController = TextEditingController();
 
@@ -53,6 +58,10 @@ class _AccountPageV2State extends State<AccountPageV2> {
             ElevatedButton(
               onPressed: () => showAccessDialog(context, false),
               child: Text('Remove User Access'),
+            ),
+            ElevatedButton(
+              onPressed: () => viewJoinPantry(),
+              child: Text('View Pantry Join Code'),
             ),
             ElevatedButton(
               onPressed: () => viewAccess(context, true),
@@ -293,6 +302,27 @@ class _AccountPageV2State extends State<AccountPageV2> {
         },
       );
     }
+  }
+
+  Future<void> viewJoinPantry() async {
+    FoodInventory pantry = await fetchPantry();
+    String inventoryID = pantry.inventoryID as String;
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("User Access"),
+          content: Text("Pantry Join Code: ${inventoryID}"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> shareUserAccess(String userEmail) async {
