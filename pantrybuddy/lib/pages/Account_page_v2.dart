@@ -12,6 +12,7 @@ import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 import 'package:pantrybuddy/reg/forgot_pw_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
 import 'package:pantrybuddy/auth/main_page.dart';
+import 'dart:developer';
 
 class AccountPageV2 extends StatefulWidget {
   final bool isOwner;
@@ -77,7 +78,39 @@ class _AccountPageV2State extends State<AccountPageV2> {
             child: Text('Change Password'),
           ),
           ElevatedButton(
-            onPressed: () => deleteAccount(),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Delete your Account?'),
+                    content: const Text(
+                        '''If you select Delete we will delete your account on our server.
+
+              Your app data will also be deleted and you won't be able to retrieve it.
+
+              Since this is a security-sensitive operation, you eventually are asked to login before your account can be deleted.'''),
+                    actions: [
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text(
+                          'Delete',
+                        ),
+                        onPressed: () {
+                          // Call the delete account function
+                          deleteUserAccount();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             child: Text('Delete Account'),
           ),
         ],
@@ -665,6 +698,56 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
     // Sign out the user and redirect to the main page
     await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => MainPage()),
+        (Route<dynamic> route) => false);
+  }
+
+  Future<void> deleteUserAccount() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+    FoodInventory pantry = await fetchPantry();
+    String inventoryID = pantry.inventoryID as String;
+    String owner = pantry.owner as String;
+    List<String> users = pantry.users as List<String>;
+
+    if (inventoryID != null && owner != "Null") {
+      if (widget.userID == owner) {
+        // Current user is the owner, remove pantry and set pantry field of all users to null
+        for (String user in users) {
+          dbRef.child('users/$user').update({'inventoryID': "Null"});
+        }
+
+        // Update the current user's pantry field to null
+        dbRef.child('users/${widget.userID}').update({'inventoryID': "Null"});
+
+        // Remove the pantry from the Food Inventory database
+        dbRef.child('foodInventories/$inventoryID').remove();
+      } else {
+        // Current user is not the owner
+        // Remove the user from the pantry users list
+        users.remove(widget.userID);
+        await dbRef
+            .child('foodInventories/$inventoryID')
+            .update({'users': users});
+      }
+    }
+
+    // Delete the user from the users database
+    await dbRef.child("users/${widget.userID}").remove();
+
+    // Delete the user from the Firebase authentication database
+    try {
+      await user.delete();
+    } catch (e) {
+      debugPrint("Failed to delete user from authentication database: $e");
+      return;
+    }
+
+    // Sign out the user and redirect to the main page
+    await FirebaseAuth.instance.signOut();
+
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => MainPage()),
         (Route<dynamic> route) => false);
