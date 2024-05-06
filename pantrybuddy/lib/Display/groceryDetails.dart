@@ -92,6 +92,7 @@ class _FoodDetailsState extends State<ItemDetails> {
                       return AlertDialog(
                         title: const Text("Item Details"),
                         content: SingleChildScrollView(
+                          // Vertical scrolling
                           child: ListBody(
                             children: [
                               Text(
@@ -101,21 +102,32 @@ class _FoodDetailsState extends State<ItemDetails> {
                               const SizedBox(height: 10),
                               parseNutritionalInfo(widget.item.nutritionalInfo)
                                       .isNotEmpty
-                                  ? ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxHeight:
-                                            300, // Adjust this value as needed for your UI
-                                      ),
+                                  ? SizedBox(
+                                      height:
+                                          300, // Set a fixed height for the vertical scrolling area
                                       child: SingleChildScrollView(
+                                        scrollDirection: Axis
+                                            .horizontal, // Enable horizontal scrolling
                                         child: DataTable(
                                           columnSpacing:
-                                              10, // Adjust spacing to fit your content
+                                              38, // Adjust spacing to fit content
                                           columns: const <DataColumn>[
-                                            DataColumn(label: Text('Nutrient')),
-                                            DataColumn(label: Text('Value')),
+                                            DataColumn(
+                                                label: Text('Nutrient',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold))),
+                                            DataColumn(
+                                                label: Text('Value',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold))),
                                             DataColumn(
                                                 label: Text(
-                                                    'Percent of Daily Needs'))
+                                                    'Percent of Daily Needs',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)))
                                           ],
                                           rows: parseNutritionalInfo(
                                                   widget.item.nutritionalInfo)
