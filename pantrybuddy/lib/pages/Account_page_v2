@@ -341,6 +341,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
           // Set the shared user's pantry field to this pantry ID
           await dbRef.child('users/$userToShareID').update({'pantry': pantryID});
+          await dbRef.child('users/$userToShareID').update({'inventoryID': pantryID});
           showDialog(
             context: context,
             builder: (BuildContext context) {
