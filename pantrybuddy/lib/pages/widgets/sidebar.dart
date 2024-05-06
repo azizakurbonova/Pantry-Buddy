@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pantrybuddy/auth/auth_page.dart';
 import 'package:pantrybuddy/auth/main_page.dart';
 //import 'package:pantrybuddy/pages/account_page.dart';
-import 'package:pantrybuddy/pages/account_page_v2';
+import 'package:pantrybuddy/pages/account_page_v2.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
