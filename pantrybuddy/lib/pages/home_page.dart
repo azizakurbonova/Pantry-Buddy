@@ -13,6 +13,7 @@ import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 import 'package:pantrybuddy/pages/widgets/sidebar.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:developer';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -68,15 +69,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future hasInventory() async {
-    String inventoryID = await fetchPantryID();
-    log("INVENTORYID: " + inventoryID);
-    if (inventoryID != null &&
-        inventoryID.length >= 7 &&
-        inventoryID != "Null") {
-      widget.hasInventory = true;
-    } else {
-      widget.hasInventory = false;
-    }
+    FoodInventory pantry = await fetchPantry();
+    return pantry.owner != "Null";
   }
 
   @override

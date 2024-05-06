@@ -11,7 +11,7 @@ Future<FoodInventory> fetchPantry() async {
   DataSnapshot dbsnapshot =
       await dbRef.child("foodInventories/$inventoryID").get();
 
-  if (!dbsnapshot.exists) {
+  if (!dbsnapshot.exists || inventoryID == "Null") {
     // Return null if the pantry does not exist in the database
     return FoodInventory(owner: "Null");
   }

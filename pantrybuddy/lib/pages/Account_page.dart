@@ -11,14 +11,14 @@ import 'package:pantrybuddy/pages/tools/getPantryID.dart';
 import 'package:pantrybuddy/reg/forgot_pw_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({Key? key}) : super(key: key);
+class AccountPageV1 extends StatefulWidget {
+  const AccountPageV1({Key? key}) : super(key: key);
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<AccountPageV1> createState() => _AccountPageV1State();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountPageV1State extends State<AccountPageV1> {
   late Future<String> pantryId;
 
   @override

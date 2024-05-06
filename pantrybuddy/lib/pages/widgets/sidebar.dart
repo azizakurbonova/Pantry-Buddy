@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantrybuddy/pages/account_page.dart';
-import 'package:pantrybuddy/pages/account_page_v2.dart';
+//import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/account_page_v2';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
+import 'package:pantrybuddy/models/food_inventory.dart';
+import 'package:pantrybuddy/pages/tools/getFoodInventory.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 Widget sideBar(BuildContext context) {
   return Drawer(
@@ -19,9 +23,23 @@ Widget sideBar(BuildContext context) {
               "Account",
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AccountPageV2()));
+            onTap: () async {
+              try {
+                FoodInventory pantry = await fetchPantry();
+                bool pantryExists = pantry.owner != "Null";
+                String? userID = FirebaseAuth.instance.currentUser?.uid;
+                bool isOwner = pantry.owner == userID;
+
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AccountPageV2(
+                        userID: userID,
+                        isOwner: isOwner,
+                        pantryExists: pantryExists)));
+              } catch (e) {
+                // Handle exception if any error during fetching pantry
+                print("Error fetching pantry: $e");
+                // Optionally, navigate to an error page or show a message
+              }
             },
           ),
           ListTile(

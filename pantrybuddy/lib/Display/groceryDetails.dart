@@ -103,13 +103,13 @@ class _FoodDetailsState extends State<ItemDetails> {
                               parseNutritionalInfo(widget.item.nutritionalInfo)
                                       .isNotEmpty
                                   ? SizedBox(
-                                      width: 100,
+                                      width: 300,
                                       child: SingleChildScrollView(
                                         scrollDirection: Axis
                                             .horizontal, // Enable horizontal scrolling
                                         child: DataTable(
                                           columnSpacing:
-                                              2, // Adjust spacing to fit content
+                                              20, // Adjust spacing to fit content
                                           columns: const <DataColumn>[
                                             DataColumn(
                                                 label: Text('Nutrient',
