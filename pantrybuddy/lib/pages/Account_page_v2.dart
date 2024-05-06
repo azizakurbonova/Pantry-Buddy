@@ -17,7 +17,11 @@ class AccountPageV2 extends StatefulWidget {
   final bool isOwner;
   final bool inventoryIDExists;
   final String? userID;
-  const AccountPageV2({Key? key, required this.userID, required this.isOwner, required this.inventoryIDExists})
+  const AccountPageV2(
+      {Key? key,
+      required this.userID,
+      required this.isOwner,
+      required this.inventoryIDExists})
       : super(key: key);
 
   @override
@@ -48,13 +52,12 @@ class _AccountPageV2State extends State<AccountPageV2> {
             ElevatedButton(
               onPressed: () => showAccessDialog(context, false),
               child: Text('Remove User Access'),
-                ),
+            ),
             ElevatedButton(
               onPressed: () => viewAccess(context, true),
               child: Text('View User Access'),
             ),
-          ]
-          else if (!widget.isOwner && widget.inventoryIDExists) ...[
+          ] else if (!widget.isOwner && widget.inventoryIDExists) ...[
             ElevatedButton(
               onPressed: () => leavePantry(),
               child: Text('Leave Pantry'),
@@ -175,11 +178,9 @@ class _AccountPageV2State extends State<AccountPageV2> {
     );
   }
 
-
   Future<void> deletePantry() async {
     final user = FirebaseAuth.instance.currentUser;
     DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-
 
     FoodInventory pantry = await fetchPantry();
     String inventoryID = pantry.inventoryID as String;
@@ -187,7 +188,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
     List<String> users = pantry.users as List<String>;
 
     try {
-
       // Check if the current user is the owner of the pantry
       if (user != null && widget.userID == owner) {
         // Update all users' pantry field to null
@@ -211,11 +211,11 @@ class _AccountPageV2State extends State<AccountPageV2> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(builder: (context) {
-                                return HomePage();
-                              })); // Dismiss the dialog
-                            }, //TO-DO: Need to add logic that when the user does not have pantry id (for users w/ share access), stay at join pantry page after logging in
+                    Navigator.of(context)
+                        .pushReplacement(MaterialPageRoute(builder: (context) {
+                      return HomePage();
+                    })); // Dismiss the dialog
+                  }, //TO-DO: Need to add logic that when the user does not have pantry id (for users w/ share access), stay at join pantry page after logging in
                   child: const Text('OK'),
                 ),
               ],
@@ -229,10 +229,12 @@ class _AccountPageV2State extends State<AccountPageV2> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text("Error"),
-              content: const Text("You do not have permission to delete this pantry."),
+              content: const Text(
+                  "You do not have permission to delete this pantry."),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(), // Dismiss the dialog
+                  onPressed: () =>
+                      Navigator.of(context).pop(), // Dismiss the dialog
                   child: const Text('OK'),
                 ),
               ],
@@ -250,7 +252,8 @@ class _AccountPageV2State extends State<AccountPageV2> {
             content: Text("Failed to delete pantry: $e"),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.of(context).pop(), // Dismiss the dialog
+                onPressed: () =>
+                    Navigator.of(context).pop(), // Dismiss the dialog
                 child: const Text('OK'),
               ),
             ],
@@ -289,7 +292,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
       return;
     }
 
-    if (userEmail == ownerEmail){
+    if (userEmail == ownerEmail) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -328,7 +331,8 @@ class _AccountPageV2State extends State<AccountPageV2> {
       }
 
       // Get the user to share with by their email
-      Query query = dbRef.child('users').orderByChild('email').equalTo(userEmail);
+      Query query =
+          dbRef.child('users').orderByChild('email').equalTo(userEmail);
       DataSnapshot userSnapshot = await query.get();
 
       if (userSnapshot.exists && userSnapshot.value != null) {
@@ -338,7 +342,8 @@ class _AccountPageV2State extends State<AccountPageV2> {
         Map userToShareData = userData[userToShareID];
 
         // Check if the user already belongs to any pantry
-        if (userToShareData['inventoryID'] != null && userToShareData['inventoryID'] != "Null") {
+        if (userToShareData['inventoryID'] != null &&
+            userToShareData['inventoryID'] != "Null") {
           return showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -358,10 +363,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
         if (!users.contains(userToShareID)) {
           users.add(userToShareID);
-          await dbRef.child('foodInventories/$inventoryID').update({'users': users});
+          await dbRef
+              .child('foodInventories/$inventoryID')
+              .update({'users': users});
 
           // Set the shared user's pantry field to this pantry ID
-          await dbRef.child('users/$userToShareID').update({'inventoryID': inventoryID});
+          await dbRef
+              .child('users/$userToShareID')
+              .update({'inventoryID': inventoryID});
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -416,7 +425,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
     }
   }
 
-
   Future<void> removeUserAccess(String userEmail) async {
     final user = FirebaseAuth.instance.currentUser;
     DatabaseReference dbRef = FirebaseDatabase.instance.ref();
@@ -428,7 +436,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
     List<String> users = pantry.users as List<String>;
 
     try {
-
       // Check if the current user is the owner of the pantry
       if (widget.userID != owner) {
         showDialog(
@@ -448,13 +455,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
         );
       }
 
-      if (userEmail == ownerEmail){
+      if (userEmail == ownerEmail) {
         return showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text("Error"),
-              content: const Text("Please use delete pantry to remove yourself!"),
+              content:
+                  const Text("Please use delete pantry to remove yourself!"),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
@@ -467,7 +475,8 @@ class _AccountPageV2State extends State<AccountPageV2> {
       }
 
       // Get the user to remove by their email
-      Query query = dbRef.child('users').orderByChild('email').equalTo(userEmail);
+      Query query =
+          dbRef.child('users').orderByChild('email').equalTo(userEmail);
       DataSnapshot userSnapshot = await query.get();
 
       if (userSnapshot.exists && userSnapshot.value != null) {
@@ -475,10 +484,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
         String userToRemoveID = userData.keys.first;
 
         users.remove(userToRemoveID);
-        await dbRef.child('foodInventories/$inventoryID').update({'users': users});
+        await dbRef
+            .child('foodInventories/$inventoryID')
+            .update({'users': users});
 
         // Set the removed user's pantry field to null
-        await dbRef.child('users/$userToRemoveID').update({'inventoryID': "Null"});
+        await dbRef
+            .child('users/$userToRemoveID')
+            .update({'inventoryID': "Null"});
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -515,8 +528,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
       print("Error removing user access: $e");
     }
   }
-
-
 
   Future<void> leavePantry() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -568,10 +579,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
       // Remove the user from the pantry users list
       users.remove(widget.userID);
-      await dbRef.child('foodInventories/$inventoryID').update({'users': users});
+      await dbRef
+          .child('foodInventories/$inventoryID')
+          .update({'users': users});
 
       // Set the user's pantry field to null
-      await dbRef.child('users/${widget.userID}').update({'inventoryID': "Null"});
+      await dbRef
+          .child('users/${widget.userID}')
+          .update({'inventoryID': "Null"});
 
       // Confirmation dialog
       showDialog(
@@ -583,11 +598,11 @@ class _AccountPageV2State extends State<AccountPageV2> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) {
-                              return HomePage();
-                            })); // Dismiss the dialog
-                          }, //TO-DO: Need to add logic that when the user does not have pantry id, stay at join pantry page after logging in
+                  Navigator.of(context)
+                      .pushReplacement(MaterialPageRoute(builder: (context) {
+                    return HomePage();
+                  })); // Dismiss the dialog
+                }, //TO-DO: Need to add logic that when the user does not have pantry id, stay at join pantry page after logging in
                 child: const Text('OK'),
               ),
             ],
@@ -614,7 +629,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
     }
   }
 
-
   Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser!;
     DatabaseReference dbRef = FirebaseDatabase.instance.ref();
@@ -623,7 +637,6 @@ class _AccountPageV2State extends State<AccountPageV2> {
     String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
-    
 
     if (inventoryID != null && owner != "Null") {
       if (widget.userID == owner) {
@@ -641,7 +654,9 @@ class _AccountPageV2State extends State<AccountPageV2> {
         // Current user is not the owner
         // Remove the user from the pantry users list
         users.remove(widget.userID);
-        await dbRef.child('foodInventories/$inventoryID').update({'users': users});
+        await dbRef
+            .child('foodInventories/$inventoryID')
+            .update({'users': users});
       }
     }
 
@@ -650,7 +665,8 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
     // Sign out the user and redirect to the main page
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()), (Route<dynamic> route) => false);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => MainPage()),
+        (Route<dynamic> route) => false);
   }
-
 }
