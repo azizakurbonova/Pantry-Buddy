@@ -1,0 +1,85 @@
+
+
+class AccountPageV2 extends StatefulWidget {
+  const AccountPageV2({Key? key}) : super(key: key);
+
+  @override
+  State<AccountPageV2> createState() => _AccountPageV2State();
+}
+
+class _AccountPageV2State extends State<AccountPageV2> {
+  bool isOwner = false; // This should be determined based on actual data
+  String? userId; // User ID should be fetched from Firebase Auth
+
+  @override
+  void initState() {
+    super.initState();
+    checkOwnership();
+  }
+
+  void checkOwnership() async {
+    // Logic to check if the current user is the owner of the pantry
+    // Update `isOwner` based on response
+    setState(() {
+      isOwner = true; // Example, set based on actual check
+      userId = FirebaseAuth.instance.currentUser?.uid;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Account Settings'),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          if (isOwner) ...[
+            ElevatedButton(
+              onPressed: () => deletePantry(),
+              child: Text('Delete Pantry'),
+            ),
+            ElevatedButton(
+              onPressed: () => removeUserAccess(),
+              child: Text('Remove User Access'),
+            ),
+          ] else ...[
+            ElevatedButton(
+              onPressed: () => leavePantry(),
+              child: Text('Leave Pantry'),
+            ),
+          ],
+          ElevatedButton(
+            onPressed: () => changePassword(),
+            child: Text('Change Password'),
+          ),
+          ElevatedButton(
+            onPressed: () => deleteAccount(),
+            child: Text('Delete Account'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void deletePantry() {
+    // Logic to delete the pantry and set user's pantry field to null
+  }
+
+  void removeUserAccess() {
+    // Logic to remove a user from the pantry
+  }
+
+  void leavePantry() {
+    // Logic for a user to leave the pantry
+  }
+
+  void changePassword() {
+    // Logic to change user's password
+  }
+
+  void deleteAccount() {
+    // Logic to delete the user's account
+  }
+}

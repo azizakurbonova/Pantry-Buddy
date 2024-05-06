@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pantrybuddy/pages/account_page.dart';
+import 'package:pantrybuddy/pages/account_page_v2.dart';
 import 'package:pantrybuddy/pages/inventory_page.dart';
 import 'package:pantrybuddy/pages/dc_inventory_page.dart';
 import 'package:pantrybuddy/reg/login_page.dart';
@@ -19,8 +20,8 @@ Widget sideBar(BuildContext context) {
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => AccountPage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => AccountPageV2()));
             },
           ),
           ListTile(
