@@ -93,8 +93,8 @@ class _AccountPageState extends State<AccountPage> {
     }
 
     //delete FoodInventory
-    final String pantryCode = await fetchPantryID();
-    databaseReference.child('foodInventories').child(pantryCode).remove();
+    String? pantryCode = pantry.inventoryId;
+    databaseReference.child('foodInventories').child(pantryCode!).remove();
   }
 
   void deleteAccount() async {
