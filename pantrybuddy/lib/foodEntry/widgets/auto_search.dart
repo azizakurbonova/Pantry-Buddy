@@ -139,21 +139,21 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
         : DateTime.now();
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
 
     GroceryItem? item;
     switch (_selectedSearchType) {
       case SearchType.products:
         item = await idSearch_products(
-            suggestion.id, pantryID, expirationDate!, quantity);
+            suggestion.id, inventoryID, expirationDate!, quantity);
         break;
       case SearchType.ingredients:
         item = await idSearch_ingredients(
-            suggestion.id, pantryID, expirationDate!, quantity);
+            suggestion.id, inventoryID, expirationDate!, quantity);
         break;
       case SearchType.menuItems:
         item = await idSearch_menuItems(
-            suggestion.id, pantryID, expirationDate!, quantity);
+            suggestion.id, inventoryID, expirationDate!, quantity);
         break;
     }
 
@@ -162,7 +162,7 @@ class _AutoSearchFormState extends State<AutoSearchForm> {
         log("length before" + pantry.groceryItems.length.toString());
         pantry.appendGroceryItem(item);
         log("length after" + pantry.groceryItems.length.toString());
-        dbRef.child("foodInventories/$pantryID").update(pantry.toJson());
+        dbRef.child("foodInventories/$inventoryID").update(pantry.toJson());
       } catch (e) {
         debugPrint("Error adding item to pantry: $e");
       }

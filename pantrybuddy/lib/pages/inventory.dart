@@ -47,12 +47,12 @@ class _NewInventoryPageState extends State<NewInventoryPage> {
 
     // 2) From joincode, get FoodInventoryID
     final foodInventoryID =
-        await readCode.child('foodInventories/$joincode/inventoryId').get();
+        await readCode.child('foodInventories/$joincode/inventoryID').get();
 
     // 3) Get foodInventory, get items in Alphabetical Format
     final itemsObjects = FirebaseDatabase.instance
         .ref()
-        .child('FoodInventory/inventoryId/$foodInventoryID')
+        .child('FoodInventory/inventoryID/$foodInventoryID')
         .orderByKey()
         .get();
 

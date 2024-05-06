@@ -177,16 +177,16 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
         : 1;
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
 
     GroceryItem? newItem = createGroceryItemFromSpoonacular(
-        widget.product, pantryID, expirationDate, quantity);
+        widget.product, inventoryID, expirationDate, quantity);
 
     try {
       log("length before" + pantry.groceryItems.length.toString());
       pantry.appendGroceryItem(newItem!);
       log("length after" + pantry.groceryItems.length.toString());
-      dbRef.child("foodInventories/$pantryID").update(pantry.toJson());
+      dbRef.child("foodInventories/$inventoryID").update(pantry.toJson());
     } catch (e) {
       debugPrint("Error adding item to pantry: $e");
     }

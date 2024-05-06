@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantrybuddy/auth/auth_page.dart';
+import 'package:pantrybuddy/auth/main_page.dart';
 //import 'package:pantrybuddy/pages/account_page.dart';
 import 'package:pantrybuddy/pages/account_page_v2';
 import 'package:pantrybuddy/pages/inventory_page.dart';
@@ -26,7 +28,7 @@ Widget sideBar(BuildContext context) {
             onTap: () async {
               try {
                 FoodInventory pantry = await fetchPantry();
-                bool pantryExists = pantry.owner != "Null";
+                bool inventoryIDExists = (pantry.owner != "Null");
                 String? userID = FirebaseAuth.instance.currentUser?.uid;
                 bool isOwner = pantry.owner == userID;
 
@@ -34,7 +36,7 @@ Widget sideBar(BuildContext context) {
                     builder: (context) => AccountPageV2(
                         userID: userID,
                         isOwner: isOwner,
-                        pantryExists: pantryExists)));
+                        inventoryIDExists: inventoryIDExists)));
               } catch (e) {
                 // Handle exception if any error during fetching pantry
                 print("Error fetching pantry: $e");
@@ -76,12 +78,11 @@ Widget sideBar(BuildContext context) {
             onTap: () async {
               await FirebaseAuth.instance.signOut();
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    builder: (context) => LoginPage(showRegisterPage: () {})),
+                MaterialPageRoute(builder: (context) => MainPage()),
                 (Route<dynamic> route) => false,
               );
             },
-          )
+          ),
         ],
       ),
     ),

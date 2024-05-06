@@ -15,9 +15,9 @@ import 'package:pantrybuddy/auth/main_page.dart';
 
 class AccountPageV2 extends StatefulWidget {
   final bool isOwner;
-  final bool pantryExists;
+  final bool inventoryIDExists;
   final String? userID;
-  const AccountPageV2({Key? key, required this.userID, required this.isOwner, required this.pantryExists})
+  const AccountPageV2({Key? key, required this.userID, required this.isOwner, required this.inventoryIDExists})
       : super(key: key);
 
   @override
@@ -36,7 +36,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          if (widget.isOwner && widget.pantryExists) ...[
+          if (widget.isOwner && widget.inventoryIDExists) ...[
             ElevatedButton(
               onPressed: () => deletePantry(),
               child: Text('Delete Pantry'),
@@ -54,7 +54,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
               child: Text('View User Access'),
             ),
           ]
-          else if (!widget.isOwner && widget.pantryExists) ...[
+          else if (!widget.isOwner && widget.inventoryIDExists) ...[
             ElevatedButton(
               onPressed: () => leavePantry(),
               child: Text('Leave Pantry'),
@@ -182,7 +182,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
 
@@ -192,14 +192,14 @@ class _AccountPageV2State extends State<AccountPageV2> {
       if (user != null && widget.userID == owner) {
         // Update all users' pantry field to null
         for (String user in users) {
-          dbRef.child('users/$user').update({'pantry': "Null"});
+          dbRef.child('users/$user').update({'inventoryID': "Null"});
         }
 
         // Update the current user's pantry field to null
-        dbRef.child('users/${widget.userID}').update({'pantry': "Null"});
+        dbRef.child('users/${widget.userID}').update({'inventoryID': "Null"});
 
         // Remove the pantry from the Food Inventory database
-        dbRef.child('foodInventories/$pantryID').remove();
+        dbRef.child('foodInventories/$inventoryID').remove();
 
         // Confirmation dialog
         showDialog(
@@ -266,7 +266,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
     String? ownerEmail = FirebaseAuth.instance.currentUser?.email;
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
 
@@ -337,11 +337,10 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
         if (!users.contains(userToShareID)) {
           users.add(userToShareID);
-          await dbRef.child('foodInventories/$pantryID').update({'users': users});
+          await dbRef.child('foodInventories/$inventoryID').update({'users': users});
 
           // Set the shared user's pantry field to this pantry ID
-          await dbRef.child('users/$userToShareID').update({'pantry': pantryID});
-          await dbRef.child('users/$userToShareID').update({'inventoryID': pantryID});
+          await dbRef.child('users/$userToShareID').update({'pantry': inventoryID});
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -403,7 +402,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
     String? ownerEmail = FirebaseAuth.instance.currentUser?.email;
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
 
@@ -455,10 +454,10 @@ class _AccountPageV2State extends State<AccountPageV2> {
         String userToRemoveID = userData.keys.first;
 
         users.remove(userToRemoveID);
-        await dbRef.child('foodInventories/$pantryID').update({'users': users});
+        await dbRef.child('foodInventories/$inventoryID').update({'users': users});
 
         // Set the removed user's pantry field to null
-        await dbRef.child('users/$userToRemoveID').update({'pantry': "Null"});
+        await dbRef.child('users/$userToRemoveID').update({'inventoryID': "Null"});
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -503,7 +502,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
     DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
 
@@ -527,7 +526,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
     }
 
     try {
-      if (pantryID == null) {
+      if (inventoryID == null) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -548,10 +547,10 @@ class _AccountPageV2State extends State<AccountPageV2> {
 
       // Remove the user from the pantry users list
       users.remove(widget.userID);
-      await dbRef.child('foodInventories/$pantryID').update({'users': users});
+      await dbRef.child('foodInventories/$inventoryID').update({'users': users});
 
       // Set the user's pantry field to null
-      await dbRef.child('users/${widget.userID}').update({'pantry': "Null"});
+      await dbRef.child('users/${widget.userID}').update({'inventoryID': "Null"});
 
       // Confirmation dialog
       showDialog(
@@ -565,7 +564,7 @@ class _AccountPageV2State extends State<AccountPageV2> {
                 onPressed: () {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (context) {
-                              return CreatePantryPage();
+                              return HomePage();
                             })); // Dismiss the dialog
                           }, //TO-DO: Need to add logic that when the user does not have pantry id, stay at join pantry page after logging in
                 child: const Text('OK'),
@@ -600,28 +599,28 @@ class _AccountPageV2State extends State<AccountPageV2> {
     DatabaseReference dbRef = FirebaseDatabase.instance.ref();
 
     FoodInventory pantry = await fetchPantry();
-    String pantryID = pantry.inventoryId as String;
+    String inventoryID = pantry.inventoryID as String;
     String owner = pantry.owner as String;
     List<String> users = pantry.users as List<String>;
     
 
-    if (pantryID != null && owner != "Null") {
+    if (inventoryID != null && owner != "Null") {
       if (widget.userID == owner) {
         // Current user is the owner, remove pantry and set pantry field of all users to null
         for (String user in users) {
-          dbRef.child('users/$user').update({'pantry': "Null"});
+          dbRef.child('users/$user').update({'inventoryID': "Null"});
         }
 
         // Update the current user's pantry field to null
-        dbRef.child('users/${widget.userID}').update({'pantry': "Null"});
+        dbRef.child('users/${widget.userID}').update({'inventoryID': "Null"});
 
         // Remove the pantry from the Food Inventory database
-        dbRef.child('foodInventories/$pantryID').remove();
+        dbRef.child('foodInventories/$inventoryID').remove();
       } else {
         // Current user is not the owner
         // Remove the user from the pantry users list
         users.remove(widget.userID);
-        await dbRef.child('foodInventories/$pantryID').update({'users': users});
+        await dbRef.child('foodInventories/$inventoryID').update({'users': users});
       }
     }
 

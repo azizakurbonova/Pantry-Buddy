@@ -93,7 +93,7 @@ class _AccountPageV1State extends State<AccountPageV1> {
 
     //remove inventoryid from every user
     List<String> users = pantry.users;
-    String pantryCode = pantry.inventoryId as String;
+    String pantryCode = pantry.inventoryID as String;
 
     for (String userId in users) {
       //working
