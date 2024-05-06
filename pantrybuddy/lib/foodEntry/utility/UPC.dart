@@ -58,7 +58,7 @@ GroceryItem createGroceryItemFromSpoonacular(Map<String, dynamic>? product,
     String name = nutrient['title'] ?? 'Unknown';
     String amount = nutrient['amount'].toString();
     String unit = nutrient['unit'] ?? '';
-    String percentDaily = nutrition['percentOfDailyNeeds'].toString() ?? '';
+    String percentDaily = nutrient['percentOfDailyNeeds'].toString();
     return "$name, $amount $unit, $percentDaily";
   }).join('; ');
 
