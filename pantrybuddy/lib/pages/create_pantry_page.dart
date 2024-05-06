@@ -22,18 +22,18 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final userId = currentUser.uid;
-      String? inventoryId =
+      String? inventoryID =
           FirebaseDatabase.instance.ref("foodInventories").push().key;
       GroceryItem groceryItem = GroceryItem(
           name: "dummy",
-          inventoryID: inventoryId as String,
+          inventoryID: inventoryID as String,
           category: ['test'],
           dateAdded: DateTime.now(),
           expirationDate: DateTime.now(),
           itemIdType: ItemIdType.MANUAL);
 
       final pantry = FoodInventory(
-        inventoryId: inventoryId,
+        inventoryID: inventoryID,
         owner: userId,
         users: [userId], // Current user is added as owner and user
         groceryItems: [groceryItem],
@@ -41,16 +41,16 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
         discarded: 0,
       );
       final reference =
-          FirebaseDatabase.instance.ref().child('foodInventories/$inventoryId');
+          FirebaseDatabase.instance.ref().child('foodInventories/$inventoryID');
       reference.set(pantry.toJson());
       final userRef =
           FirebaseDatabase.instance.ref().child('users').child(userId);
-      userRef.update({'inventoryID': inventoryId});
+      userRef.update({'inventoryID': inventoryID});
 
       if (currentUser != null) {
         GroceryItem groceryItem = GroceryItem(
             name: "dummy",
-            inventoryID: inventoryId as String,
+            inventoryID: inventoryID as String,
             category: ['test'],
             dateAdded: DateTime.now(),
             expirationDate: DateTime.now(),
