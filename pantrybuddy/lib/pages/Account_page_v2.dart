@@ -84,12 +84,11 @@ class _AccountPageV2State extends State<AccountPageV2> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Delete your Account?'),
-                    content: const Text(
-                        '''If you select Delete we will delete your account on our server.
-
-              Your app data will also be deleted and you won't be able to retrieve it.
-
-              Since this is a security-sensitive operation, you eventually are asked to login before your account can be deleted.'''),
+                    content: const Text('''
+                        If you select Delete we will delete your account on our server.
+                        Your app data will also be deleted and you won't be able to retrieve it. 
+                        Since this is a security-sensitive operation, you eventually are asked to login before your account can be deleted.
+                        '''),
                     actions: [
                       TextButton(
                         child: const Text('Cancel'),
