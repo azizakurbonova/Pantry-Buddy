@@ -1,5 +1,3 @@
-//import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -71,7 +69,10 @@ class _HomePageState extends State<HomePage> {
 
   Future hasInventory() async {
     String inventoryID = await fetchPantryID();
-    if (inventoryID != null && inventoryID.length >= 7) {
+    log("INVENTORYID: " + inventoryID);
+    if (inventoryID != null &&
+        inventoryID.length >= 7 &&
+        inventoryID != "Null") {
       widget.hasInventory = true;
     } else {
       widget.hasInventory = false;

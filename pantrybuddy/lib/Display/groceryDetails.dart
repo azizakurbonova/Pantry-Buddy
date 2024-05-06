@@ -34,9 +34,7 @@ class _FoodDetailsState extends State<ItemDetails> {
   int getIndex(List<GroceryItem> groceries, GroceryItem item) {
     for (int x = 0; x < groceries.length; x++) {
       if ((item.dateAdded.toIso8601String() ==
-              groceries[x].dateAdded.toIso8601String()) &&
-          (item.name == groceries[x].name) &&
-          (item.quantity == groceries[x].quantity)) {
+          groceries[x].dateAdded.toIso8601String())) {
         return x;
       }
     }
