@@ -103,8 +103,8 @@ class _FoodDetailsState extends State<ItemDetails> {
                               parseNutritionalInfo(widget.item.nutritionalInfo)
                                       .isNotEmpty
                                   ? SizedBox(
-                                      height:
-                                          300, // Set a fixed height for the vertical scrolling area
+                                      width:
+                                          100, // Set a fixed height for the vertical scrolling area
                                       child: SingleChildScrollView(
                                         scrollDirection: Axis
                                             .horizontal, // Enable horizontal scrolling
