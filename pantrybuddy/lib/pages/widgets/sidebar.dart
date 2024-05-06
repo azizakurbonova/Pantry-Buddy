@@ -36,7 +36,7 @@ Widget sideBar(BuildContext context) {
                     builder: (context) => AccountPageV2(
                         userID: userID,
                         isOwner: isOwner,
-                        inventoryIDExists: inventoryIDExists)));
+                        pantryExists: inventoryIDExists)));
               } catch (e) {
                 // Handle exception if any error during fetching pantry
                 print("Error fetching pantry: $e");

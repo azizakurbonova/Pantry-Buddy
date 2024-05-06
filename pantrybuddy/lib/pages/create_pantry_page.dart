@@ -33,7 +33,7 @@ class _CreatePantryPageState extends State<CreatePantryPage> {
           itemIdType: ItemIdType.MANUAL);
 
       final pantry = FoodInventory(
-        inventoryId: inventoryId,
+        inventoryID: inventoryId,
         owner: userId,
         users: [userId], // Current user is added as owner and user
         groceryItems: [groceryItem],
