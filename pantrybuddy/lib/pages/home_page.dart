@@ -69,7 +69,10 @@ class _HomePageState extends State<HomePage> {
 
   Future hasInventory() async {
     String inventoryID = await fetchPantryID();
-    if (inventoryID != null && inventoryID.length >= 7) {
+    log("INVENTORYID: " + inventoryID);
+    if (inventoryID != null &&
+        inventoryID.length >= 7 &&
+        inventoryID != "Null") {
       widget.hasInventory = true;
     } else {
       widget.hasInventory = false;
