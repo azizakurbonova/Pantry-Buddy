@@ -53,7 +53,7 @@ class _FoodDetailsState extends State<ItemDetails> {
       if (parts.length >= 3) {
         String name = parts[0].trim();
         String amount = parts[1].trim();
-        String percentDaily = parts[2].trim();
+        String percentDaily = "${parts[2].trim()} %";
 
         nutritionMap[name] = [amount, percentDaily];
       }
@@ -101,27 +101,37 @@ class _FoodDetailsState extends State<ItemDetails> {
                               const SizedBox(height: 10),
                               parseNutritionalInfo(widget.item.nutritionalInfo)
                                       .isNotEmpty
-                                  ? DataTable(
-                                      columns: const <DataColumn>[
-                                        DataColumn(label: Text('Nutrient')),
-                                        DataColumn(label: Text('Value')),
-                                        DataColumn(
-                                            label:
-                                                Text('Percent of Daily Needs'))
-                                      ],
-                                      rows: parseNutritionalInfo(
-                                              widget.item.nutritionalInfo)
-                                          .entries
-                                          .map((entry) => DataRow(
-                                                cells: <DataCell>[
-                                                  DataCell(Text(entry.key)),
-                                                  DataCell(
-                                                      Text(entry.value[0])),
-                                                  DataCell(
-                                                      Text(entry.value[1])),
-                                                ],
-                                              ))
-                                          .toList(),
+                                  ? ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxHeight:
+                                            300, // Adjust this value as needed for your UI
+                                      ),
+                                      child: SingleChildScrollView(
+                                        child: DataTable(
+                                          columnSpacing:
+                                              10, // Adjust spacing to fit your content
+                                          columns: const <DataColumn>[
+                                            DataColumn(label: Text('Nutrient')),
+                                            DataColumn(label: Text('Value')),
+                                            DataColumn(
+                                                label: Text(
+                                                    'Percent of Daily Needs'))
+                                          ],
+                                          rows: parseNutritionalInfo(
+                                                  widget.item.nutritionalInfo)
+                                              .entries
+                                              .map((entry) => DataRow(
+                                                    cells: <DataCell>[
+                                                      DataCell(Text(entry.key)),
+                                                      DataCell(
+                                                          Text(entry.value[0])),
+                                                      DataCell(
+                                                          Text(entry.value[1]))
+                                                    ],
+                                                  ))
+                                              .toList(),
+                                        ),
+                                      ),
                                     )
                                   : const Padding(
                                       padding:
