@@ -335,7 +335,26 @@ class _AccountPageV2State extends State<AccountPageV2> {
         Map userData = userSnapshot.value as Map;
         String userToShareID = userData.keys.first;
 
-        bool hasPantryAlready = (userData.keys.inventoryID == "Null");
+        Map userToShareData = userData[userToShareID];
+
+        // Check if the user already belongs to any pantry
+        if (userToShareData['inventoryID'] != null && userToShareData['inventoryID'] != "Null") {
+          return showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Error"),
+                content: const Text("User already belongs to a pantry!"),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
 
         if (!users.contains(userToShareID)) {
           users.add(userToShareID);
