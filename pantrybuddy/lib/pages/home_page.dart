@@ -69,8 +69,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future hasInventory() async {
-    FoodInventory pantry = await fetchPantry();
-    return pantry.owner != "Null";
+    //FoodInventory pantry = await fetchPantry();
+    //return pantry.owner != "Null";
+    widget.hasInventory = true;
+    log(await fetchPantryID());
+    return await fetchPantryID() != "Null";
   }
 
   @override

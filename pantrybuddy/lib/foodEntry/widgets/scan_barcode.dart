@@ -170,6 +170,7 @@ class _BarcodeEntryPageState extends State<BarcodeEntryPage> {
     final DateTime expirationDate = _dateController.text.isNotEmpty
         ? DateTime.parse(_dateController.text)
         : DateTime.now();
+    log(expirationDate.toIso8601String());
 
     final int quantity = _quantityController.text.isNotEmpty
         ? int.parse(_quantityController.text)
